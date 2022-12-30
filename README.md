@@ -87,7 +87,7 @@ TC0: 16b format, buffering file in memory
 :login: 
 ```
 
-Just type `root`, in lower case, and press <ENTER>. You will immediately be taken to the UNIX v1 shell.
+Just type `root`, in lower case, and press ENTER. You will immediately be taken to the UNIX v1 shell.
 
 ```
 You must select, from the list below, which edition/version of
@@ -118,7 +118,7 @@ usr
 # 
 ```
 
-To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the simh> prompt appears on the screen.
+To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
 
 #### Particularities for v5 UNIX version
 
@@ -145,7 +145,7 @@ Modem control activated
 @
 ```
 
-To start UNIX, you must type `unix` and press <ENTER> after the @ character, without spaces and in lower case. After pressing <ENTER>, UNIX will load and you will be taken to a login screen as below:
+To start UNIX, you must type `unix` and press ENTER after the @ character, without spaces and in lower case. After pressing ENTER, UNIX will load and you will be taken to a login screen as below:
 
 ```
 You must select, from the list below, which edition/version of
@@ -170,7 +170,7 @@ Modem control activated
 login:
 ```
 
-You must then type `root` and press <ENTER>. You will then be taken to the shell and be able to use the system. see below:
+You must then type `root` and press ENTER. You will then be taken to the shell and be able to use the system. see below:
 
 ```
 You must select, from the list below, which edition/version of
@@ -196,7 +196,7 @@ login: root
 # 
 ```
 
-To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the simh> prompt appears on the screen.
+To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
 
 #### Particularities for v7 UNIX version
 
@@ -222,7 +222,7 @@ Listening on port 5672 (socket 7)
 Modem control activated
 ```
 
-After seeing the screen above, you must type `boot` in lower case and press <ENTER>. You will see the screen below after that:
+After seeing the screen above, you must type `boot` in lower case and press ENTER. You will see the screen below after that:
 
 ```
 You must select, from the list below, which edition/version of
@@ -247,7 +247,7 @@ Boot
 :
 ```
 
-After the appearance of `:`, you must type, without spaces and in lower case, the command `hp(0,0)unix` and press <ENTER>, as below:
+After the appearance of `:`, you must type, without spaces and in lower case, the command `hp(0,0)unix` and press ENTER, as below:
 
 ```
 You must select, from the list below, which edition/version of
@@ -274,7 +274,9 @@ mem = 2020544
 # 
 ```
 
-Pressing <ENTER> will immediately take you to the UNIX v7 shell. To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. you will again be taken to the UNIX v7 shell, as below:
+Pressing ENTER will immediately take you to the UNIX v7 shell.
+
+- [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. you will again be taken to the UNIX v7 shell, as below:
 
 ```
 You must select, from the list below, which edition/version of
@@ -309,6 +311,89 @@ You have mail.
 # 
 ```
 
-To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the simh> prompt appears on the screen.
+To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
+
+#### Particularities for 2.11BSD UNIX version
+
+After the start of execution after selecting 2.11BSD UNIX version, you will see a screen like below:
+
+```
+You must select, from the list below, which edition/version of
+UNIX you want to start. The available options are:
+
+1) v1 UNIX
+2) v5 UNIX
+3) v7 UNIX
+4) 2.11BSD UNIX
+5) Clear temporary files
+
+Select a number and press <ENTER>: 4
+
+PDP-11 simulator V3.8-1
+Listening on port 4000 (socket 4)
+Modem control activated
+Auto disconnect activated
+211bsd.simh> attach xq eth0
+File open error
+Disabling CR
+
+73Boot from ra(0,0,0) at 0172150
+: 
+```
+
+You can just press ENTER when you see the screen to start UNIX. Afterwards, you will see the following screen:
+
+```
+You must select, from the list below, which edition/version of
+UNIX you want to start. The available options are:
+
+1) v1 UNIX
+2) v5 UNIX
+3) v7 UNIX
+4) 2.11BSD UNIX
+5) Clear temporary files
+
+Select a number and press <ENTER>: 4
+
+PDP-11 simulator V3.8-1
+Listening on port 4000 (socket 4)
+Modem control activated
+Auto disconnect activated
+211bsd.simh> attach xq eth0
+File open error
+Disabling CR
+
+73Boot from ra(0,0,0) at 0172150
+: 
+: ra(0,0,0)unix
+Boot: bootdev=02400 bootcsr=0172150
+
+2.11 BSD UNIX #1: Fri Jun 9 08:42:54 PDT 1995
+    root@SSU-64EN137:/usr/src/sys/SYSTEM
+
+ra0: Ver 3 mod 3
+ra0: RD54  size=311200
+attaching qe0 csr 174440
+qe0: DEC DELQA addr 00:50:56:01:01:01
+attaching lo0
+
+phys mem  = 3145728
+avail mem = 1737664
+user mem  = 307200
+
+June  9 12:21:04 init: configure system
+
+dz 0 csr 160100 vector 300 attached
+ra 0 csr 172150 vector 154 vectorset attached
+ts 0 csr 172520 vector 224 attached
+erase, kill ^U, intr ^C
+# 
+```
+
+The `#` symbol indicates that the shell is ready to receive commands. Try using `uname -a` or `ls` to get started.
+
+- [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. you will again be taken to the 2.11BSD shell.
+
+To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
 
 </div>
