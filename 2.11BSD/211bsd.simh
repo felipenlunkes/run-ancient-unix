@@ -1,0 +1,22 @@
+set tto 7b
+
+set dz lines=8
+set dz 7b
+attach -am dz 4000
+
+set ts enable
+set rq enable
+
+set RK disable
+set HK disable
+set TC disable
+set TM disable
+
+attach xq eth0
+set xq type=delqa
+set xq mac=00-50-56-01-01-01
+
+; It doesn't seem to like 4 megabytes
+set cpu 3072k
+attach rq media/root.dsk
+boot rq

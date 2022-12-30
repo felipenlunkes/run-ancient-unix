@@ -1,0 +1,117 @@
+
+This is my (Andru Luvisi's) setup for running 2.11BSD under SIMH.
+
+
+MANIFEST
+
+  distro/*
+    The original files from the TUHS archive (http://www.tuhs.org/)
+    under PDP-11/Distributions/ucb/2.11BSD/
+
+  docs/2.11bsd_setup.txt
+    The 2.11BSD install manual from the TUHS archive
+    under PDP-11/Documentation/
+
+  media/211bsd.tap
+    A recreation of the distribution tape created using mkdisttap.pl
+
+  media/root.dsk
+    A disk image that boots a kernel with networking and a ram disk.
+
+  211bsd.simh
+    The command file for booting SIMH from the root.dsk image.
+    "pdp11 211bsd.simh" should boot you into the networked system.
+
+  211bsd.simh.bootstrap
+    The command file for booting SIMH from the 211bsd.tap distribution
+    tape image.  To create a new system:
+      dd if=/dev/zero of=media/newsystem.dsk bs=1024k count=XXXX
+      pdp11 211bsd.simh.bootstrap
+    Then follow the instructions in docs/2.11bsd_setup.txt
+
+  mkdisttap.pl
+    Perl script for generating the distribution tape from the distribution
+    files.  To create a distribution tape "./mkdisttap.pl > 211bsd.tap"
+
+  tapadd.pl
+    Perl script for putting files into a tape image.  For example, to move
+    a folder named "foo" from the host into the emulator, you might:
+      (in the host)
+      tar cvf foo.tar foo
+      ./tapadd.pl foo.tar > foo.tap
+      (at the emulator's command prompt)
+      attach ts foo.tap
+      (inside 211BSD)
+      mt rewind
+      tar xvf /dev/rmt12
+  
+  tapcat.pl
+    Perl script for extracting files from a tape image.  For example, to move
+    a folder named "foo" from the emulator out to the host, you might:
+      (at the emulator's command prompt)
+      attach ts foo.tap
+      (in the emulator)
+      mt rewind
+      tar cvf /dev/rmt12 foo
+      (at the emulator's command prompt)
+      detach ts
+      (in the host)
+      ./tapcat.pl foo.tap 0 > foo.tar
+      tar xvf foo.tar
+
+
+CHANGES FROM THE DEFAULT IN media/root.dsk
+
+  It has the ra boot block installed (as described in docs/2.11bsd_setup.txt).
+
+  The /unix and /netnix files (the default kernel) were built from the 
+  configuration file /sys/conf/SYSTEM.  In particular,
+    Only ra disks are supported.
+    Only ts tapes are supported.
+    There is a 1 megabyte ramdisk.
+    Networking and the qe driver are enabled.
+    It supports a DZ11 with 8 ports.
+
+  The distribution/generic kernel without networking is in /unixorg.  
+  This is the one you want to boot from if you botch up the main kernel.
+
+  I have edited /etc/rc to:
+    Mount /tmp as a ramdisk and place fsck's temporary file there.
+    This stopped fsck from complaining about its temporary file being
+    on /.
+
+    Start fewer network services.
+
+  /dev/{mt,rmt}* are ts devices.
+
+  /dev/tty0[0-7] are dz devices
+
+  /etc/ttys starts getty on the 8 DZ11 ports.
+
+  I modified syslogd so that it won't listen to the network.
+  See /usr/src/usr.sbin/syslogd/
+
+
+RUNNING
+
+  Set up SIMH with networking (see the SIMH docs for how to do this).
+
+  edit 211bsd.simh and modify the ethernet address to your liking.
+
+  run: pdp11 211bsd.simh
+
+  When the boot loader offers you a ":" prompt, press return.  It will
+  boot into single user mode.  Press ^D.
+
+  Once it finishes booting into multiuser mode, you can log in on the 
+  console as root with a password of Hithere.
+
+  For additional logins, "telnet localhost 4000".
+
+
+CONFIGURING NETWORKING
+
+  In order to configure networking, you will need to edit the files
+  /etc/hosts and /etc/netstart.  In /etc/netstart look for "hostname="
+  (it's around line 26).
+

@@ -1,0 +1,13 @@
+mtboot 1
+mtboot 1
+boot 1
+* 1
+disklabel 2
+* 1
+mkfs 2
+* 1
+restor 2
+* 1
+icheck 2
+* 1
+root.dump 20

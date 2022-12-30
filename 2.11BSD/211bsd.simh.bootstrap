@@ -1,0 +1,10 @@
+set tto 7b
+set RK disable
+set HK disable
+set TC disable
+set TM disable
+set cpu 3072k
+set ts enable
+attach ts media/211bsd.tap
+attach rq media/newsystem.dsk
+boot ts

@@ -1,0 +1,21 @@
+BASE=   br.o cons.o dh.o dhu.o dhv.o dr.o dz.o hk.o ht.o init_sysent.o \
+        kern_clock.o kern_descrip.o kern_mman.o kern_proc.o kern_prot.o \
+        kern_prot2.o kern_subr.o kern_synch.o lp.o machdep.o ra.o ram.o \
+        rk.o rl.o rx.o si.o subr_rmap.o sys_inode.o sys_kern.o \
+        tm.o ts.o tty.o tty_conf.o tty_subr.o tty_tb.o ufs_alloc.o \
+        ufs_bio.o ufs_fio.o ufs_inode.o ufs_namei.o \
+        toy.o vm_swp.o
+OV1=    sys_generic.o ufs_syscalls.o vfs_vnops.o
+OV2=    kern_acct.o kern_exec.o kern_exit.o kern_fork.o kern_resource.o
+OV3=    kern_time.o sys_process.o ufs_mount.o ufs_subr.o uipc_syscalls.o
+OV4=    dkbad.o kern_sig.o mem.o subr_xxx.o trap.o tty_pty.o tty_tty.o
+OV5=    quota_kern.o quota_ufs.o quota_sys.o ufs_bmap.o \
+        sys_pipe.o
+# OV6 gets the (hopefully) never used routines
+OV6=    clock.o dn.o init_main.o kern_pdp.o machdep2.o subr_prf.o syscalls.o \
+        subr_log.o
+OV7=    ufs_disksubr.o ufs_dsort.o ufs_syscalls2.o kern_sig2.o
+OV8=    mch_fpsim.o kern_sysctl.o kern_xxx.o ingreslock.o vm_text.o
+OV9=    tmscp.o tmscpdump.o \
+        vm_proc.o vm_sched.o vm_swap.o xp.o quota_subr.o
+

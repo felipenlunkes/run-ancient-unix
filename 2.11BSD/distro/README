@@ -1,0 +1,486 @@
+	This release incorporates all fixes and changes made since the
+	release of 2.10.1BSD in January 1989 as well as several missing
+	pieces of 4.3BSD (the namei cache, tmscp driver, long filenames,
+	etc.)
+
+Bug reports, technical questions:
+
+	Report bugs using the standard sendbug format (see bugfiler(1))
+	WITH AN INDEX LINE OF "2.11BSD".
+	General questions can be directed to Steven Schultz at 
+	sms@wlv.iipo.gtegsc.com.  At this time, contact by phone is not 
+	available due to a high degree of travel.  If you're really desperate, 
+	print out a hardcopy example of the problem, and carefully mark your 
+	place with a picture of your favorite president, preferably a large 
+	denomination.  Send it to me.
+
+	Bug fixes will be posted to comp.bugs.2bsd.
+	Archives may be requested from Steven Schultz by electronic mail.  
+
+	For an explanation of how unsupported this release is, read the 
+	the remainder of this and the "changes" document, and keep
+	in mind that this activity is not what pays the mortgage each month.
+
+Credit where it's due:
+
+	Paul Taylor of SUNY Oswego for volunteering to put 2.11BSD on
+	his 11/73's back when it was known as 2.10.2SMS and fighting the 
+	beta test problems, proofreading and critiqueing the documentation.  
+	Terry Kennedy of St. Peter's College for final testing on a 11/70 and 
+	for putting together an 11/73 for me.  Bob Karlicek of AT&T for 
+	loaning me his 11/73 (on the basis of an Internet developed 
+	acquaintance) to develop the TMSCP driver and related standalone 
+	support.
+	
+Steven Schultz  sms@wlv.iipo.gtegsc.com
+Paul Taylor     taylor@oswego.oswego.edu
+Terry Kennedy   terry@spcvxa.spc.edu
+Bob Karlicek	rfkjr@mhuxo.att.com
+
+In general:
+	- The system hasn't been fit onto a non-separate I&D or machine
+	  without a floating point processor in a long time.  Lots of overlay
+	  schemes need to be worked out; the floating point simulator in
+	  the kernel hasn't been tested; sendmail won't run on a non-separate
+	  machine, so bin/mail and ucb/Mail have to auto-configure not to
+	  use sendmail; csh is overlaid now even on a separate I&D machine,
+	  /lib/cpp is pushing the limit to handle all the #define'ing that
+	  is required to compile the kernel...
+
+	  It is not anticipated the split I&D restriction will ever be lifted.
+	  The historical trend is for systems and programs to increase in
+	  size, not decrease.
+
+Kernel:
+	- Profiling hasn't been looked at in years.  It won't work as it is
+	  because the supervisor mode has been allocated to the networking code.
+
+	- The networking is very stable.  The DEQNA, DEUNA, DELUA, Interlan,
+	  3Com, PRONET, ACC LH/DH-11 drivers are known to work;  others will
+	  require some work.  Diffs are provided in /sys/OTHERS for the
+	  VAX Excelan EXOS 204 driver.   The XNS code is ported, but has
+	  to my knowledge never been compiled or tested.  The residual PUP
+	  support has been removed (as it was in 4.3BSD).  SL/IP works but
+	  can hang and not restart when you run out of CLISTs.  It would
+	  probably be a good idea to increase CLISTs to the maximum when
+	  running SL/IP.  
+
+	  The DEQNA driver is a fresh port from 4.3BSD and is more stable
+	  and much less susceptible to hanging than the old version.
+
+	  Don't even THINK of using TRAILERS on *ANY* of the machines in your 
+	  LAN.  In many cases the trailer code has been ifdef'd/commented out 
+	  from 2.11BSD drivers, in other cases the trailer code has simply 
+	  been ripped out.  In any case, the current drivers drop trailer
+	  packets and increment the input packet error count.
+
+	- The rtp call is wrong, any superuser call to turn off rtp will
+	  turn it off, even if it's not the process itself requesting to
+	  have its special status revoked.  The whole 'rtp' call should
+	  probably go away.  As far as i know it has never been tested with
+	  the present kernel and probably doesn't work.
+
+	- There should be some way to monitor which overlays you're
+	  switching between to aid in determining the best overlay scheme
+	  for your kernel.
+
+	- 2.10.X has not been made to run on the PRO series machines.  See
+	  sys/OTHERS/PRO for more details and some helpful diffs.  The
+	  OTHERS directory is quite useful, as it contains many other
+	  versions of various drivers and such things.
+
+	- The directory /sys/vaxif contains the source for the VAX networking 
+	  drivers.  This is an excellent reference for adding new drivers and 
+	  fixing current ones.
+
+Applications:
+	In some of the major source subdirectories you'll see, variously,
+	subdirectories named OLD and PORT.  The OLD directories contain
+	old 2.9BSD versions of software which were kept around for
+	porting purposes.  The PORT directories contain 4.3BSD code that
+	we didn't have time to port, but felt should be ported eventually.
+
+	Due to the amount of software ported from 4.3BSD (and the Internet)
+	the number of PORT directories has been cut down in order to fit
+	the distribution on two 1600bpi tapes.  Many of the sources not included
+	are available from INTERNET archive sites, others will have to be
+	acquired from a friendly 4.3BSD site.
+
+	There are only four OLD directories present in the system:  
+	/usr/include/OLD, /usr/src/include/OLD (two .h files for support of 
+	'ps'), /sys/pdpstand/OLD (unused standalone programs) and
+	/usr/src/new/OLD where the 2.9BSD remnants are kept.
+
+	- User level gprof profiling has not been implemented.  It should
+	  be doable, just hasn't been time to do it.  Regular profiling
+	  seems to be working fine however.
+
+	- Lint hasn't been ported yet; the old version is in an unknown
+	  state.  (it doesn't work)
+
+	- Ucb/sysline compiles but doesn't run.  not a big loss really
+	  unless you have a 25 line terminal.
+
+	- Ucb/systat hasn't been ported.  but should be pretty easy EXCEPT
+	  for the '-vmstat' display, much of the information there is simply
+	  not applicable.
+
+	- The acucntrl program in the usr.bin/uucp directory doesn't work.
+	  It sets flags properly in the kernel, but the tty drivers don't
+	  pay any attention to them.  See /sys/OTHERS/acucntrl for a fix
+	  and comments.  The temptation was to simply adopt the 4.3BSD
+	  soft-carrier mechanism and modify autoconfig to pass flags to
+	  the driver.  For now the old method has been left in place.
+
+	- The PDP-11 lisp hasn't been converted over to the new system
+	  calling protocol; it's a fairly straightforward, mechanical
+	  process, though.  You can find it in /usr/src/new/OLD/lisp11.tar.Z
+
+	- Most of the applications under /usr/src/new have been tested
+	  and work properly.  However, a large number of the 4.3BSD new
+	  directory remains to be ported ...
+
+	- Only some of the games have been tested.  Most compile, but ...
+
+
+Man pages:
+
+  The 4.3BSD-tahoe manual page system remains inplace from 2.10.1BSD.  
+  Manual page source is generally contained under /usr/src/man.  Only 
+  preformatted manual pages are stored under /usr/man.  The script 
+  /usr/man/manroff is used to help format manual pages.  Man(1) has been 
+  modified accordingly.  I'm not happy with this setup, it broke a
+  symmetry i liked, but ...
+
+  Because the 14 character limit on file name lengths has been lifted
+  there are no manual page files whose names required truncation.
+
+The man program will automatically truncate any names over MAXNAMLEN-2, but
+since MAXNAMLEN is now 63 this should never be a problem unless manual
+page filename lengths take on the attribute of a novella.
+
+The following manual pages are NOT in 2.10BSD but ARE in 4.3BSD:
+
+	dbx.1		  gprof.1	    symorder.1	      vlp.1
+	fp.1		  liszt.1	    systat.1
+
+	ad.4		  dn.4		    kg.4	      uda.4
+	autoconf.4	  drum.4	    mt.4	      up.4
+	crl.4		  ex.4		    np.4	      ut.4
+	ct.4		  fl.4		    pcl.4	      uu.4
+	ddn.4		  hdh.4		    ps.4	      va.4
+	dmf.4		  ik.4		    vp.4	      dmz.4
+	ix.4		  tu.4
+
+	stab.5
+
+	config.8	  fasthalt.8	    restore.8
+
+
+The following manual pages are NOT in 4.3BSD but ARE in 2.10BSD:
+
+	mkdep.1		  nslookup.1
+
+	fetchi.2	  gldav.2	    nostk.2	      rtp.2
+	fperr.2		  lock.2	    phys.2	      ucall.2
+
+	l3tol.3		  loadav.3	    strcasecmp(3)
+	ldfps.3		  ltol3.3	    strncasecmp(3)
+(since block numbers of files are no longer 3 bytes long, the l3tol and ltol3
+ routines are historical dregs)
+
+	br.4		  ram.4		    rp.4	      xp.4
+	dr.4		  rk.4		    si.4
+	dvhp.4		  rl.4		    sri.4
+	ra.4		  rm.4		    swap.4
+
+	dtab.5 		  stack.5	    tzfile.5
+
+	bj.6		  ttt.6		    warp.6	      words.6
+	moo.6
+
+	hostname.7
+
+	autoconfig.8	  restor.8
+
+
+The following manual pages DIFFER between 2.10BSD and 4.3BSD:
+
+	adb.1		  f77.1		    man.1	      px.1
+	nm.1	          pxp.1 	    as.1	      ld.1
+	pi.1	          pxref.1	    cc.1	      lisp.1
+	pix.1		  make.1	    ps.1
+
+	adjtime.2	  ptrace.2	    sigpause.2	      write.2
+	getitimer.2	  read.2	    sigreturn.2
+	getrusage.2	  setitimer.2	    sigsetmask.2
+	profil.2	  sigblock.2	    sigvec.2
+(differences in the sig* man pages consist of substituting 'long' for 'int')
+
+	bstring.3	  gethostbyname.3   resolver.3	      usleep.3
+	compat-sys5.3	  inet.3	    setjmp.3	      vlimit.3
+	ctime.3		  mktemp.3	    signal.3	      vtimes.3
+	execl.3		  printf.3	    string.3
+	rand.3	    	  ualarm.3
+
+	acc.4		  dz.4		    inet.4f	      null.4
+	arp.4p		  ec.4		    intro.4	      pty.4
+	bk.4		  en.4		    intro.4n	      qe.4
+	cons.4		  hk.4		    lo.4	      rx.4
+	css.4		  hp.4		    lp.4	      tb.4
+	de.4		  ht.4		    mem.4	      tm.4
+	dh.4		  hy.4		    mtio.4	      ts.4
+	dhu.4		  il.4		    ns.4f	      tty.4
+	dmc.4		  imp.4		    nsip.4	      vv.4
+	tmscp.4
+
+	a.out.5		  core.5	    dump.5	      resolver.5
+	fs.5
+
+	bcd.6		  chess.6
+
+	mailaddr.7
+
+	bad144.8	  dump.8	    icheck.8	      quot.8
+	badsect.8	  dumpdir.8	    mkfs.8	      reboot.8
+	clri.8		  fastboot.8	    named.8	      rxformat.8
+	crash.8		  fsck.8	    ncheck.8	      savecore.8
+	dcheck.8	  halt.8	    newfs.8
+=======================================================================
+The original README file as distributed with 2.10.1BSD
+=======================================================================
+Please see the file /ERRATA for distribution errata notices.
+
+Bug reports, technical questions:
+	Please, if possible, report bugs using the standard sendbug format
+	(see bugfiler(1)) WITH AN INDEX LINE OF "2.10BSD" and e-mail it to
+	uunet!ucbvax!bugs or bugs@ucbvax.berkeley.edu.  General questions
+	can be directed to Keith Bostic at one of the e-mail addresses below;
+	if that's not possible, he may be contacted at 415-642-4948.  If
+	you're really desperate, print out a hardcopy example of the problem,
+	and carefully mark your place with a picture of your favorite
+	president, preferably in a large denomination.  Send it to us.  All
+	bug fixes will be posted to comp.bugs.2bsd; archives may be requested
+	from Keith Bostic by electronic mail.  For a detailed explanation
+	of how unsupported this release is, read the kernel changes document.
+
+Credit where it's due:
+	Cyrus Rahman, of Duke University, is responsible for much of the
+	work done on various applications for 2.10.1, as well as for making
+	us do select(2) and adjtime(2) correctly.  Steven Schultz, of
+	Contel Federal Systems, did the original port of the supervisor
+	space networking, as well as much of the debugging.
+
+Keith Bostic	{uunet!bostic, bostic@ucbvax.berkeley.edu}
+Casey Leedom	{uunet!ucbvax!vangogh!casey, casey@vangogh.berkeley.edu}
+Cyrus Rahman	{dukempd!cr@mcnc.org}
+Steven Schultz	{sms@etn-wlv.eaton.com}
+
+
+In general:
+	- The system hasn't been fit onto a non-separate I&D or machine
+	  without a floating point processor in a long time.  Lots of overlay
+	  schemes need to be worked out; the floating point simulator in
+	  the kernel hasn't been tested; sendmail won't run on a non-separate
+	  machine, so bin/mail and ucb/Mail have to auto-configure not to
+	  use sendmail; -DNONSEP needs to be passed up and down the make
+	  files (or better yet, the new environment inheritance feature of
+	  make should be used to pull out the environment variable MACHDEFS
+	  and SEPFLAG);
+	  ...
+
+	  The reason this hasn't been done now is, as always, lack of
+	  time.
+
+Kernel:
+	- Profiling hasn't been looked at in well over a year.  It
+	  probably doesn't work.
+
+	- The networking is stable.  The DEQNA, DEUNA, DELUA, Interlan
+	  and 3Com drivers are known to work; the PRONET and others will
+	  require some work.  Diffs are provided in /sys/OTHERS for the
+	  VAX Excelan EXOS 204 driver. TCP/IP is in place and working;
+	  XNS has been ported, but will contain more bugs than the mainstream
+	  networking.  PUP hasn't even been looked at.  SLIP works, but
+	  can hang and not restart when you run out of CLISTs.  DON'T EVEN
+	  THINK OF USING TRAILERS on *ANY* of the machines in your LAN.
+
+	- The rtp call is wrong, any superuser call to turn off rtp will
+	  turn it off, even if it's not the process itself requesting to
+	  have its special status revoked.  Probably need 3 defines:
+
+		#define RTP_ON		1	/* turn it on */
+		#define RTP_OFF		2	/* turn it off if I set it */
+		#define RTP_FORCE_OFF	3	/* turn off everyone's */
+
+	  If rtp(2) gets RPT_FORCE_OFF, it should find the process and
+	  turn off the stuff, if necessary; question is if rtpp is the
+	  flag that everyone checks for the existence of a run-time
+	  process.
+
+	- There should be some way to monitor which overlays you're
+	  switching between to aid in determining the best overlay scheme
+	  for your kernel.  Alternatively, and more correctly, gprof
+	  should be implemented for the kernel.
+
+	- The device number is not currently included in the buffer
+	  hashing function, and probably should be.
+
+	- 2.10 has not been made to run on the PRO series machines.  See
+	  sys/OTHERS/PRO for more details and some helpful diffs.  The
+	  OTHERS directory is quite useful, as it contains many other
+	  versions of various drivers and such things.
+
+	- A new directory has been added, /sys/vaxif, which contains the
+	  source for the VAX networking drivers.  This is an excellent
+	  reference for adding new drivers and fixing current ones.
+
+Applications:
+	In each of the major source subdirectories you'll see, variously,
+	subdirectories named OLD and PORT.  The OLD directories contain
+	old 2.9BSD versions of software which were kept around for
+	porting purposes.  The PORT directories contain 4.3BSD code that
+	we didn't have time to port, but felt should be ported eventually.
+
+	- User level gprof profiling has not been implemented.  It should
+	  be doable, we just haven't had time to do it.  Regular profiling
+	  seems to be working fine however.
+
+	- Lint hasn't been ported yet; the old version is in an unknown
+	  state.
+
+	- Ucb/sysline compiles but doesn't run.
+
+	- Ucb/systat hasn't been ported, but should be pretty easy.
+
+	- The acucntrl program in the usr.bin/uucp directory doesn't work.
+	  It sets flags properly in the kernel, but the tty drivers don't
+	  pay any attention to them.  See /sys/OTHERS/acucntrl for a fix
+	  and our comments on it.
+
+	- The PDP-11 lisp hasn't been converted over to the new system
+	  calling protocol; it's a fairly straightforward, mechanical
+	  process, though.  You can find it in new/PORT/lisp11.
+
+	- Most of the applications under /usr/src/new have been tested
+	  and work properly.  However, a large number of the 4.3BSD new
+	  directory remains to be ported ...
+
+	- Only some of the games have been tested.  Most compile, but ...
+
+
+Man pages:
+
+  The new 4.3BSD-tahoe manual page system has been set up.  Manual page
+source is generally contained under /usr/src/man.  Only preformatted
+manual pages are stored under /usr/man.  The script /usr/man/manroff is
+used to help format manual pages.  Man(1) has been modified accordingly
+...
+
+  Because of the 14 character limit on file name lengths, the names of the
+following manual pages have been changed:
+
+	Old name		New name
+	--------		--------
+	getdtablesize(2)	getdtabsize(2)
+
+	getdiskbyname(3)	getdiskbynam(3)
+	gethostbyaddr(3)	gethostbyadd(3)
+	gethostbyname(3)	gethostbynam(3)
+	getprotobyname(3)	getprotobyna(3)
+	getprotobynumber(3)	getprotobynu(3)
+	getservbyname(3)	getservbynam(3)
+	getservbyport(3)	getservbypor(3)
+	inet_makeaddr(3)	inet_makeadd(3)
+
+	miscellaneous(7)	miscellaneou(7)
+
+The man program will automatically truncate any names over MAXNAMLEN-2
+(leaving room for the ".x" extension), so this should be transparent (at
+least until we run into names which aren't unique within the first 12
+characters ...
+
+The following manual pages are NOT in 2.10BSD but ARE in 4.3BSD:
+
+	dbx.1		  gprof.1	    symorder.1	      vlp.1
+	fp.1		  liszt.1	    systat.1
+
+	ad.4		  dn.4		    kg.4	      uda.4
+	autoconf.4	  drum.4	    mt.4	      up.4
+	crl.4		  ex.4		    np.4	      ut.4
+	ct.4		  fl.4		    pcl.4	      uu.4
+	ddn.4		  hdh.4		    ps.4	      va.4
+	dmf.4		  ik.4		    tmscp.4	      vp.4
+	dmz.4		  ix.4		    tu.4
+
+	stab.5
+
+	config.8	  fasthalt.8	    mklost+found.8    restore.8
+
+
+The following manual pages are NOT in 4.3BSD but ARE in 2.10BSD:
+
+	mkdep.1		  nslookup.1
+
+	fetchi.2	  gldav.2	    nostk.2	      rtp.2
+	fperr.2		  lock.2	    phys.2	      ucall.2
+
+	l3tol.3		  loadav.3	    strcasecmp(3)
+	ldfps.3		  ltol3.3	    strncasecmp(3)
+
+	br.4		  ram.4		    rp.4	      xp.4
+	dr.4		  rk.4		    si.4
+	dvhp.4		  rl.4		    sri.4
+	ra.4		  rm.4		    swap.4
+
+	dtab.5 		  stack.5	    tzfile.5
+
+	bj.6		  ttt.6		    warp.6	      words.6
+	moo.6
+
+	hostname.7
+
+	autoconfig.8	  mklost.8	    restor.8
+
+
+The following manual pages DIFFER between 2.10BSD and 4.3BSD:
+
+	adb.1		  f77.1		    man.1	      px.1
+	ar.1		  file.1	    nm.1	      pxp.1
+	as.1		  ld.1		    pi.1	      pxref.1
+	cc.1		  lisp.1	    pix.1	      ranlib.1
+	date.1		  make.1	    ps.1	      w.1
+
+	adjtime.2	  ptrace.2	    sigpause.2	      write.2
+	getitimer.2	  read.2	    sigreturn.2
+	getrusage.2	  setitimer.2	    sigsetmask.2
+	profil.2	  sigblock.2	    sigvec.2
+
+	bstring.3	  gethostbyname.3   resolver.3	      usleep.3
+	compat-sys5.3	  inet.3	    setjmp.3	      vlimit.3
+	ctime.3		  mktemp.3	    signal.3	      vtimes.3
+	execl.3		  printf.3	    string.3
+	getenv.3	  rand.3	    ualarm.3
+
+	acc.4		  dz.4		    inet.4f	      null.4
+	arp.4p		  ec.4		    intro.4	      pty.4
+	bk.4		  en.4		    intro.4n	      qe.4
+	cons.4		  hk.4		    lo.4	      rx.4
+	css.4		  hp.4		    lp.4	      tb.4
+	de.4		  ht.4		    mem.4	      tm.4
+	dh.4		  hy.4		    mtio.4	      ts.4
+	dhu.4		  il.4		    ns.4f	      tty.4
+	dmc.4		  imp.4		    nsip.4	      vv.4
+
+	a.out.5		  core.5	    dump.5	      resolver.5
+	ar.5		  dir.5		    fs.5
+
+	bcd.6		  chess.6
+
+	mailaddr.7
+
+	bad144.8	  dump.8	    icheck.8	      quot.8
+	badsect.8	  dumpdir.8	    mkfs.8	      reboot.8
+	clri.8		  fastboot.8	    named.8	      rxformat.8
+	crash.8		  fsck.8	    ncheck.8	      savecore.8
+	dcheck.8	  halt.8	    newfs.8

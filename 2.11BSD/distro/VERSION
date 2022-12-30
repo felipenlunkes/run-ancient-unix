@@ -1,0 +1,101 @@
+Current Patch Level: 431
+Date: April 21, 2000
+
+2.11 BSD
+============
+NOTE --
+	This would have been the third release of 2.10BSD; but since
+	the filesystem has changed and a coldstart is required
+	this release was instead called: 2.11BSD
+
+	Work on this release has been on going since the initial
+	release of 2.10.1BSD in January 1989.  This release, 
+	is in celebration of the 20th anniversary of the PDP-11.
+	
+	This release incorporates all fixes and changes posted
+	to the group comp.bugs.2bsd on the newsnet since 2.10.1BSD
+	was released.
+
+	Present in this release are several more missing pieces
+	from the 4.3BSD distribution:
+
+		1) the kernel logger (/dev/klog)
+
+		2) the namei cache
+
+		3) readv(2)/writev(2) as system calls rather than 
+		   emulation/compatibility routines
+
+		4) the shadow password implementation released for 4.3BSD
+
+		5) a TMSCP (TK50/TU81) driver with standalone support 
+		   (bootblock and standalone driver)
+
+		6) a couple more network drivers have ported or made to
+		   work:  if_vv and if_acc
+
+		7) the portable ascii archive file format (ar(1), ar(5)) has 
+		   been implemented.
+
+		8) last, but most importantly, long filenames!  
+		
+		   This last is the reason a coldstart kit is necessary.  The 
+		   on-disc directory structure has been ported from 4.3BSD 
+		   (along with the utilities that know about on-disc
+		   directories via the raw filesystem: fsck, ncheck, icheck, 
+		   dcheck, etc.) and is not compatible with previous versions
+		   of UNIX for the PDP-11.  A limited amount of backward
+		   compatibility is present in a version of dump(8) which
+		   can read old filesystems.  restor(8) automagically converts
+		   old dump tapes to the new format on input.
+
+		   MAXNAMLEN is now 63 instead of 14.  It is possible the
+		   limit could be higher, but with MAXPATHLEN at 256 a
+		   MAXNAMLEN of 63 was judged sufficient.
+
+	MANY other fixes and changes have also been made, see the
+	"Changes To The System" document which describes the changes
+	made to both the kernel and the application programs.
+
+	Steven M. Schultz
+	GTE Government Systems
+	112 South Lakeview Canyon Road
+	Thousand Oaks CA 91359
+	sms@wlv.iipo.gtegsc.com
+
+	Below is the original VERSION file distributed with 2.10.1BSD
+-----------------------------------------------------------------------
+NOTE --
+	This is the second release of 2.10BSD; most of the changes
+	are part of the addition of supervisor space networking in
+	the kernel, although there are other changes.
+
+	To give some idea of the dates involved, distribution of
+	2.10BSD by the USENIX Assoc. started in fall of 1987.
+	Distribution of this source started in January of 1989.
+
+Keith Bostic
+Casey Leedom
+Cyrus Rahman
+Steven Schultz
+	Steven M. Schultz
+	Contel Federal Systems
+	31717 La Tienda Drive
+	Westlake Village CA 91359
+	sms@wlv.imsd.contel.com
+
+	Below is the original VERSION file distributed with 2.10.1BSD
+-----------------------------------------------------------------------
+NOTE --
+	This is the second release of 2.10BSD; most of the changes
+	are part of the addition of supervisor space networking in
+	the kernel, although there are other changes.
+
+	To give some idea of the dates involved, distribution of
+	2.10BSD by the USENIX Assoc. started in fall of 1987.
+	Distribution of this source started in January of 1989.
+
+Keith Bostic
+Casey Leedom
+Cyrus Rahman
+Steven Schultz

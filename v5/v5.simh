@@ -1,0 +1,146 @@
+; $Id: u5ed_rk_boot.scmd 922 2017-07-02 12:13:36Z mueller $
+;
+; Setup file for Unix 5th Edition RK05 based system
+;
+; Usage:
+;
+; pdp11 v5.simh
+;
+; $Id: setup_w11a_max.scmd 1280 2022-08-15 09:12:03Z mueller $
+; SPDX-License-Identifier: GPL-3.0-or-later
+; Copyright 2008-2022 by Walter F.J. Mueller <W.F.J.Mueller@gsi.de>
+;
+; Setup file for 'maximal' w11a configuration under simh 3.8 and above
+;
+; This setup reflects the full w11a system on a Nexys[234] board
+;   --> 4 MByte, 2 DL11, DZ+LP+PC, RK05+RL02+RP06+TM11, DEUNA
+;
+; 11/70 CPU no FPP, 4 MByte memory
+; 1 KW11-L                      177546/100/BR6
+; 1 KW11-P                      172540/104/BR6
+; 2 DL11                        177560/060/BR4   (cons)
+;                               176500/300/BR4 * (2nd)
+; 1 DZ11                        160100/310/BR5 *
+; 1 LP11                        177514/200/BR4
+; 1 PC11                        177550/070/BR4
+; 1 RK11 + 8 RK05    drives     177400/220/BR5
+; 1 RL11 + 4 RL01/02 drives     174400/160/BR5
+; 1 RH70 + 4 RP06    drives     176700/254/BR5
+; 1 TM11 + 4 drives             172520/224/BR5
+; 1 DEUNA                       174510/120/BR5 *
+;
+; Revision History: 
+; Date         Rev Version  Comment
+; 2922-08-14  1280  1.1.1   set sysid, indicate simulator and SimH
+; 2022-07-14  1256  1.1     use autoconfig, cleanups
+; 2008-12-28   182  1.0     Initial version
+;
+; processor options
+;
+set cpu 11/70
+set cpu nofpp
+set cpu 4m
+set cpu oct
+set cpu idle
+;
+; set sysid, leading '1' indicates simulator, next '1' SimH
+;
+dep sysid 110234
+;
+; clock options
+;
+set clk  50hz
+set pclk enabled
+set pclk 50hz
+;
+; setup pdp11 console via telnet (default is mixed with simh console)
+;
+; set cons telnet=5670
+;
+; terminal interface options
+;   the default tti time=0 setting gives 50 chars/sec, slow
+;   setting time=50000 (means 1 char every 50000 instructions) is much
+;   faster and seems still save for old DEC OS like XXDP, RT-11, RXS11-M
+;
+set cons log=simh_dl0.log
+dep tti time 50000
+set tto 8b
+;
+; 2nd DL11 interface options
+;   Note: default for DLO's is UC ! -> set to 8bit
+;
+set dli  enabled
+set dli  lines=1
+att dli  5671
+set dlo0 log=simh_dl1.log
+set dlo0 8b
+;
+set dz   enabled
+set dz   lines=8
+att dz   -m 5672
+set dz   log=0=simh_dz0.log
+set dz   log=1=simh_dz1.log
+set dz   log=2=simh_dz2.log
+set dz   log=3=simh_dz3.log
+;
+; line printer
+;
+set lpt  enabled
+att lpt  simh_lpt.dat
+;
+; paper tape read/punch
+;
+set ptr  enabled
+set ptp  enabled
+att ptp  simh_ptp.dat
+;
+; disk drives
+;
+set rk  enabled
+;
+set rl  enabled
+set rl0 rl02
+set rl1 rl02
+set rl2 rl02
+set rl3 rl02
+;
+set rp  enabled
+set rp0 rp06
+set rp1 rp06
+set rp2 rp06
+set rp3 rp06
+set rp4 disabled
+set rp5 disabled
+set rp6 disabled
+set rp7 disabled
+;
+; tape drives
+;
+set tm  enabled
+set tm4 disabled
+set tm5 disabled
+set tm6 disabled
+set tm7 disabled
+;
+; ethernet interfaces
+;
+set xu  enabled
+set xu  type=DEUNA
+;
+; DISABLE all else
+;
+set cr  disabled
+set hk  disabled
+set rx  disabled
+set rq  disabled
+set tq  disabled
+;
+;sho conf
+;
+
+set tto 7b
+set dlo0 7b
+;
+att rk0 v5.dsk
+;
+boo rk0

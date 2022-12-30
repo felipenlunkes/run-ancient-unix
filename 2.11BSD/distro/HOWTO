@@ -1,0 +1,115 @@
+	This is a brief description of howto create a bootable 2.11BSD tape
+	from the files in this directory.
+	
+	First you should have a set of files/directories that look like this:
+
+total 31653
+-rw-r-----   1 root  wheel       135 Apr 22 21:12 .mkisofsrc
+-rw-r--r--   1 root  wheel      3410 Apr 22 21:13 HOWTO
+-rwxr-xr-x   1 root  wheel     35236 Apr 22 20:50 boot
+-rwxr-xr-x   1 root  wheel        63 Apr 22 20:19 cdw
+-rw-r--r--   1 sms   wheel   1201381 Apr 23 20:36 chown+chmod.sh
+-rwxr-xr-x   1 root  wheel     37881 Apr 22 20:51 disklabel
+-rw-r--r--   1 root  wheel  11681254 Apr 22 20:57 file6.tar.gz
+-rw-r--r--   1 root  wheel   1378438 Apr 22 20:57 file7.tar.gz
+-rw-r--r--   1 root  wheel  14098801 Apr 22 20:58 file8.tar.gz
+-rwxr-xr-x   1 root  wheel     33032 Apr 22 20:51 icheck
+-rwxr-xr-x   1 root  wheel       493 Apr 22 20:56 m
+-rw-r--r--   1 root  wheel      2172 Apr 28  1991 maketape.c
+-rw-r--r--   1 root  wheel        95 Aug  7  1997 maketape.data
+-rwxr-xr-x   1 root  wheel        57 Apr 22 20:19 mk
+-rwxr-xr-x   1 root  wheel     33158 Apr 22 20:51 mkfs
+-rw-r--r--   1 root  wheel       490 Apr 22 20:51 mtboot
+-rwxr-xr-x   1 root  wheel     35742 Apr 22 20:51 restor
+drwxr-xr-x  14 sms   wheel      1024 Apr 22 20:22 root
+-rw-r--r--   1 sms   wheel   3440640 Apr 23 20:18 root.dump
+-rw-r--r--   1 sms   wheel    344682 Oct 27  1997 setup.ps
+
+	You can ignore .mkisofsrc, cdw, mk and root but you must have AT LEAST
+
+		boot
+		disklabel
+		file6.tar.gz
+		file7.tar.gz
+		file8.tar.gz
+		icheck
+		mkfs
+		mtboot
+		restor
+		root.dump
+
+	file6.tar is a tar archive containing usr/ without usr/src or 
+	usr/include.
+
+	file7.tar is a tar archive containing usr/src/sys and usr/src/include
+
+	file8.tar is a tar archvie containing everything else in usr/
+
+	setup.ps is a Postscript version of the setup/installation documentation
+
+	The format of a 2.11BSD boot tape is:
+
+	File	Blocksize	Content
+	0	512		mtboot
+		512		mtboot
+		512		boot
+	1	1024		disklabel
+	2	1024		mkfs
+	3	1024		restor
+	4	1024		icheck
+	5	10240		root.dump
+	6	10240		file6.tar
+	7	10240		file7.tar
+	8	10240		file8.tar
+
+	Traditionally 2.11BSD was distributed on 2 1600bpi 9-track tapes and
+	file8.tar was on the second volume.  The bare MINIMUM boot tape
+	consists of the first 6 files (the standalone utilities and root.dump).
+	That is enough to load the root filesystem and boot from disk and use
+	tar to load the remaining files (which could be sneakernet'd over one
+	per tape if necessary/desired).
+
+	There are two ways to write a boot tape.  The first uses 'dd' (the
+	name /dev/nrst0 is used below - substitute local conventions):
+
+		cat mtboot mtboot boot | dd of=/dev/nrst0 obs=512
+		dd if=disklabel of=/dev/nrst0 obs=1024
+		dd if=mkfs of=/dev/nrst0 obs=1024
+		dd if=restor of=/dev/nrst0 obs=1024
+		dd if=icheck of=/dev/nrst0 obs=1024
+		dd if=root.dump of=/dev/nrst0 obs=10240
+		dd if=file6.tar of=/dev/nrst0 obs=10240
+		dd if=file7.tar of=/dev/nrst0 obs=10240
+		dd if=file8.tar of=/dev/nrst0 obs=10240
+
+	maketape.c is a simple C program which reads a small configuration file 
+	(maketape.data) and will write the tape:
+
+		cc -o maketape maketape.c
+		./maketape /dev/nrst0 maketape.data
+
+	maketape.data by default looks like this:
+mtboot 1
+mtboot 1
+boot 1
+* 1
+disklabel 2
+* 1
+mkfs 2
+* 1
+restor 2
+* 1
+icheck 2
+* 1
+root.dump 20
+
+	and will write only the first 5 files.  You may either add the lines:
+
+* 1
+file6.tar 20
+* 1
+file7.tar 20
+* 1
+file8.tar 20
+
+	or simply run the 3 'dd' commands manually.

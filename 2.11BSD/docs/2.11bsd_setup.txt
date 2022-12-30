@@ -1,0 +1,5214 @@
+
+
+
+
+
+
+
+
+
+       IInnssttaalllliinngg aanndd OOppeerraattiinngg 22..1111BBSSDD oonn tthhee PPDDPP--1111
+                       JJuunnee 1133,, 11999955
+
+                       _S_t_e_v_e_n _S_c_h_u_l_t_z
+                   GTE Government Systems
+                    112 Lakeview Canyon
+                   Thousand Oaks CA 91362
+                  sms@wlv.iipo.gtegsc.com
+
+
+                          _A_B_S_T_R_A_C_T
+
+
+
+          This  document  contains instructions for the
+     installation and operation of the 2.11BSD  PDP-11|^
+     UNIX|= system.
+
+          It   discusses   procedures   for  installing
+     2.11BSD UNIX on a PDP-11,  including  explanations
+     of how to lay out file systems on available disks,
+     how to set up terminal lines  and  user  accounts,
+     how  to  do  system-specific tailoring, and how to
+     install and configure the  networking  facilities.
+     Finally,  the  document  details  system operation
+     procedures: shutdown and startup,  hardware  error
+     reporting and diagnosis, file system backup proce-
+     dures, resource control,  performance  monitoring,
+     and  procedures  for  recompiling and reinstalling
+     system software.
+
+          The  ``bugs''  address  supplied  with   this
+     release will work for some unknown period of time;
+     make sure the ``Index:'' line of  the  bug  report
+     indicates  that  the  release is ``2.11BSD''.  See
+     the _s_e_n_d_b_u_g(8)  program  for  more  details.   All
+     fixes that I make, or that are sent to me, will be
+     posted   on   _U_S_E_N_E_T,   in    the    news    group
+     ``comp.bugs.2bsd''.
+
+
+
+
+
+
+
+
+-----------
+|^ DEC,  PDP-11,  VAX, IDC, SBI, UNIBUS and MASSBUS
+  are trademarks of Digital Equipment Corporation.
+|= UNIX is a Trademark of Bell Laboratories.
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 2Installing and Operating 2.11BSD on the PDP-11
+
+
+                      11.. IINNTTRROODDUUCCTTIIOONN
+
+
+
+     This  document explains how to install 2.11BSD UNIX for
+the PDP-11 on your system.  This document has  been  revised
+several  times  since  the  first  release  of 2.11BSD, most
+recently in July 1995 to reflect the addition of disk labels
+to the system.  The format of the bootable tape has changed.
+There is now a standalone ddiisskkllaabbeell program present.   While
+the  system call interface is the same as that of 2.10.1BSD,
+a full bootstrap from  the  distribution  tape  is  required
+because  the  filesystem  has  changed  to  allow file names
+longer than 14 characters.  Also, the 3  byte  block  number
+packing  scheme  used  by  earlier  versions of UNIX for the
+PDP-11 has been eliminated.  Block numbers are always 4 byte
+lloonnggss now.
+
+     The  procedure  for performing a full bootstrap is out-
+lined in chapter 2.  The process  includes  copying  a  root
+file  system from the distribution tape into a new file sys-
+tem, booting that root  filesystem,  and  then  reading  the
+remainder  of  the  system  binaries  and  sources  from the
+archives on the tapes.
+
+     As 2.11BSD is not compatible at  the  filesystem  level
+with  previous  versions  of UNIX on the PDP-11, any upgrade
+procedure is essentially a full bootstrap.  There is a  lim-
+ited  ability  to  access  old filesystems which may be used
+after the system partitions have been  loaded  from  a  full
+bootstrap.  It is desirable to recompile most local software
+after the conversion, as there are changes  and  performance
+improvements in the standard libraries.
+
+     Binaries  from  2.10.1BSD which do not read directories
+or inode structures may be used but should be recompiled  to
+pick  up  changes in the standard libraries.  Note too, that
+the portable ASCII format of _a_r(1) archives is now in  place
+-  any  local  archive files will have to be converted using
+_/_u_s_r_/_o_l_d_/_a_r_c_v.
+
+11..  HHaarrddwwaarree ssuuppppoorrtteedd
+
+     This distribution can be booted on a PDP-11 with 1Mb of
+memory or more|^, separate I&D, and with any of the following
+disks:
+
+
+
+-----------
+|^ 2.11BSD  would  probably only require a moderate
+  amount of squeezing to fit on machines with less
+  memory,  but it would also be very unhappy about
+  the prospect.
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 3
+
+
+     RK06, RK07
+     Any MSCP disk, including but not limited to: RD53, RD54, RA81, RZ2x
+     RM03, RM05
+     RP04, RP05, RP06
+     Many other SMD disks, for example: CDC 9766, Fuji 160, Fuji Eagle
+
+
+
+     Other  disks are supported (RX23, RX33, RX50, RD51) but
+are not large enough to hold a root filesystem plus  a  swap
+partition.   The  old  restriction  of  using RL02 drives in
+pairs has been lifted.  It is now possible to define a  root
+('a') partition and a swap partition ('b') and load at least
+the root filesystem to a single RL02.  Discs which  are  too
+small  to hold even a root filesystem (floppies for example)
+may be used as data disks or as standalone boot  media,  but
+are not useable for loading the distribution.  Others, while
+listed above, are not very well suited to loading  the  dis-
+tribution.  The RK06/07 drives are hard pressed to even hold
+the system binaries, much less the sources.
+
+     The tape drives supported by this distribution are:
+
+
+     TS11, TU80, TK25
+     TM11, AVIV 6250/1600
+     TE16, TU45, TU77
+     TK50, TU81, TU81+, TZ30
+
+
+Although 2.11BSD contains a kernel level floating point sim-
+ulator, it has never been tested.  In fact it would not even
+compile/assemble without  errors!   That  problem  has  been
+fixed  but  it  is  still  not  know if the simulator works,
+KDJ-11 based systems have builtin floating point so the sim-
+ulator  can  not  be tested.  At the release of 2.10BSD some
+thought was given to the possibility of lifting the separate
+I&D  restriction, but that thought has languished.  The work
+will never be done.  As time passes more and  more  programs
+have become almost too large even with separate I&D.
+
+22..  DDiissttrriibbuuttiioonn ffoorrmmaatt
+
+     The basic distribution contains the following items:
+
+     (2)   1600bpi 2400' magnetic tapes, or
+     (2)   TK25 tape cartridges, or
+     (1)   TK50 tape cartridge, and
+     (1)   Hardcopy of this document,
+     (1)   Hardcopy of the _C_h_a_n_g_e_s _i_n _2_._1_1_B_S_D document,
+     (1)   Hardcopy of the 2.11BSD /README and /VERSION files, and
+     (1)   Hardcopy of manual pages from sections 4, and 8.
+
+Installation  on  any  machine  requires a tape unit.  Since
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 4Installing and Operating 2.11BSD on the PDP-11
+
+
+certain standard PDP-11  packages  do  not  include  a  tape
+drive,  this  means  one must either borrow one from another
+PDP-11 system or one must be purchased separately.
+
+     TThhee ddiissttrriibbuuttiioonn  ddooeess  nnoott  ffiitt  oonn  sseevveerraall  ssttaannddaarrdd
+PPDDPP--1111  ccoonnffiigguurraattiioonnss  tthhaatt  ccoonnttaaiinn  oonnllyy ssmmaallll ddiisskkss.  If
+your hardware configuration does not  provide  at  lleeaasstt  7755
+Megabytes  of disk space you can still install the distribu-
+tion, but you will probably have to operate  without  source
+for  the  user  level commands and, possibly, the source for
+the operating system.
+
+     The root file system now occupies aa mmiinniimmuumm ooff 44MMbb.  If
+at all possible a larger, 6 or 7Mb, root partition should be
+defined when using the standalone ddiisskkllaabbeell program.
+
+     If you have the facilities, it is a good idea  to  copy
+the  magnetic  tape(s)  in  the  distribution  kit  to guard
+against disaster.  The tapes are 9-track 1600 BPI,  TK50  or
+TK25  cartridges and contain some 512-byte records, followed
+by some  1024-byte  records,  followed  by  many  10240-byte
+records.   There are interspersed tape marks; end-of-tape is
+signaled by a double end-of-file.
+
+     The basic bootstrap material is present  in  six  short
+files at the beginning of the first tape.  The first file on
+the tape contains preliminary bootstrapping programs.   This
+is  followed  by  several  standalone  utilities (_d_i_s_k_l_a_b_e_l,
+_m_k_f_s(8), _r_e_s_t_o_r(8), and _i_c_h_e_c_k(8)|^) followed by a full  dump
+of  a  root  file  system (see _d_u_m_p(8)).  Following the root
+file system dump is a tape archive image of //uussrr except  for
+//uussrr//ssrrcc  (see  _t_a_r(1)).   Finally, a tape archive of source
+for include files and kernel source  ends  the  first  tape.
+The  second  tape contains a tape archive image, also in _t_a_r
+format, of all the remaining source that comes with the sys-
+tem.
+
+     The  entire distribution (barely) fits on a single TK50
+cartridge, references to the second tape should  be  treated
+as  being the 9th file on the TK50.  Many of the programs in
+/usr/src/new have been tar+compress'd in order to  keep  the
+distribution to a single tape.
+
+
+
+
+
+
+
+
+-----------
+|^ References of the form X(Y) mean the  subsection
+  named  X  in  section Y of the UNIX programmer's
+  manual.
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 5
+
+
+TAPE 1:
+
+Tape file   Record size   Records|^   Contents
+---------------------------------------------------------------------------------------
+    0            512           1     primary tape boot block
+                 512           1     boot block (some tape boot ROMs go for this copy)
+                 512          69     standalone bboooott program
+    1           1024          37     standalone ddiisskkllaabbeell
+    2           1024          33     standalone mmkkffss(8)
+    3           1024          35     standalone rreessttoorr(8)
+    4           1024          32     standalone iicchheecckk(8)
+    5          10240         285     _d_u_m_p of ``root'' file system
+    6          10240        3368     _t_a_r dump of /usr, excepting /usr/src
+    7          10240         519     _t_a_r dump of /usr/src/include and /usr/src/sys
+
+
+TAPE 2:
+
+Tape file   Record size   Records|^   Contents
+-------------------------------------------------------------------------------------
+    0          10240        4092     _t_a_r dump of /usr/src, excepting include and sys
+
+
+
+33..  UUNNIIXX ddeevviiccee nnaammiinngg
+
+     UNIX has a set of names for devices which are different
+from the DEC names for the devices.
+
+The disk and tape names used by the bootstrap and the system
+are:
+
+
+     RK06, RK07 disks                  hk
+     RL01, RL02 disks                  rl
+     RK05                              rk
+     MSCP disks                        ra
+     RM02/03/05                        xp
+     RP04/05/06                        xp
+     SMD disks                         xp
+     TM02/03, TE16, TU45, TU77 tapes   ht
+     TE10/TM11 tapes                   tm
+     TS11 tapes                        ts
+     TMSCP tapes                       tms
+
+
+Additionally,  the  following  non-DEC devices are also sup-
+ported:
+
+
+-----------
+|^ The  number  of  records  in  each tape file are
+  approximate and do not necessarily correspond to
+  the actual number on the tape.
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 6Installing and Operating 2.11BSD on the PDP-11
+
+
+     SI 9500, CDC 9766                     si
+     SI, CDC 9775                          xp
+     SI6100, Fujitsu Eagle 2351A           xp
+     Emulex SC01B or SI9400, Fujitsu 160   xp
+     Emulex SC-21, xp
+
+
+The generic SMD disk driver, _x_p, will handle most  types  of
+SMD  disks  on one or more controllers (even different types
+on the same controller).  The xxpp driver handles RM03,  RM05,
+RP04,  RP05  and   RP06  disks on DEC, Emulex, Dilog, and SI
+UNIBUS or MASSBUS controllers.
+
+     MSCP disks and TMSCP tapes include SCSI drives attached
+to  the  RQZX1  controller on the PDP-11/93.  MSCP disks and
+TMSCP tapes also include SCSI drives attached to the  Emulex
+UC07  or  UC08 Q-BUS controllers on Q-bus systems as well as
+the UC17 and UC18 controllers on UNIBUS systems.
+
+     The standalone system used to bootstrap the  full  UNIX
+system uses device names of the form:
+
+     _x_x(_c,_y,_z)
+
+where  _x_x is one of hhkk, hhtt, rrkk, rrll, ttmm, ttss, ttmmss, or xxpp.  The
+value _c specifies the controller number (0-3).   This  value
+is  usually not explicitly given.  The default is 0 if boot-
+ing from the standard (first) CSR of a device.
+
+     Example: if there are two MSCP controllers in the  sys-
+tem  addressed  as  0172150 and 0172154 respectively booting
+from the controller at 172154 requires that _c be given as 1.
+Booting  from  the  standard CSR of 0172150 would be done by
+specifying _c as 0 or omitting the _c parameter.   bboooott  auto-
+matically detects if the first (standard) CSR is being used.
+All future references will ignore the _c parameter by  assum-
+ing the default value.
+
+     The  value _y specifies the device or drive unit to use.
+The _z value is interpreted differently for tapes and  disks:
+for  disks it is a partition number (0 thru 7) corresponding
+to partitions 'a' thru 'h' respectively.  This should always
+be  zero  unless  you  rreeaallllyy  know what you are doing.  The
+ability to load a kernel from the swap area is  planned  for
+the  future  but does not presently exist.  For tapes _z is a
+file number on the tape.|^
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 7
+
+
+     In all simple cases, a drive with unit number 0 (deter-
+mined  either  by  a unit plug on the front of the drive, or
+jumper settings on the drive or controller) will  be  called
+unit 0 in its UNIX file name.  file name.  If there are mul-
+tiple controllers, the drive unit numbers will  normally  be
+counted  within  each  controller.   Thus  drives on the the
+first controller are numbered 0 thru 7  and  drives  on  the
+second  controller  are  numbered  0 thru 7 on controller 1.
+Returning to the discussion of the standalone system, recall
+that tapes also took two integer parameters.  In the case of
+a TE16/TU tape formatter on drive 0, the files on  the  tape
+have  names  ``ht(0,0)'',  ``ht(0,1)'',  etc.  Here ``file''
+means a tape file containing a single data stream  separated
+by  a  single  tape  mark.  The distribution tapes have data
+structures in the tape files and though the first tape  con-
+tains  only  7 tape files, it contains several thousand UNIX
+files.
+
+     Each UNIX physical disk is divided into 8 logical  disk
+partitions,  each of which may occupy any consecutive cylin-
+der range on the physical device.  While overlapping  parti-
+tions  are  allowed they are not a good idea, being an acci-
+dent waiting to happen (making one filesystem  will  destroy
+the  other overlapping filesystems).  The cylinders occupied
+by the 8 partitions for each drive type are specified by the
+disk label read from the disk.
+
+-----------
+|^ NNoottee:: that while a tape file consists of a  sin-
+  gle  data  stream, the distribution tape(s) have
+  data structures in these  files.   Although  the
+  first tape contains only 8 tape files, they com-
+  prise several thousand UNIX files.
+  NNoottee:: The standalone tape drive unit  number  is
+  specially  encoded  to  specify both unit number
+  and tape density (BPI).   Most  tape  subsystems
+  either  automatically  adjust to tape density or
+  have switches on the drives to force the density
+  to  a  particular  setting,  but for those which
+  don't the following  density  select  mechanisms
+  may  be  necessary.   The  ttss  only  operates at
+  1600BPI, so there is  no  special  unit  density
+  encoding.   The hhtt will operate at either 800BPI
+  or 1600BPI.  Units 0 through 3 corresponding  to
+  800BPI,  and  Units 4 through 7 corresponding to
+  1600BPI on drives 0 through 3 respectively.  The
+  standard  DEC ttmm only supports 800BPI (and hence
+  can't be  used  with  the  2.11BSD  distribution
+  tape), but several widely used ttmm emulators sup-
+  port 1600BPI and even 6250BPI.  Units 0  through
+  3  corresponding  to  800BPI,  Units 4 through 7
+  corresponding to 1600BPI, and Units 8 through 11
+  corresponding  to  6250BPI on drives 0 through 3
+  respectively.
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 8Installing and Operating 2.11BSD on the PDP-11
+
+
+     If  no  label  exists the disk will not be bootable and
+while the kernel attempts not to damage unlabeled disks  (by
+swapping  to  or  doing  a  crash dump on a live filesystem)
+there is a chance that filesystem damage will  result  if  a
+kernel is loaded from an unlabeled disk.
+
+     The  standalone ddiisskkllaabbeell program is used to define the
+partition tables.  Each partition may be used  either  as  a
+raw  data  area (such as a swapping area) or to store a UNIX
+file system.  It is mandatory for the first partition  on  a
+disk  to  start at sector offset 0 because the 'a' partition
+is used to read and write the label (which is at the  begin-
+ning  of the disk).  If the drive is to be used to bootstrap
+a UNIX system then the 'a' partition must be of type 22..1111BBSSDD
+(FS_V71K  in  _d_i_s_k_l_a_b_e_l_._h)  and at least 4Mb is size.  A 'b'
+partition of at least 2-3Mb (4Mb is a good choice  if  space
+is  available)  for  swapping is also needed.  If a drive is
+being used solely for data then that drive need not  have  a
+'b'  (swap)  partition but partition 'a' must still span the
+first part of the disk.  The second partition is used  as  a
+swapping  area,  and  the  rest  of the disk is divided into
+spaces for additional ``mounted file systems'' by use of one
+or more additional partitions.
+
+     The third ('c') logical partition of each physical disk
+also has a conventional  usage:  it  allows  access  to  the
+entire  physical device, including the bad sector forwarding
+information recorded at the end of the disk (one track  plus
+126  sectors).   It  is  occasionally used to store a single
+large file system or to access the entire pack when making a
+copy  of  it on another.  Care must be taken when using this
+partition not to overwrite the last few tracks  and  thereby
+destroying the bad sector information.
+
+     Unfortunately  while  the  drivers can follow the rules
+above the entries in _/_e_t_c_/_d_i_s_k_t_a_b (_d_i_s_k_t_a_b(5)) do not.   The
+entries  in  _/_e_t_c_/_d_i_s_k_t_a_b are translations of the old parti-
+tion tables which used to be embedded in the device  drivers
+and  are thus probably not suitable for use without editing.
+In some cases it may be that the 8th ('h') partition is used
+for  access  to  the entire disk rather than the third ('c')
+partition.   Caution  should  be  observed  when  using  the
+_n_e_w_f_s(8) and _d_i_s_k_l_a_b_e_l(8) commands.
+
+44..  UUNNIIXX ddeevviicceess:: bblloocckk aanndd rraaww
+
+     UNIX  makes a distinction between ``block'' and ``raw''
+(character) devices.  Each disk has a block device interface
+where  the  system makes the device byte addressable and you
+can write a single byte in the middle of the disk.  The sys-
+tem  will read out the data from the disk sector, insert the
+byte you gave it and put the modified data back.  The  disks
+with  the names ``/dev/xx0a'', etc are block devices.  There
+are also raw  devices  available.   These  have  names  like
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 9
+
+
+``/dev/rxx0a'',  the  ``r''  here standing for ``raw''.  Raw
+devices bypass the buffer cache and use DMA directly to/from
+the  program's  I/O buffers; they are normally restricted to
+full-sector transfers.  In the bootstrap procedures we  will
+often  suggest  using the raw devices, because these tend to
+work faster.  Raw devices are used when making new  filesys-
+tems,  when  checking  unmounted filesystems, or for copying
+quiescent filesystems.  The block devices are used to  mount
+file systems, or when operating on a mounted filesystem such
+as the root.
+
+     You should be aware  that  it  is  sometimes  important
+whether  to use the character device (for efficiency) or not
+(because it wouldn't work, e.g. to write a  single  byte  in
+the  middle  of a sector).  Don't change the instructions by
+using the wrong type of device indiscriminately.
+
+     The standalone ddiisskkllaabbeell program must be used to  alter
+the  'a'  and  'b'  partitions  of  a drive being used for a
+bootable system.  This is because the kernel will not permit
+an  open  partition  to change size or offset.  The root and
+and swap partitions are aallwwaayyss open when the kernel is  run-
+ning.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 10Installing and Operating 2.11BSD on the PDP-11
+
+
+                   22.. BBOOOOTTSSTTRRAAPP PPRROOCCEEDDUURREE
+
+
+
+     This  section explains the bootstrap procedure that can
+be used to get the kernel supplied  with  this  distribution
+running on your machine.  It is mandatory to do a full boot-
+strap since the filesystem has  changed  from  2.10.1BSD  to
+2.11BSD.
+
+     The  safest  route is to use _t_a_r(1) to dump all of your
+current file systems, do a full  bootstrap  of  2.11BSD  and
+then  restore user files from the backups.  There is also an
+untested version of _5_1_2_r_e_s_t_o_r(8) available for V7 sites that
+need to read old dump tapes.
+
+     It  is also desirable to make a convenient copy of sys-
+tem configuration files for use as guides  when  setting  up
+the  new  system;  the  list  of  files to save from earlier
+PDP-11 UNIX systems, found in chapter 3, may be  used  as  a
+guideline.
+
+     2.11BSD  _r_e_s_t_o_r(8)  is  able  to read and automatically
+convert to the new on disk directory  format  _d_u_m_p(8)  tapes
+made under 2.9BSD, 2.10BSD and 2.10.1BSD.
+
+22..11..  BBoooottiinngg ffrroomm ttaappee
+
+     The  tape  bootstrap procedure used to create a working
+system involves the following major steps:
+
+1)   Load the tape bootstrap monitor.
+
+2)   Create the partition tables on the disk  using  _d_i_s_k_l_a_-
+     _b_e_l.
+
+3)   Create a UNIX ``root'' file system system on disk using
+     _m_k_f_s(8).
+
+4)   Restore the full root file system using _r_e_s_t_o_r(8).
+
+5)   Boot the UNIX system on the new root  file  system  and
+     copy  the  appropriate _s_e_c_t_o_r _0 _b_o_o_t _b_l_o_c_k to your boot
+     device.
+
+6)   Build and restore the /usr file system from  tape  with
+     _t_a_r(1).
+
+7)   Restore the include and kernel sources from tape.
+
+8)   Extract the remaining source from the second tape.
+
+9)   Tailor a version of UNIX to your specific hardware (see
+     section 4.2).
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 11
+
+
+     Certain of these steps are dependent on  your  hardware
+configuration.   If  your disks require formatting, standard
+DEC diagnostic utilities will have to be used, they are  not
+supplied on the 2.11BSD distribution tape.
+
+22..11..11..  SStteepp 11:: llooaaddiinngg tthhee ttaappee bboooottssttrraapp mmoonniittoorr
+
+     To  load  the  tape  bootstrap monitor, first mount the
+magnetic tape on drive 0 at load point, making sure that the
+write  ring  is not inserted.  Then use the normal bootstrap
+ROM, console monitor or other bootstrap  to  boot  from  the
+tape.
+
+     NOTE:  The  boot  blocks  expect the CSR of the booting
+controller in r0 and the unit number in  r1.   bboooott  may  be
+booted from any controller or unit, the earlier restrictions
+of controller 0 and unit 0 have been lifted.
+
+     If no other means are available, the following code can
+be  keyed in and executed at (say) 0100000 to boot from a TM
+tape drive (the magic number 172526 is the  address  of  the
+TM-11  current memory address register; an adjustment may be
+necessary if your controller is at a nonstandard address):
+
+
+     012700   (mov $unit, r0)
+     000000   (normally unit 0)
+     012701   (mov $172526, r1)
+     172526
+     010141   (mov r1, -(r1))
+     012741   (mov $60003, -(r1))
+     060003   (if unit 1 use 060403, etc)
+     000777   (br .)
+
+
+A toggle-in routine which has been used with a TS tape drive
+(this should be entered at 01000):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 12Installing and Operating 2.11BSD on the PDP-11
+
+
+     012700   mov $unit,r0
+     000000
+     012701   mov $172522,r1
+     172522
+     005011   clr (r1)
+     105711   1b:tstb (r1)
+     100376   bpl 1b
+     012761   mov $setchr,-2(r1)
+     001040
+     177776
+     105711   2b:tstb (r1)
+     100376   bpl 2b
+     012761   mov $read,-2(r1)
+     001060
+     177776
+     000000   halt
+     140004   setchr: TS_ACK|TS_CVC|TS_SETCHR
+     001050   char
+     000000   high order address
+     000010   number of bytes
+     001070   char: status
+     000000
+     000016
+     000000
+     140001   read: TS_ACK|TS_CVC|TS_READ
+     000000   low order of address
+     000000   high order of address
+     001000   number of bytes to read
+     000000   status:
+
+
+When  this  is executed, the first block of the tape will be
+read into memory.  Halt the CPU and restart at  location  0.
+The  register  rr11  MMUUSSTT  be left pointing at the device _c_s_r.
+For the default/first TM or TS this is 0172522.  The  regis-
+ter rr00 MMUUSSTT contain the unit number (usually 0).
+
+     The console should type
+
+     _n_nBBoooott ffrroomm _x_x((_c_t_l_r,,_d_r_i_v_e,,_p_a_r_t)) aatt _c_s_r
+     ::
+
+where _n_n is the CPU type on which it believes it is running.
+The value will be one of 23, 24, 40, 44, 45, 53, 60, 70, 73,
+83,  84, 93 or 94 depending whether separate instruction and
+data (separate I/D) and/or a UNIBUS map are  detected.   For
+KDJ-11  systems  the System Maintenance Register is examined
+to determine the cpu type.  At present 2.11BSD runs  on  the
+44,  53,  70, 73, 83, 84, 93 and 94 oonnllyy.  It must be empha-
+sized that 2.11BSD requires separate I/D.
+
+_c_t_l_r is the controller number that BBoooott was loaded from.  It
+is 0 unless booting from a non-standard CSR.
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 13
+
+
+_d_r_i_v_e is the drive unit number.
+
+The  _p_a_r_t number is disk partition or tapefile number booted
+from.  This will always be 0 for the tape BBoooott program.
+
+_c_s_r is an octal number telling the  CSR  of  the  controller
+from which BBoooott was loaded.
+
+
+     You  are now talking to the tape bootstrap monitor.  At
+any point in the following procedure you can return to  this
+section,  reload  the  tape bootstrap, and restart.  Through
+the rest of this section, substitute the correct  disk  type
+for _d_k and the tape type for _t_p.
+
+22..11..22..  SStteepp 22:: ccrreeaattiinngg tthhee ddiisskk llaabbeell
+
+     The standalone _d_i_s_k_l_a_b_e_l program is then run:
+
+
+     ::_t_p(0,1)                                       (_d_i_s_k_l_a_b_e_l is tape file 1)
+     BBoooott:: bboooottddeevv==00nnnnnnnn bboooottccssrr==00mmmmmmmmmmmm
+     ddiisskkllaabbeell
+     DDiisskk?? _d_k(0,0)                                  (drive 0, partition 0)
+     d(isplay) D(efault) m(odify) w(rite) q(uit)?
+      ...
+     ::                                              (back at tape boot level)
+
+
+The _d_i_s_k_l_a_b_e_l program is meant to be fairly intuitive.  When
+prompted with a line of choices entering the key just before
+the left parenthesis selects the entry.
+
+     If  there  is  an  existing label present on _d_k(0,0) it
+will be used as the default.  To have _d_i_s_k_l_a_b_e_l create a new
+default  based  on  its  idea of what the drive is select DD.
+Then enter mm to modify/edit the label.
+
+     The MSCP driver is quite  good  at  identifying  drives
+because it can query the controller.  Other drivers (notably
+the SMD (xxpp) driver) have to deal with a much wider range of
+controllers  which do not all have the same capabilities for
+drive identification.  When dealing with SMD drives you must
+know  the  geometry of the drive so you can verify  and cor-
+rect _d_i_s_k_l_a_b_e_l's choices.
+
+     You can however, if using non-DEC SMD controllers, make
+things easy for _d_i_s_k_l_a_b_e_l to determine what type of drive is
+being used.  If your controller offers the  choice  of  RM02
+emulation  you should select that choice.  The standalone xxpp
+driver uses RM02 as the indication that drive identification
+capabilities  not  offered  by  DEC controllers are present.
+The driver will be able to determine  the  geometry  of  the
+drive  in  this  case.    This  is  ooppttiioonnaall because you can
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 14Installing and Operating 2.11BSD on the PDP-11
+
+
+explicitly specify all of the parameters to  the  standalone
+_d_i_s_k_l_a_b_e_l program.
+
+     A  full description of the standalone _d_i_s_k_l_a_b_e_l program
+is in Appendix B of this document.
+
+22..11..33..  SStteepp 33:: ccrreeaattiinngg aa UUNNIIXX ````rroooott'''' ffiillee ssyysstteemm
+
+     Now create the root file  system  using  the  following
+procedure.|^
+
+     The  size  of the root ('a') filesystem was assigned in
+step 2 (creating the disk label).  _m_k_f_s  will  not  allow  a
+filesystem  to be created if there is not a label present or
+if the partition size is 0.  _m_k_f_s looks at partition 0 ('a')
+in the disklabel for the root file system size.
+
+     Finally,  determine  the  proper interleaving factors _m
+and _n for your disk.   Extensive  testing  has  demonstrated
+that  the choice of _m is non critical (performance of a file
+system varying only by 3 to 4% for a wide range  of  _m  val-
+ues).   Values  for  _m  within  the  range from  2 to 5 give
+almost identical performance.  Increasing _m too  much  actu-
+ally causes degraded performance because the free blocks are
+too far apart.  Slower processors (such as the  73  and  44)
+may  want  to  start  with  a _m of 3 or 4, faster processors
+(such as the 70 and 84) may start with a _m of 2  or  3.   On
+the  other  hand,  the  _n value is moderately important.  It
+should be the number of filesystem blocks contained  by  one
+cylinder  of  the disk, calculated by dividing the number of
+sectors per cylinder by 2, rounding down if  needed.   (This
+is what _m_k_f_s does by default, based on the geometry informa-
+tion in the disk label.)  These numbers determine the layout
+of the free list that will be constructed; the proper inter-
+leaving will help increase the speed of the file system.
+
+     The number of  bytes  per  inode  determines  how  many
+inodes  will be allocated in the filesystem.  The default of
+4096 bytes per inode is normally enough (resulting in  about
+2000  inodes  for  a 8mb root filesystem and 1000 inodes for
+-----------
+|^ NNoottee::  These  instructions  have changed quite a
+  bit during the  evolution  of  the  system  from
+  2.10.1BSD.  Previously, if the disk on which you
+  are creating a root file system was an  xxpp  disk
+  you  would  have  been  asked to check the drive
+  type register and possibly halt the processor to
+  patch  a  location  (hopefully before the driver
+  accessed the drive).  TThhiiss iiss nnoo lloonnggeerr  nneeeeddeedd.
+  All   geometry   and  partition  information  is
+  obtained from the disklabel created in  step  2.
+  We  also  used  to give tables of mm and nn values
+  for various disks, which are now purposely omit-
+  ted.
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 15
+
+
+the 4mb distribution ``generic'' root filesystem).  If  more
+inodes  are desired then a lower value (perhaps 3072) should
+be specified when prompted  for  the  number  of  bytes  per
+inode.
+
+     Then  run  the  standalone version of the _m_k_f_s (8) pro-
+gram.  The values in square brackets at the size  prompt  is
+the  default  from  the  disklabel.   Simply hit a return to
+accept the default.  _m_k_f_s will allow you to create a smaller
+filesystem  but  you  can not enter a larger number than the
+one in brackets.  In the following procedure, substitute the
+correct  types  for  _t_p and _d_k and the size determined above
+for _s_i_z_e:
+
+
+     ::_t_p(0,2)                                   (_m_k_f_s is tape file 2)
+     BBoooott:: bboooottddeevv==00nnnnnnnn bboooottccssrr==00mmmmmmmmmmmm
+     MMkkffss
+     ffiillee ssyysstteemm:: _d_k(0,0)                       (root is the first file system on drive 0)
+     ffiillee ssyysstteemm ssiizzee:: [NNNN] _s_i_z_e              (count of 1024 byte blocks in root)
+     bbyytteess ppeerr iinnooddee:: [4096] _b_y_t_e_s              (number of bytes per inode)
+     iinntteerrlleeaavviinngg ffaaccttoorr ((mm,, 22 ddeeffaauulltt)):: _m      (interleaving, see above)
+     iinntteerrlleeaavviinngg mmoodduulluuss ((nn,, 112277 ddeeffaauulltt)):: _n   (interleaving, see above)
+     iissiizzee == XXXX                                 (count of inodes in root file system)
+     mm//nn == _m _n                                  (interleave parameters)
+     EExxiitt ccaalllleedd
+     _n_nBBoooott
+     ::                                          (back at tape boot level)
+
+
+
+The number nnnnnnnn is the device number  of  the  device  (high
+byte is the major device number and the low byte is the unit
+number).  The mmmmmmmmmmmm number is the CSR of the device.   This
+information  is  mainly  used  as  a  reminder  and diagnos-
+tic/testing purposes.
+
+You now have an empty UNIX root file system.
+
+22..11..44..  SStteepp 44:: rreessttoorriinngg tthhee rroooott ffiillee ssyysstteemm
+
+     To restore the root file system onto it, type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 16Installing and Operating 2.11BSD on the PDP-11
+
+
+     ::_t_p(0,3)                                 (_r_e_s_t_o_r is tape file 3)
+     BBoooott:: bboooottddeevv==00nnnnnnnn bboooottccssrr==00mmmmmmmmmmmm
+     RReessttoorr
+     TTaappee?? _t_p(0,5)                            (root _d_u_m_p is tape file 5)
+     DDiisskk?? _d_k(0,0)                            (into root file system)
+     LLaasstt cchhaannccee bbeeffoorree ssccrriibbbblliinngg oonn ddiisskk..   (type a carriage return to start)
+     ""EEnndd ooff ttaappee""                            (appears on same line as message above)
+     EExxiitt ccaalllleedd
+     _n_nBBoooott
+     ::                                        (back at tape boot level)
+
+
+     This takes about 8 minutes with a TZ30 on a 11/93 and about 15 minutes using
+     a TK50 on a 11/73.
+
+If you wish, you may use the _i_c_h_e_c_k  program  on  the  tape,
+_t_p(0,4),  to  check  the  consistency of the file system you
+have just installed.  This has rarely  been  useful  and  is
+mostly for the voyeuristic.
+
+22..11..55..  SStteepp 55:: bboooottiinngg UUNNIIXX
+
+     You are now ready to boot from disk.  Type:
+
+
+     ::_d_k(0,0)unix                          (bring in unix from the root system)
+     BBoooott:: bboooottddeevv==00nnnnnnnn bboooottccssrr==00mmmmmmmmmmmm
+
+
+The  standalone  boot  program  will then load unix from the
+root file system you just created,  and  the  system  should
+boot:
+
+     22..1111BBSSDD BBSSDD UUNNIIXX ##11:: SSaatt JJuull 44 0011::3333::0033 PPDDTT 11999922
+         rroooott@@wwlloonneexx..iiiippoo..ggtteeggsscc..ccoomm:://uussrr//ssrrcc//ssyyss//GGEENNEERRIICC
+     pphhyyss mmeemm  == _?_?_?
+     aavvaaiill mmeemm == _?_?_?
+     uusseerr mmeemm  == _?_?_?
+
+     ccoonnffiigguurree ssyysstteemm
+     _._._. _i_n_f_o_r_m_a_t_i_o_n _a_b_o_u_t _a_v_a_i_l_a_b_l_e _d_e_v_i_c_e_s _._._.
+     (Information about various devices will print;
+     most of them will probably not be found until
+     the addresses are set below.)
+     eerraassee==^^??,, kkiillll==^^UU,, iinnttrr==^^CC
+     ##
+
+
+     UNIX  itself then runs for the first time and begins by
+printing out a banner identifying the release and version of
+the system that is in use and the date that it was compiled.
+
+     Next the _m_e_m messages give the amount of  real  (physi-
+cal) memory, the amount of memory left over after the system
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 17
+
+
+has allocated various data structures,  and  the  amount  of
+memory available to user programs in bytes.
+
+     The  information about different devices being attached
+or not being found is produced by the _a_u_t_o_c_o_n_f_i_g(8) program.
+Most  of this is not important for the moment, but later the
+device table, _/_e_t_c_/_d_t_a_b, can be edited to correspond to your
+hardware.   However,  the  tape  drive  of  the correct type
+should have been detected and attached.
+
+     The ``erase ...'' message is part of /.profile that was
+executed by the root shell when it started.  This message is
+present to remind you that the character erase, line  erase,
+and interrupt characters are set to what is standard for DEC
+systems; this insures that things are  consistent  with  the
+DEC console interface characters.
+
+     UNIX  is  now running single user on the installed root
+file system, and the  `UNIX  Programmer's  Manual'  applies.
+The  next  section tells how to complete the installation of
+distributed software on the /usr file system.   The  `#'  is
+the  prompt  from  the shell, and lets you know that you are
+the super-user, whose login name is ``root''.
+
+     The disk with the new root file system on it  will  not
+be bootable directly until the block 0 bootstrap program for
+your disk has been installed.  There are copies of the boot-
+straps  in  /mdec.   Use  _d_d(1) to copy the right boot block
+onto block 0 of the disk.
+
+     ## dd if=/mdec/_b_o_o_t of=/dev/r_d_k0a count=1
+
+Block zero bootstraps and the devices they support are:
+
+
+     boot        driver   devices
+     -------------------------------------------------------------------------
+     hkuboot     hk       RK06/07
+     rauboot     ra       All RA, RD, RZ, RX (except RX01,02) and RC25 drives
+     rkuboot     rk       RK05
+     rluboot     rl       RL01/02
+     si95uboot   si       SI 9500, CDC 9766
+     dvhpuboot   xp       Diva Comp V, Ampex 9300
+     hpuboot     xp       RP04/05/06
+     rm03uboot   xp       RM03
+     rm05uboot   xp       RM05 or SI 9500, CDC 9766
+     si51uboot   xp       SI 6100, Fujitsu Eagle 2351A
+     si94uboot   xp       Emulex SC01B/SC03B or SI 9400, Fujitsu 160
+
+
+NNOOTTEE:: If none of the above are correct (most likely  with  a
+SMD drive with differing geometry) then you will have to use
+a tape/floppy boot proceedure rather than a sector  0  boot-
+block.   This can be fixed by creating a customized sector 0
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 18Installing and Operating 2.11BSD on the PDP-11
+
+
+boot program once the system sources have been loaded.
+
+     Once this is done, booting from this disk will load and
+execute  the  block  0  bootstrap,  which  will in turn load
+/boot.  //bboooott will print on the console:
+
+
+     _n_nBBoooott ffrroomm _d_k((_c_t_l_r,,_u_n_i_t,,_p_a_r_t)) aatt _c_s_r
+     :
+
+
+The bootblock automatically loads and runs /_b_o_o_t for you; if
+/_b_o_o_t  is not found, the system will hang/loop forever.  The
+block 0 program is very small (has to fit in 512 bytes)  and
+simple  program, however, and can only boot the second-stage
+boot from the first file system.  Once /boot is running  and
+prints its ``: '' prompt, boot unix as above.
+
+     As  distributed  /_b_o_o_t will load _d_k(0,0)unix by default
+if a carriage return is typed at the :: prompt.
+
+     NNOOTTEE:: NONE the primary  bootstraps  have  a  prompt  or
+alternate program name capability because of space consider-
+ations.  No diagnostic message results if the file cannot be
+found.
+
+22..11..66..  SStteepp 66:: sseettttiinngg uupp tthhee //uussrr ffiillee ssyysstteemm
+
+     First set a shell variable to the name of your disk, so
+the commands used later will work regardless of the disk you
+have; do one of the following:
+
+
+     ## disk=hk   (if you have RK06's or RK07's)
+     ## disk=rl   (if you have RL01's or RL02's)
+     ## disk=ra   (if you have an MSCP drive)
+     ## disk=xp   (if you have an RP06, RM03, RM05, or other SMD drive)
+
+
+
+     The next thing to do is to extract the rest of the data
+from the tape.  You might wish to review the disk configura-
+tion  information in section 4.3 before continuing; you will
+have to select a partition to restore the /usr  file  system
+into  which  is  at least 2255 Megabytes in size (this is just
+barely enough for the system binaries and such and leaves no
+room for the system source.)|^
+-----------
+|^ NNoottee::  Previously  a  lengthy table of partition
+  names organized by specific disk type was given.
+  With  the  introduction of disklabels this is no
+  longer necessary (or possible  since  each  site
+  can  select  whatever  partitioning  scheme they
+  desire).  In step 2 (creating the  disklabel)  a
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 19
+
+
+     In the command below _p_a_r_t is the partition  name  (a-h)
+for the partition which will hold /usr.
+
+
+     nnaammee==$${{ddiisskk}}00$${{ppaarrtt}}
+
+
+Next, find the tape you have in the following table and exe-
+cute the commands in the right hand portion of the table:
+
+
+     DEC TM02/03, TE16/TU45/TU77   ## cd /dev; rm *mt*; ./MAKEDEV ht0; sync
+     DEC TS11, TK25/TU80/TS05      ## cd /dev; rm *mt*; ./MAKEDEV ts0; sync
+     DEC TM11, TU10/TE10/TS03      ## cd /dev; rm *mt*; ./MAKEDEV tm0; sync
+     DEC TMSCP, TK50/TZ30/TU81     ## cd /dev; rm *mt*; ./MAKEDEV tu0; sync
+     EMULEX TC11                   ## cd /dev; rm *mt*; ./MAKEDEV tm0; sync
+
+
+Then execute the following commands:
+
+
+
+     ## date _y_y_m_m_d_d_h_h_m_m                                (set date, see _d_a_t_e(1))
+     ....
+     ## passwd root                                    (set password for super-user)
+     NNeeww ppaasssswwoorrdd::                                    (password will not echo)
+     RReettyyppee nneeww ppaasssswwoorrdd::
+     ## hostname _m_y_s_i_t_e_n_a_m_e                            (set your hostname)
+     ## newfs ${name}                                  (create empty user file system)
+     (this takes a minute)
+     ## mount /dev/${name} /usr                        (mount the usr file system)
+     ## cd /usr                                        (make /usr the current directory)
+     ## mt rew
+     ## mt fsf 6
+     ## tar xpbf 20 /dev/rmt12                         (extract all of usr except usr/src)
+     (this takes about 15-20 minutes except for the
+     TK50 and TZ30 which are mmuucchh slower)
+
+
+The data on the seventh tape file has  now  been  extracted.
+All  that  remains on the first tape is a small archive con-
+taining source for the kernel and include files.
+
+     If you have an existing/old password file to be  merged
+back  into  2.11BSD,  special steps are necessary to convert
+the old password file to the  shadow  password  file  format
+(shadow  password  file  and password aging were ported from
+4.3BSD and are standard in 2.11BSD ).
+
+-----------
+  partition should have been created for _/_u_s_r.  If
+  this was not done then it may be easier to  per-
+  form  step  2  now  than to use the more complex
+  _d_i_s_k_l_a_b_e_l(8) program and _e_d(1).
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 20Installing and Operating 2.11BSD on the PDP-11
+
+
+     ## mt -f /dev/rmt12 fsf                        (position tape at beginning of next tape file)
+     ## mkdir src                                   (make directory for source)
+     ## cd src                                      (make /usr/src the current directory)
+     ## tar xpbf 20 /dev/rmt12                      (extract the system and include source)
+     (this takes about 5-10 minutes)
+     ## cd /                                        (back to root)
+     ## chmod 755  /  /usr  /usr/src /usr/src/sys
+     ## rm -f sys
+     ## ln -s usr/src/sys sys                       (make a symbolic link to the system source)
+     ## umount /dev/${name}                         (unmount /usr)
+
+
+
+     The first tape has been been  completely  loaded.   You
+can check the consistency of the /usr file system by doing
+
+     ## fsck /dev/r${name}
+
+The output from _f_s_c_k should look something like:
+
+     **** //ddeevv//rr_x_x00gg
+     FFiillee SSyysstteemm:: //uussrr
+
+     NNEEEEDD SSCCRRAATTCCHH FFIILLEE ((117799 BBLLKKSS))
+     EENNTTEERR FFIILLEENNAAMMEE::  //ttmmpp//xxxxxx
+     **** LLaasstt MMoouunntteedd oonn //uussrr
+     **** PPhhaassee 11 -- CChheecckk BBlloocckkss aanndd SSiizzeess
+     **** PPhhaassee 22 -- CChheecckk PPaatthhnnaammeess
+     **** PPhhaassee 33 -- CChheecckk CCoonnnneeccttiivviittyy
+     **** PPhhaassee 44 -- CChheecckk RReeffeerreennccee CCoouunnttss
+     **** PPhhaassee 55 -- CChheecckk FFrreeee LLiisstt
+     667711 ffiilleess,, 33449977 uusseedd,, 113377006677 ffrreeee
+
+
+     If  there  are  inconsistencies in the file system, you
+may be prompted to apply corrective action; see the document
+describing _f_s_c_k for information.
+
+     To  use the /usr file system, you should now remount it
+by saying
+
+     ## mount /dev/${name} /usr
+
+
+22..11..77..  SStteepp 77:: eexxttrraaccttiinngg rreemmaaiinniinngg ssoouurrccee ffrroomm tthhee  sseeccoonndd
+ttaappee
+
+     You  can  then extract the source code for the commands
+from  the  second  distribution tape|^ (with the exception of
+RK07's, RM03's, and RD52's and other small disks  this  will
+fit in the /usr file system):
+-----------
+|^ On the TK50 the remaining source is the 9th file
+  on the cartridge.
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 21
+
+
+     ## cd /usr/src
+     ## tar xpb 20
+
+If  you  get  an  error  at this point, most likely it was a
+problem with tape positioning.  Rewind the tape and use  the
+mmtt command to skip files, then retry the ttaarr command.
+
+22..22..  AAddddiittiioonnaall ccoonnvveerrssiioonn iinnffoorrmmaattiioonn
+
+     After  setting  up the new 2.11BSD filesystems, you may
+restore the user files that were saved on tape before begin-
+ning  the  conversion.  Note that the 2.11BSD _r_e_s_t_o_r program
+does its work by accessing the raw file  system  device  and
+depositing  inodes  in  the  appropriate  locations on disk.
+This means that file system dumps  might  not  restore  cor-
+rectly  if  the  characteristics  of  the  file  system have
+changed (eg. if you're restoring a dump  of  a  file  system
+into a file system smaller than the original.)  To restore a
+dump tape for, say, the /u file system  something  like  the
+following would be used:
+
+     ## restor r /dev/rxp1e
+
+
+     If _t_a_r images were written instead of doing a dump, you
+should be sure to use the `p' option when reading the  files
+back.   No matter how you restore a file system, be sure and
+check its integrity with _f_s_c_k when the job is complete.
+
+     _t_a_r tapes are preferred  (when  possible)  because  the
+inode  allocation is performed by the kernel rather than the
+_r_e_s_t_o_r(8) program.   This  has  the  benefit  of  allocating
+inodes sequentially starting from the beginning of the inode
+portion of the filesystem rather than preserving  the  frag-
+mented/randomized order of the old filesystem.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 22Installing and Operating 2.11BSD on the PDP-11
+
+
+              33.. UUPPGGRRAADDIINNGG AANN EEXXIISSTTIINNGG SSYYSSTTEEMM
+
+
+
+     Begin  by  reading the document ``Changes to the System
+in 2.11BSD'' to get an idea of how the system  changes  will
+affect  your  local modifications.  If you have local device
+drivers, see the file _/_s_y_s_/_O_T_H_E_R_S_/_R_E_A_D_M_E for hints on how to
+integrate your drivers into 2.11BSD.
+
+     The  only upgrade path to 2.11BSD is to do a full boot-
+strap as described in Chapter 2.  As always, full backups of
+the  existing  system should be made to guard against errors
+or failures.  NNOOTTEE:: The old filesystems can not  be  mounted
+by the new kernel.  If you must access old discs or filesys-
+tems, there is a version  of  _d_u_m_p(8)  in  /usr/src/old/dump
+which can be used with the rraaww disc to dump old filesystems.
+
+     The archive file format has changed, the  4.3BSD  _a_r(5)
+format  is  now  used.   Local archives will have to be con-
+verted by the _/_u_s_r_/_o_l_d_/_a_r_c_v program.
+
+33..11..  FFiilleess ttoo ssaavvee
+
+     The following list enumerates the standard set of files
+you will want to save and suggests directories in which site
+specific files should be present.  Note that because 2.10BSD
+changed  so  radically from previous versions of UNIX on the
+PDP-11, many of these files may not exist  on  your  system,
+and  will  almost  certainly  require  extensive changes for
+2.11BSD, but it's still handy to have them around as  you're
+configuring  2.11BSD.   This  list  will likely be augmented
+with non-standard files you have added to your system.
+
+     You should create a _t_a_r image of  (at  a  minimum)  the
+following files before the new file systems are created.  In
+addition, you should do a full dump  before  rebuilding  the
+file  system  to  guard  against missing something the first
+time around.  The 2.11BSD _r_e_s_t_o_r(8)  program  can  read  and
+convert old _d_u_m_p(8) tapes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 23
+
+
+     /.cshrc                |^   root csh startup script
+     /.login                |^   root csh login script
+     /.profile              |^   root sh startup script
+     /.rhosts               |^   for trusted machines and users
+     /dev/MAKEDEV           |=   in case you added anything here
+     /dev/MAKEDEV.local     *   for making local devices
+     /etc/disktab           *   in case you changed disk partition sizes
+     /etc/dtab              |=   table of devices to attach at boot time
+     /etc/fstab             |^   disk configuration data
+     /etc/ftpusers          |^   for local additions
+     /etc/gateways          |^   routing daemon database
+     /etc/gettytab          |^   getty database
+     /etc/group             |^   group data base
+     /etc/hosts             |^   for local host information
+     /etc/hosts.dir         *   must be rebuilt with mkhosts
+     /etc/hosts.pag         *   must be rebuilt with mkhosts
+     /etc/hosts.equiv       |^   for local host equivalence information
+     /etc/networks          |^   for local network information
+     /etc/netstart          *   site dependent network startup script
+     /etc/passwd            *   must be converted to shadow password file format
+     /etc/passwd.dir        *   must be rebuilt with mkpasswd
+     /etc/passwd.pag        *   must be rebuilt with mkpasswd
+     /etc/printcap          |^   line printer database
+     /etc/protocols         |=   in case you added any local protocols
+     /etc/rc                *   for any local additions
+     /etc/rc.local          *   site specific system startup commands
+     /etc/remote            |^   auto-dialer configuration
+     /etc/services          |=   for local additions
+     /etc/syslog.conf       |^   system logger configuration
+     /etc/securettys        *   for restricted list of ttys where root can log in
+     /etc/ttys              |^   terminal line configuration data
+     /etc/ttytype           *   terminal line to terminal type mapping data
+     /etc/termcap           |=   for any local entries that may have been added
+     /lib                   |=   for any locally developed language processors
+     /usr/dict/*            |=   for local additions to words and papers
+     /usr/hosts/MAKEHOSTS   |^   for local changes
+     /usr/include/*         |=   for local additions
+     /etc/aliases           |^   mail forwarding data base
+     /etc/crontab           |^   cron daemon data base
+     /usr/share/font/*      |=   for locally developed font libraries
+     /usr/lib/lib*.a        |^   for local libraries
+     /usr/share/lint/*      |=   for locally developed lint libraries
+     /etc/sendmail.cf       |^   sendmail configuration
+     /usr/share/tabset/*    |=   for locally developed tab setting files
+     /usr/share/term/*      |=   for locally developed nroff drive tables
+     /usr/share/tmac/*      |=   for locally developed troff/nroff macros
+     /etc/uucp/*            |^   for local uucp configuration files
+     /usr/man/manl          *   for manual pages for locally developed programs
+     /usr/msgs              |^   for current msgs
+     /usr/spool/*           |^   for current mail, news, uucp files, etc.
+     /usr/src/local         |^   for source for locally developed programs
+     /sys/conf/HOST         |^   configuration file for your machine
+     /sys/conf/files.HOST   |^   list of special files in your kernel
+     /*/quotas              *   file system quota files
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 24Installing and Operating 2.11BSD on the PDP-11
+
+
+     |^Files that can be used from 2.10BSD without change.
+     |=Files that need local modifications merged into 2.11BSD files.
+     *Files that require special work to merge and are discussed below.
+
+
+
+33..11..11..  IInnssttaalllliinngg 22..1111BBSSDD
+
+     The  next  step  is  to build a working 2.11BSD system.
+This can be done by following the steps in section 2 of this
+document  for extracting the root and /usr file systems from
+the distribution tape onto unused disk partitions.
+
+     Once you have extracted the 2.11BSD system  and  booted
+from it, you will have to build a kernel customized for your
+configuration.  If you have any local device  drivers,  they
+will  have to be incorporated into the new kernel.  See sec-
+tion 4.2.3 and ``Building 2.11BSD UNIX Systems.''
+
+     With the introduction of disklabels the disk partitions
+in  2.11BSD  the /etc/disktab file has changed dramatically.
+There is a detailed description later in this chapter  about
+the  changes.   If you have modified the partition tables in
+previous versions of 2.11BSD you will need to create  a  new
+disktab entry or modify an existing one.
+
+33..22..   MMeerrggiinngg  yyoouurr  ffiilleess ffrroomm eeaarrlliieerr PPDDPP--1111 UUNNIIXX ssyysstteemmss
+iinnttoo 22..1111BBSSDD
+
+     When your system is booting reliably and you  have  the
+2.11BSD  root and /usr file systems fully installed you will
+be ready to continue with the next step  in  the  conversion
+process, merging your old files into the new system.
+
+     If you saved the files on a _t_a_r tape, extract them into
+a scratch directory, say /usr/convert:
+
+     ## mkdir /usr/convert
+     ## cd /usr/convert
+     ## tar x
+
+
+     For sites running 2.10.1BSD, converting local  configu-
+ration  files should be very simple.  In general very little
+has changed between 2.10.1BSD and  2.11BSD  with  regard  to
+these files.
+
+     For  sites  running  a  pre-2.10BSD UNIX, there is very
+little that can be said here as the variety of previous ver-
+sions  of PDP-11 UNIX systems and how they were administered
+is large.  As an example, most previous versions  of  PDP-11
+UNIX  systems  used  the files _/_e_t_c_/_t_t_y_s and _/_e_t_c_/_t_t_y_t_y_p_e to
+administer  which  terminals  should  have  login  processes
+attached to them and what the types of terminals those were.
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 25
+
+
+Under 2.11BSD /etc/ttytype  has  disappeared  entirely,  its
+functions subsumed by /etc/ttys along with several new func-
+tions.  In general you will simply have to use your previous
+configuration  files  as references as you configure 2.11BSD
+to your site needs.  Familiarity with  4.3BSD  configuration
+is  very helpful at this point since 2.11BSD is nearly iden-
+tical in most of the files listed in the previous section.
+
+     If you have any home  grown  device  drivers  that  use
+major device numbers reserved by the system you will have to
+modify the commands used to create the devices or alter  the
+system device configuration tables in /sys/pdp/conf.c.  Note
+that almost all 2.11BSD major device numbers  are  different
+from those in previous PDP-11 UNIX systems except 2.10.1BSD.
+A couple more device numbers were added since the release of
+2.10.1BSD  for the kernel logging facility (/dev/klog) and a
+(new) TK50/TU81 driver.
+
+     System security  changes  require  adding  several  new
+``well-known''  groups  to  /etc/group.  The groups that are
+needed by the system as distributed are:
+
+
+     name       number
+     ------------------
+     wheel        0
+     daemon       1
+     kmem         2
+     sys          3
+     tty          4
+     operator     5
+     staff        10
+     bin          20
+
+
+Only users in the ``wheel'' group are  permitted  to  _s_u  to
+``root''.    Most   programs   that  manage  directories  in
+/usr/spool now run set-group-id to ``daemon'' so that  users
+cannot  directly  access the files in the spool directories.
+The special files that access kernel memory,  _/_d_e_v_/_k_m_e_m  and
+_/_d_e_v_/_m_e_m,  are  made readable only by group ``kmem''.  Stan-
+dard system programs that require this access are made  set-
+group-id  to  that  group.  The group ``sys'' is intended to
+control access to system sources, and other  sources  belong
+to  group  ``staff.''   Rather  than  make  user's terminals
+writable by all users, they are now placed in group  ``tty''
+and  made only group writable.  Programs that should legiti-
+mately have access to write on user's terminals such as _t_a_l_k
+and _w_r_i_t_e now run set-group-id to ``tty''.  The ``operator''
+group controls access to disks.  By default, disks are read-
+able  by group ``operator'', so that programs such as _d_f can
+access the file system information without being set-user-id
+to ``root''.
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 26Installing and Operating 2.11BSD on the PDP-11
+
+
+     Several  new users have also been added to the group of
+``well-known'' users in /etc/passwd.  The current list is:
+
+
+     name       number
+     ------------------
+     root         0
+     daemon       1
+     operator     2
+     uucp         66
+     nobody     32767
+
+
+The ``daemon'' user is used for daemon processes that do not
+need  root  privileges.  The ``operator'' user-id is used as
+an account for dumpers so that they can log in without  hav-
+ing  the root password.  By placing them in the ``operator''
+group, they can get read access to the disks.  The  ``uucp''
+login  has  existed  long  before 2.11BSD, and is noted here
+just to  provide  a  common  user-id.   The  password  entry
+``nobody''  has  been  added  to specify the user with least
+privilege.
+
+     After   restoring   your   old   password   file   from
+tape/backups,  a conversion is required to create the shadow
+password file.  Only the steps to  convert  /etc/passwd  are
+given  here,  see  the  various  man  pages  for  _c_h_p_a_s_s(1),
+_v_i_p_w(8), _m_k_p_a_s_s_w_d(8), etc.
+
+     ## awk -f /etc/awk.script < /etc/passwd >/etc/junk
+     ## mkpasswd -p /etc/junk
+     ## mv /etc/junk.orig /etc/passwd
+     ## mv /etc/junk.pag /etc/passwd.pag
+     ## mv /etc/junk.dir /etc/passwd.dir
+     ## mv /etc/junk /etc/master.passwd
+     ## chown root /etc/passwd* /etc/master.passwd
+     ## chmod 0600 /etc/master.passwd
+
+
+     The format of the cron table, /etc/crontab, is the same
+as that of 2.10.1BSD.
+
+     Some  of  the commands previously in /etc/rc.local have
+been moved to /etc/rc; several new functions are now handled
+by  /etc/rc.local.  You should look closely at the prototype
+version of /etc/rc.local and read the manual pages  for  the
+commands  contained  in it before trying to merge your local
+copy.   Note  in  particular  that  _i_f_c_o_n_f_i_g  has  had  many
+changes,  and  that  host  names  are now fully specified as
+domain-style names (e.g, boris.Oswego.EDU).
+
+     The C library and system binaries on  the  distribution
+tape  are  compiled with versions of _g_e_t_h_o_s_t_b_y_n_a_m_e and _g_e_t_h_-
+_o_s_t_b_y_a_d_d_r which use ndbm host table lookup routines  instead
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 27
+
+
+of  the  name server.  You must run _m_k_h_o_s_t_s(8) to create the
+_n_d_b_m host table database from _/_e_t_c_/_h_o_s_t_s.  For  2.11BSD  the
+_m_k_h_o_s_t_s  program  has  been  enhanced  to  support  multiple
+addresses per host with order being preserved (the order  in
+which  the  multiple  addresses appear in _/_e_t_c_/_h_o_s_t_s for the
+same host is the same order the addresses will  be  returned
+to the caller of _g_e_t_h_o_s_t_b_y_n_a_m_e).
+
+     There  is  a version of the nameserver which runs under
+2.11BSD.  However in addition to having a voracious appetite
+for  memory  there  are memory leaks which cause _n_a_m_e_d(8) to
+crash after running  for  an  extended  period.   Restarting
+_n_a_m_e_d(8)  nightly from _c_r_o_n is the only work around solution
+at present.
+
+     If you want to compile your  system  to  use  the  name
+server resolver routines instead of the ndbm host table, you
+will need to modify /usr/src/lib/libc/Makefile according  to
+the  instructions there and then recompile all of the system
+and local programs (see section 6.5).|^
+
+     The format of /etc/ttys is the same  as  it  was  under
+2.10BSD.  It includes the terminal type and security options
+that were previously in /etc/ttytype and /etc/securettys.
+
+     _s_y_s_l_o_g is the 4.4BSD-Lite version now.   See  _s_y_s_l_o_g(3)
+and  _s_y_s_l_o_g_d(8)  for  details.  They are used by many of the
+system daemons to monitor system problems more closely,  for
+example network routing changes.
+
+     Again, it must be emphasized that the nameserver is not
+robust under 2.11BSD, and if the _h_o_s_t_s files are not desired
+then the best alternative is to use the _r_e_s_o_l_v_e_r(5) routines
+and use the nameserver on  a  remote  larger  machine.   The
+_r_e_s_o_l_v_e_r(5) routines are known to work.
+
+     The  spooling directories saved on tape may be restored
+in their eventual resting places without too  much  concern.
+Be  sure  to  use  the ``p'' option to _t_a_r so that files are
+recreated with the same file modes:
+
+     ## cd /usr
+     ## tar xp msgs spool/mail spool/uucp spool/uucppublic spool/news
+
+
+     The ownership and modes of  two  of  these  directories
+needs  to be changed, because _a_t now runs set-user-id ``dae-
+mon'' instead of root.  Also, the uucp directory  no  longer
+-----------
+|^ Note: The resolver routines  add  about  5kb  of
+  text and 1kb of data to each program.  Also, the
+  resolver routines use more stack space which may
+  cause  large programs to crash due to failure to
+  extend the stack area.
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 28Installing and Operating 2.11BSD on the PDP-11
+
+
+needs  to be publicly writable, as _t_i_p reverts to privileged
+status to remove its lock files.  After copying your version
+of /usr/spool, you should do the following:
+
+     ## chown -R daemon /usr/spool/at
+     ## chown -R root /usr/spool/uucp
+     ## chgrp -R daemon /usr/spool/uucp
+     ## chmod -R o-w /usr/spool/uucp
+
+
+     Whatever  else is left is likely to be site specific or
+require careful scrutiny  before  placing  in  its  eventual
+resting  place.   Refer to the documentation and source code
+before arbitrarily overwriting a file.
+
+33..33..  HHiinnttss oonn ccoonnvveerrttiinngg ffrroomm pprreevviioouuss PPDDPP--1111 UUNNIIXX  ssyysstteemmss
+ttoo 22..1111BBSSDD
+
+     This section summarizes some of the significant changes
+in 2.11BSD  from  2.10.1BSD.   The  installation  guide  for
+2.10.1BSD    is    included    in    the   distribution   as
+/usr/doc/2.10/setup.2.10 and should be read if you  are  not
+presently running 2.10BSD or 2.10.1BSD.  It does not include
+changes in the network; see chapter  5  for  information  on
+setting up the network.
+
+     Old  core files will not be intelligible by the current
+debuggers because of numerous changes to the user structure.
+Also  removed  from  the  user  structure  are  the  members
+u_offset,   u_count,   u_base,    u_segflg,    the    4.3BSD
+uio/iovec/rdwri  kernel  i/o model having been put in place.
+The 4.3BSD _n_a_m_e_i argument encapsulation technique  has  been
+ported, which adds the u_nd member to the user structure.
+
+     Note,  once  your  system is installed and running, you
+should make sure that you recompile and reinstall the direc-
+tory  _/_u_s_r_/_s_r_c_/_s_h_a_r_e_/_z_o_n_e_i_n_f_o.   Read  through  the Makefile
+first, if you're not located on the West Coast you will have
+to  change  it.  This directory is an addition since 4.3BSD,
+and is intended to solve the Daylight Savings Time  problems
+once and for all.
+
+     The  incore  inode  structure  has  had the i_id member
+added as part of implementing the 4.3BSD namei  cache.   The
+di_addr  member  of  the  on  disk inode structure is now an
+array of type ddaaddddrr__tt instead  of  cchhaarr.   The  old  3  byte
+packed block number is obsolete at last.
+
+     The  on disk directory structure is that of 4.3BSD with
+the difference that the inode number is  an  unsigned  short
+instead  of  a  long.  This was done to reduce the amount of
+long arithmetic in the kernel and to maintain  compatibility
+with  earlier  versions with regard to the maximum number of
+inodes per filesystem.  Given the typical size of discs used
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 29
+
+
+with  2.11BSD the limit on the number of inodes per filesys-
+tem will not be a problem.
+
+     And again, 2.11BSD is not  filesystem  compatible  with
+any previous PDP-11 UNIX system.
+
+     If  you  want to use _p_s after booting a new kernel, and
+before going multiuser, you must initialize  its  name  list
+database by running _p_s _-_U.
+
+33..44..    HHiinnttss   oonn  ppoossssiibbllee  pprroobblleemmss  uuppggrraaddiinngg  ffrroomm  tthhee
+22..1100..11BBSSDD
+
+33..44..11..  NNeeww uuttmmpp UUTT__NNAAMMEESSIIZZEE..
+
+     UUTT__NNAAMMEESSIIZZEE in >_<utmp.h was changed from 8 to 15.  This
+won't  affect correctly written programs (those which do not
+hard code the constant 8) at the source level but does cause
+changes  in various databases.  This means that old binaries
+won't be able to cope with new databases  (passwd,  aliases,
+etc) and vice versa.
+
+     This  change  was necessary since the systems available
+for 2.11BSD development had to be  shared  with  systems  in
+which    UT_NAMESIZE    was    set    at    15.    If   this
+change/incompatibility  is  not  desired,  then  utmp.h  and
+wtmp.h will have to be modified and the system libraries and
+applications rebuilt before proceeding to load  local  soft-
+ware.
+
+     The  simplest  way to deal with this incompatibility is
+simply to rebuild all your databases from the  source  data.
+In  particular,  you should be sure you rebuild _/_e_t_c_/_p_a_s_s_w_d,
+_/_e_t_c_/_h_o_s_t_s, and _/_e_t_c_/_a_l_i_a_s_e_s  databases  via  the  commands:
+_m_k_p_a_s_s_w_d     _/_e_t_c_/_p_a_s_s_w_d,     _m_k_h_o_s_t_s     _/_e_t_c_/_h_o_s_t_s,    and
+_/_u_s_r_/_u_c_b_/_n_e_w_a_l_i_a_s_e_s_.
+
+33..44..22..  mmaann ssyysstteemm
+
+     The manual system continues to track the changes  going
+on  in 4BSD.  I'm not convinced the new setup is better, but
+it does seem to be the method of the moment.  The  setup  is
+essentially  the  same as that in the 44..33BBSSDD--TTAAHHOOEE distribu-
+tion with the manual source in /usr/src/man.
+
+33..44..33..  NNMMOOUUNNTT lloowweerreedd
+
+     The value of NNMMOOUUNNTT in _/_s_y_s_/_h_/_p_a_r_a_m_._h is set  to  5  in
+the  distribution  system.   This will be too small for many
+sites.  Since each mount table entry costs about  440  bytes
+of  valuable  kernel  dataspace this number should be chosen
+with care.  See Appendix A for  an  explanation  of  how  to
+reconfigure NNMMOOUUNNTT..
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 30Installing and Operating 2.11BSD on the PDP-11
+
+
+33..44..44..  SShhaaddooww ppaasssswwoorrddss
+
+     The May 1989 release of the 4.3BSD shadow password file
+has been ported to 2.11BSD.  Password aging is  also  imple-
+mented.
+
+33..44..55..  NNeeww //eettcc//rrcc ssttaarrttuupp ssccrriippttss
+
+     _/_e_t_c_/_r_c  and _/_e_t_c_/_r_c_._l_o_c_a_l have changed fairly signifi-
+cantly, and
+
+     _/_e_t_c_/_n_e_t_s_t_a_r_t has been added to configure site specific
+network  features  (much  of  this  was  pulled from the old
+rc.local).  _/_e_t_c_/_n_e_t_s_t_a_r_t  uses  the  tiny  program  _t_e_s_t_n_e_t
+which attempts to create a socket and prints NO on stdout if
+an error is returned by the kernel,  YES  if  no  error  was
+returned.
+
+33..44..66..  mmkkffss,, mmkkpprroottoo,, mmkklloosstt++ffoouunndd
+
+     _m_k_f_s(8) no longer can populate a filesystem with files.
+The 4.3BSD versions of _m_k_f_s(8) and _m_k_p_r_o_t_o(8) were ported to
+2.11BSD.   There  is  a  limit on the size of the file which
+_m_k_p_r_o_t_o(8) can place on a newly  created  filesystem.   Only
+files  up  to single indirect (about 260kb) may be copied at
+this time.
+
+     _m_k_l_o_s_t_+_f_o_u_n_d(8) is a ported version  from  4.3BSD,  the
+only  change being to use 63 character file names (MAXNAMLEN
+is  63  at  this  time   in   2.11BSD)   instead   of   255.
+_m_k_l_o_s_t_+_f_o_u_n_d(8) is really not needed, _f_s_c_k(8) is now capable
+of automatically extending lost+found by up to the number of
+direct blocks in an inode.
+
+33..44..77..  //eettcc//ddiisskkttaabb
+
+     The  format  of /etc/disktab is now the same as 4.3BSD-
+Reno and 4.4BSD.  Previously to describe a  drive  (an  RM03
+for example) the /etc/disktab file had entries of the form:
+
+:ty=removable:ns#32:nt#5:nc#823:sf:
+:b0=/mdec/rm03uboot:
+:pa#9600:ba#1024:fa#1024:
+:pb#9600:bb#1024:fb#1024:
+:pc#131520:bc#1024:fc#1024:
+:pf#121920:bf#1024:ff#1024:
+:pg#112320:bg#1024:fg#1024:
+:ph#131520:bh#1024:fh#1024:
+
+Note  that there is no information at all about which cylin-
+der a partition starts at or which  partitions  overlap  and
+may  not  be used simultaneously.  That information was kept
+in tables in the driver.  If you  modified  /etc/disktab  it
+would  have  no  effect without also changing the driver and
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 31
+
+
+recompiling the kernel.
+
+The new /etc/disktab file looks like this:
+
+:ty=removable:ns#32:nt#5:nc#823:sf:
+:b0=/mdec/rm03uboot:
+:pa#9600:oa#0:ba#1024:fa#1024:ta=2.11BSD:
+:pb#9600:ob#9600:bb#1024:fb#1024:tb=swap:
+:pc#131520:oc#0:bc#1024:fc#1024:
+:pf#121920:of#9600:bf#1024:ff#1024:tf=2.11BSD:
+:pg#112320:og#19200:bg#1024:fg#1024:tg=2.11BSD:
+:ph#131520:oh#0:bh#1024:fh#1024:th=2.11BSD
+
+
+     There are two new fields per partition,  the  'o'  (oa,
+ob,  usw.)  field  specifies  the offset in sectors that the
+partition begins at.  The 't' field specifies the  partition
+type.   Only those partitions which are 22..1111BBSSDD will be rec-
+ognized by _n_e_w_f_s(8) and the kernel as filesystems.  The ker-
+nel  also will not swap or place a crash dump on a partition
+that is not of type sswwaapp.
+
+     The two examples above are equivalent  and  provide  an
+example  of  a translating an old style disktab entry into a
+new style entry.  To translate a customized disktab  entries
+you  will  need:  1) a copy of your current partition tables
+from the device driver, 2) a copy of the old disktab  entry,
+3) your current /etc/fstab file.  In new disktab entries you
+should only place those partitions you actually use.   There
+is  no  need  to declare (as was done in the examples above)
+all of the possible partitions.
+
+     If you have changed the disk partition sizes,  be  sure
+to  make  the  necessary /etc/disktab changes and label your
+disks BEFORE trying to access any of your old file  systems!
+There  are  two  ways  to  label your disks.  The standalone
+disklabel program is one way.  It is also possible to  label
+disks  using  _d_i_s_k_l_a_b_e_l(8)  with  the -r option - this works
+even when running on a kernel which does not support  labels
+(-r  reads  and  writes the raw disk, thus it is possible to
+label disks on an older kernel as long as  the  _d_i_s_k_l_a_b_e_l(8)
+program is present).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 32Installing and Operating 2.11BSD on the PDP-11
+
+
+                      44.. SSYYSSTTEEMM SSEETTUUPP
+
+
+
+     This  section  describes  procedures  used  to set up a
+PDP-11 UNIX system.  These procedures are used when a system
+is first installed or when the system configuration changes.
+Procedures for normal system operation are described in  the
+next section.
+
+44..11..  CCrreeaattiinngg aa UUNNIIXX bboooott
+
+     _/_b_o_o_t uses the device information passed to it from the
+bootstrap in determining the device, unit and file to  load.
+If  an  autoreboot is being done the kernel will have passed
+the device information to the bootstrap as well  as  setting
+the autoreboot flag.
+
+     _/_b_o_o_t  does not require recompilation to adapt to a new
+autoreboot device.
+
+44..22..  KKeerrnneell ccoonnffiigguurraattiioonn
+
+     This section briefly describes the layout of the kernel
+code and how files for devices are made.
+
+44..22..11..  KKeerrnneell oorrggaanniizzaattiioonn
+
+     As  distributed, the kernel source is in a separate tar
+image.  The source may be physically located anywhere within
+any  file  system so long as a symbolic link to the location
+is created for the file /sys (many files in /usr/include are
+normally  symbolic links relative to /sys).  In further dis-
+cussions of the system source all path names will  be  given
+relative to /sys.
+
+     The  directory  /sys/sys  contains the mainline machine
+independent operating system code.  Files within this direc-
+tory are conventionally named with the following prefixes:
+
+
+     init_        system initialization
+     kern_        kernel (authentication, process management, etc.)
+     quota_       kernel portion of disk quota system
+     subr_        misc. subroutines used throughout the kernel
+     sys_         system calls and the like
+     tty_         terminal handling
+     ufs_         file system
+     uipc_        interprocess communication
+     vm_          memory management
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 33
+
+
+     The remaining directories are organized as follows:
+
+
+     /sys/h         machine independent include files
+     /sys/conf      site configuration files and basic templates
+     /sys/net       network independent, but network related code
+     /sys/netinet   DARPA Internet code
+     /sys/netimp    IMP support code
+     /sys/netns     Xerox NS support code
+     /sys/pdp       PDP-11 specific mainline code
+     /sys/pdpif     PDP-11 network interface code
+     /sys/pdpmba    PDP-11 MASSBUS device drivers and related code
+     /sys/pdpuba    PDP-11 UNIBUS device drivers and related code
+
+
+
+     Many   of  these  directories  are  referenced  through
+/usr/include   with   symbolic    links.     For    example,
+/usr/include/sys  is  a symbolic link to /sys/h.  The system
+code, as distributed, is mostly independent of  the  include
+files  in /usr/include.  Unfortunately not all references to
+/usr/include have been eradicated, so compiling  the  system
+requires the /usr file system to be mounted.
+
+44..22..22..  DDeevviicceess aanndd ddeevviiccee ddrriivveerrss
+
+     Devices supported by UNIX are implemented in the kernel
+by drivers whose source is kept in /sys/pdp, /sys/pdpuba, or
+/sys/pdpmba.   These drivers are loaded into the system when
+included in a cpu specific configuration file  kept  in  the
+conf  directory.  Devices are accessed through special files
+in the file system, made by the _m_k_n_o_d(8)  program  and  nor-
+mally  kept in the /dev directory.  For all the devices sup-
+ported by the distribution system, the  files  in  /dev  are
+created by the /dev/MAKEDEV shell script.
+
+     Determine the set of devices that you have and create a
+new /dev directory by running  the  MAKEDEV  script.   First
+create  a  new directory /newdev, copy MAKEDEV into it, edit
+the file MAKEDEV.local to provide an entry for local  needs,
+and  run  it to generate a /newdev directory.  For instance,
+if your machine has a single DZ11, a single  DH11,  an  RM03
+disk,  an  EMULEX  UNIBUS SMD disk controller, an AMPEX 9300
+disk, and a TE16 tape drive you would do:
+
+     ## cd /
+     ## mkdir newdev
+     ## cp dev/MAKEDEV newdev/MAKEDEV
+     ## cd newdev
+     ## MAKEDEV dz0 dh0 xp0 xp1 ht0 std LOCAL
+
+Note the ``std'' argument causes standard  devices  such  as
+_/_d_e_v_/_c_o_n_s_o_l_e,  the  machine  console,  _/_d_e_v_/_n_u_l_l,  _/_d_e_v_/_t_t_y,
+_/_d_e_v_/_k_l_o_g, etc.  to be created.
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 34Installing and Operating 2.11BSD on the PDP-11
+
+
+     You can then do
+
+     ## cd /
+     ## mv dev olddev ; mv newdev dev
+     ## sync
+
+to  install the new device directory.|^ As distributed almost
+all of the device nodes are already present and you may wish
+to  remove  unused entries from /dev to speed up scanning of
+the directory.  The  terminal  nodes  are  almost  certainly
+incorrect  for  your  site  and  will need to be deleted and
+recreated.  Directly connected  terminals  should  have  the
+softcarrier  bit  on  in  their minor device numbers.  Since
+MAKEDEV by default creates terminal (dh, dz, etc) nodes with
+the  softcarrier bit off you will have to delete those nodes
+and recreate those terminal nodes which  are  directly  con-
+nected:
+
+     ## cd /dev
+     ## rm ttyh0
+     ## mknod ttyh0 c 3 128
+
+
+44..22..33..  BBuuiillddiinngg nneeww ssyysstteemm iimmaaggeess
+
+     The   kernel  configuration  of  each  UNIX  system  is
+described by a single  configuration  file,  stored  in  the
+_/_s_y_s_/_c_o_n_f directory.  The format of this file is very simple
+consisting of lines starting with an _i_d_e_n_t_i_f_i_e_r followed  by
+a  _v_a_l_u_e.   Blank lines and anything past a ``#'' (including
+the #) are comments.  This file is processed  by  the  shell
+script  _c_o_n_f_i_g  in  the same directory.  The manual pages in
+section 4 of the UNIX manual specify the configuration lines
+necessary for various devices.  A comprehensive list of sys-
+tem options with descriptions of their meanings and  effects
+can be found in appendix A.
+
+     The  configuration  file  _G_E_N_E_R_I_C in the conf directory
+was used to build the generic distribution kernel.  To build
+a  local configuration file, copy GENERIC to a new file _S_Y_S_-
+_T_E_M, edit _S_Y_S_T_E_M for your local  system  configuration,  and
+then type "./config _S_Y_S_T_E_M".  This will create the directory
+_._._/_S_Y_S_T_E_M and copy specially edited files into based on  the
+definitions in _S_Y_S_T_E_M.  Change directory into the new system
+directory and type "make all".|^,
+
+
+
+
+-----------
+|^ You must  reboot  your  system  before  you  can
+  remove the /olddev directory.
+|^ note that non-separate systems are not currently
+  supported
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 35
+
+
+     ## cp GENERIC _S_Y_S_T_E_M
+     ## TERM=_t_e_r_m_i_n_a_l___t_y_p_e; export TERM
+     ## vi _S_Y_S_T_E_M
+     ## ./config _S_Y_S_T_E_M
+     ## cd ../_S_Y_S_T_E_M
+     ## make
+
+
+     Note  that  the  overlay  scheme in the Makefile copied
+into the new system directory may fail  because  either  the
+_b_a_s_e  _s_e_g_m_e_n_t is too small, too large or one or more _o_v_e_r_l_a_y
+_s_e_g_m_e_n_t_s are too large.  If this happens the system  objects
+will  have  to  be  re-arranged in the _b_a_s_e and _o_v_e_r_l_a_y seg-
+ments.  The comments in the Makefile should make  it  fairly
+clear  what  the restrictions on object placement are in the
+system.
+
+     The  configured system image ``unix''|= should be copied
+to the root, and then booted to try it out.  It is  best  to
+save the old kernel to a known name so as not to destroy the
+working system until you're sure the new one does work.   It
+is an bbeetttteerr idea to have a non network kernel (/emergencyu-
+nix) always kept on the system:
+
+     ## cp /unix /oldunix
+     ## make install
+     ## sync
+
+To boot the new version of the system you should follow  the
+bootstrap  procedures outlined in section titled ``BBoooottssttrraapp
+aanndd sshhuuttddoowwnn pprroocceedduurreess'' A systematic scheme for  numbering
+and saving old versions of the system may be useful.
+
+44..33..  DDiisskk ccoonnffiigguurraattiioonn
+
+     This  section  describes  how to layout file systems to
+make use of the available space and to balance disk load for
+better system performance.
+
+44..33..11..  DDiisskk nnaammiinngg aanndd ddiivviissiioonnss
+
+     Each  physical  disk  drive can be divided into up to 8
+partitions; UNIX typically uses only 3 or 4 partitions.  For
+instance,  on an RP06 the first partition, xp0a, is used for
+a root file system, a backup thereof, or a small file system
+like, /tmp; the second partition, xp0b, is used for swapping
+or a small file system; and a combination of  the  remaining
+partitions  (xp0d,  xp0e,  xp0f, xp0g, xp0h) would hold user
+file systems.
+
+
+-----------
+|= on networked systems there are two images  _u_n_i_x,
+  and _n_e_t_n_i_x.
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 36Installing and Operating 2.11BSD on the PDP-11
+
+
+          WWaarrnniinngg::  for disks on which DEC standard 144  bad
+     sector  forwarding  is supported, the last track and up
+     to 126 preceding sectors  contain  replacement  sectors
+     and  bad  sector  lists.  Disk-to-disk copies should be
+     careful to avoid  overwriting  this  information.   See
+     _b_a_d_1_4_4(8).  Bad sector forwarding is optional in the hhkk
+     and  xxpp  drivers.   The  partition  sizes   listed   in
+     _/_e_t_c_/_d_i_s_k_t_a_b  that  _n_e_w_f_s(8) uses automatically reserve
+     the maximum amount of room that  may  be  used  by  bad
+     block forwarding on a disk.
+
+          Note  also  that bad144 style bad block forwarding
+     _c_a_n _n_o_t be used with SI controllers on the xp driver as
+     the  controllers  use their own internal scheme for bad
+     block forwarding, and you can in fact make  your  disks
+     unusable on the SI controllers if you write anything in
+     the  last  five  cylinders.   The  partition  sizes  in
+     _/_e_t_c_/_d_i_s_k_t_a_b also handle this constraint automatically.
+
+          The generic distribution kernel does  not  do  bad
+     block forwarding.  There is unfortunately no way to run
+     bad144 style bad  block  forwarding  on  some  of  your
+     disks,  but  not others.  As a final bug, the hk and xp
+     drivers do not reread the bad sector forwarding  infor-
+     mation  when  disk  packs are changed and so will erro-
+     neously use bad block forwarding information  from  the
+     wrong packs!
+
+
+     The space available on a disk varies, not surprisingly,
+per device.  Disklabels make a table giving  sizes  meaning-
+less  since there are no predefined partition sizes embedded
+in the kernel any longer.  The root filesystem (aa)  must  be
+at  least  4Mb,  preferably  6 to 7Mb if possible.  The swap
+area (almost always the bb partition) should be about 3Mb  or
+so.   If  your  system has a small amount (less than 2Mb) of
+memory you will need more swap space, perhaps 4 or 5Mb.   It
+is  a  rare  case  where more than 5 or 6Mb of swap space is
+required.   The system will run out of  other  resources  by
+the time enough activity is generated to need that much swap
+space.
+
+     The system (boot) disk has a swapping area and  a  root
+file  system.   Other  drives  may  use those partitions for
+data.  RReemmeemmbbeerr:: the aa partition must start at sector  0  or
+_d_i_s_k_l_a_b_e_l(8)  or  else  the  kernel  will  not  be  able  to
+read/write the label.
+
+     The  distributed  system  binaries  occupy   about   34
+Megabytes   while   the  major  sources  occupy  another  36
+Megabytes.  Adding  in  the  miscellaneous  sources,  a  few
+locate works of art bring the total for a complete system to
+about 90 Megabytes.  This overflows RK07, RL02 and RM03 sys-
+tems, but fits easily on most other hardware configurations.
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 37
+
+
+2.11BSD is quite happy on RD54 or  larger.   Simply  fitting
+the  distribution  isn't  enough,  there must still be space
+left for user files, objects when compiling programs, spool-
+ing directories, usw.
+
+     Be  aware  that  the disks have their sizes measured in
+disk sectors (512 bytes), while the UNIX file system  blocks
+are  1024  bytes  each.   Thus if a disk partition has 10000
+sectors (disk blocks), it will have only 5000 UNIX file sys-
+tem blocks, and you _m_u_s_t divide by 2 to use 5000 when speci-
+fying the size  to  the  _m_k_f_s  command  for  instance.   The
+_n_e_w_f_s(8)  program  performs  this calculation automatically.
+You should nneevveerr need to run _m_k_f_s manually.  All  user  pro-
+grams report disk space in kilobytes and, where needed, disk
+sizes  are  always  specified  in  units  of  sectors.   The
+/etc/disktab file used in making file systems specifies disk
+partition sizes in sectors; the default sector size  may  be
+overridden  with  the  ``se'' attribute.  NNoottee that the only
+sector size  currently  supported  is  NBPG  as  defined  in
+_/_s_y_s_/_p_d_p_/_m_a_c_h_p_a_r_a_m_._h.   This restriction is enforced in sev-
+eral places in  the  disklabeling  process  as  a  safeguard
+against specifying a sector size other than NBPG (512).  Any
+other sector size would produce strange results  and  almost
+certainly curdled filesystems.
+
+44..33..22..  LLaayyoouutt ccoonnssiiddeerraattiioonnss
+
+     There  are  several  considerations  in deciding how to
+adjust the arrangement of things on your  disks.   The  most
+important  is  making  sure that there is adequate space for
+what is required; secondarily, throughput  should  be  maxi-
+mized.   Swap  space  is  an  important  parameter  since it
+defines the maximum process image load that may be run.  If,
+for instance, your swap area were smaller than the amount of
+main memory available after the kernel took its share,  some
+of your memory would never be used.
+
+     Many  common system programs (C, the editor, the assem-
+bler etc.)  create intermediate files in the /tmp directory,
+so  the file system where this is stored also should be made
+large enough to accommodate most high-water  marks;  if  you
+have  several  disks,  it  makes  sense  to  mount this in a
+``root'' (i.e. first partition) file system on another disk.
+All  the  programs  that  create  files in /tmp take care to
+delete them, but are not immune to rare events and can leave
+dregs.   The directory should be examined every so often and
+the old files deleted.
+
+     The efficiency with which UNIX is able to use  the  CPU
+is often strongly affected by the configuration of disk con-
+trollers.  For general time-sharing applications,  the  best
+strategy  is to try to split the most actively-used sections
+among several disk arms.
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 38Installing and Operating 2.11BSD on the PDP-11
+
+
+     It is critical for good  performance  to  balance  disk
+load.   There  are at least five components of the disk load
+that you can divide between the available disks:
+
+     1. The root file system.
+     2. The /tmp file system.
+     3. The /usr file system.
+     4. The user files.
+     5. The swapping activity.
+
+The following possibilities are ones that have been used  at
+times when 2, 3 and 4 disks were available:
+
+                +--------------------------+
+                +----------+---------------+
+                |          |   | disk|s     |
+                |what      | 2 | 3   | 4   |
+                +----------+---+-----+-----+
+                |/         | 0 | 0   | 0   |
+                |tmp       | 1 | 2   | 3   |
+                |usr       | 1 | 1   | 1   |
+                |swapping|^ | 0 | 2   | 2   |
+                |users     | 0 | 0+2 | 0+2 |
+                |archive   | x | x   | 3   |
+                +----------+---+-----+-----+
+                +--------------------------+
+     The most important things to consider are to  even  out
+the  disk load as much as possible, and to do this by decou-
+pling file systems (on separate arms)  between  which  heavy
+copying occurs.  Note that a long term average balanced load
+is not important; it is  much  more  important  to  have  an
+instantaneously balanced load when the system is busy.  When
+placing several busy file systems on the same  disk,  it  is
+helpful  to  group  them  together to minimize arm movement,
+with less active file systems off to the side.
+
+     Intelligent experimentation  with  a  few  file  system
+arrangements  can  pay off in much improved performance.  It
+is particularly easy to move the root, the /tmp file  system
+and  the  swapping  area.  Note, though, that the disks con-
+taining the root and swapping  area  can  never  be  removed
+while  UNIX  is  running.  Place the user files and the /usr
+directory as space needs dictate  and  experiment  with  the
+other, more easily moved file systems.
+
+
+
+-----------
+|^ Note  also,  that only a single swapping area is
+  supported.  The _s_w_a_p_o_n(2) system call and multi-
+  ple  swapping  areas  have  nnoott been implemented
+  under 2.11BSD (yet.  no real need  since  enough
+  other  resources are exhausted by the time a 4mb
+  11/73 needs additional swap space).
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 39
+
+
+44..33..33..  IImmpplleemmeennttiinngg aa llaayyoouutt
+
+     To put a chosen disk layout into effect, you should use
+the _n_e_w_f_s(8) command to create each new file  system.   Each
+file  system  must  also  be added to the file /etc/fstab so
+that it will be checked and mounted when the system is boot-
+strapped.
+
+     As  an  example, consider a system with RA80's.  On the
+first RA80, ra0, we will put the root file system  in  ra0a,
+and  the /usr file system in ra0c, which has enough space to
+hold it and then some.  The /tmp directory will be  part  of
+the  root  file system, as no file system will be mounted on
+/tmp.  If we had only one RA80, we would put user  files  in
+the ra0c partition with the system source and binaries.
+
+     If  we  had a second RA80, we would place _/_u_s_r in ra1c.
+We would put user files in ra0c,  calling  the  file  system
+/mnt.   We  would  put swap on _r_a_0_b.  We would keep a backup
+copy of the root file system in the rraa11aa disk partition  and
+put /tmp on _r_a_1_b.  _/_e_t_c_/_f_s_t_a_b would then contain
+
+     /dev/ra0a:/:rw:1:1
+     /dev/ra0b::sw::
+     /dev/ra0c:/mnt:rw:1:2
+     /dev/ra1b:/tmp:rw::
+     /dev/ra1c:/usr:rw:1:2
+
+
+     To make the /mnt file system we would do:
+
+     ## cd /dev
+     ## MAKEDEV ra1
+     ## newfs ra1c ra80
+     (information about file system prints out)
+     (to specify an alternate _m value: newfs -m # ra1c ra80)
+     (where # is between 1 and 31)
+     ## mkdir /mnt
+     ## mount /dev/ra1c /mnt
+
+
+44..44..  CCoonnffiigguurriinngg tteerrmmiinnaallss
+
+     If   UNIX   is  to  support  simultaneous  access  from
+directly-connected terminals other  than  the  console,  the
+file _/_e_t_c_/_t_t_y_s (_t_t_y_s(5)) must be edited.
+
+     Terminals connected via DZ11 interfaces are convention-
+ally named ttttyyDDDD where DD is a decimal number,  the  ``minor
+device''  number.   The  lines  on dz0 are named /dev/tty00,
+/dev/tty01, ... /dev/tty07.  By convention, all other termi-
+nal  names  are  of the form ttttyyCX, where C is an alphabetic
+character according to the type of terminal multiplexor  and
+its unit number, and X is a digit for the first ten lines on
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 40Installing and Operating 2.11BSD on the PDP-11
+
+
+the interface and an increasing lower case  letter  for  the
+rest  of  the  lines.  C is defined for the number of inter-
+faces of each type listed below.  Since tty  structures  are
+approximately 78 bytes each, it is highly doubtful that more
+than 3 or 4 terminal interface boards will ever be  attached
+to a PDP-11 (especially in a BA23 cabinet).
+
+
+     +------------------------------------------------------+
+     |Interface                Number of lines   Number of  |
+     |  Type      Characters      per board      Interfaces |
+     +------------------------------------------------------+
+     |DZ11        see above           8              10     |
+     |DH11           h-o             16               8     |
+     |DHU11          S-Z             16               8     |
+     |pty            p-u             16               6     |
+     +------------------------------------------------------+
+
+
+     To  add  a  new  terminal device, be sure the device is
+configured into the system and that the  special  files  for
+the device have been made by /dev/MAKEDEV.  Then, enable the
+appropriate lines of /etc/ttys  by  setting  the  ``status''
+field  to  oonn  (or  add  new  lines).   Note  that  lines in
+_/_e_t_c_/_t_t_y_s are one-for-one with entries in the file  of  cur-
+rent users (_/_v_a_r_/_r_u_n_/_u_t_m_p), and therefore it is best to make
+changes while running in single-user mode and to add all  of
+the entries for a new device at once.
+
+     The format of the /etc/ttys file is the same in 2.11BSD
+as in 2.10BSD and 4.3BSD.  Each line in the file  is  broken
+into  four tab separated fields (comments are shown by a `#'
+character and extend to the end of the line).  For each ter-
+minal  line the four fields are: the device (without a lead-
+ing /dev), the program /etc/init should startup  to  service
+the line (or nnoonnee if the line is to be left alone), the ter-
+minal type (found  in  /etc/termcap),  and  optional  status
+information describing if the terminal is enabled or not and
+if it is ``secure'' (i.e. the super user should  be  allowed
+to  login  on  the  line).  All fields are character strings
+with entries requiring embedded white space enclosed in dou-
+ble quotes.  Thus a newly added terminal /dev/tty00 could be
+added as
+
+     tty00     "/usr/libexec/getty std.9600" vt100     on secure # Steve's office
+
+The std.9600 parameter  provided  to  /usr/libexec/getty  is
+used  in  searching  the  file /etc/gettytab; it specifies a
+terminal's characteristics (such as  baud  rate).   To  make
+custom  terminal types, consult _g_e_t_t_y_t_a_b(5) before modifying
+/etc/gettytab.
+
+     Dialup terminals should be wired  so  that  carrier  is
+asserted  only  when  the phone line is dialed up.  For non-
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 41
+
+
+dialup terminals from which modem control is not  available,
+you  must  either  wire back the signals so that the carrier
+appears to always be present, or show in  the  minor  device
+number that carrier is to be assumed to be present by adding
+128 decimal to the minor device  number  when  creating  the
+device node.  This differs from 4.3BSD where the softcarrier
+state is specified at kernel configuration time.
+
+     For network terminals (i.e. pseudo terminals), no  pro-
+gram  should  be  started up on the lines.  Thus, the normal
+entry in /etc/ttys would look like
+
+     ttyp0     none network
+
+(Note the fourth field is not needed here.)
+
+     When the system is running  multi-user,  all  terminals
+that  are  listed  in  /etc/ttys  as  oonn have their line are
+enabled.  If, during normal operations,  it  is  desired  to
+disable  a terminal line, you can edit the file /etc/ttys to
+change the terminal's status to ooffff and then send  a  hangup
+signal to the _i_n_i_t process, by doing
+
+     ## kill -1 1
+
+Terminals  can  similarly  be enabled by changing the status
+field from ooffff to oonn and sending a hangup signal to _i_n_i_t.
+
+     Note that if a special file is inaccessible  when  _i_n_i_t
+tries to create a process for it, init will log a message to
+the system error logging process (/usr/sbin/syslogd) and try
+to  reopen the terminal every minute, reprinting the warning
+message every 10 minutes.  Messages of this  sort  are  nor-
+mally printed on the console, though other actions may occur
+depending  on  the  configuration   information   found   in
+/etc/syslog.conf.
+
+     Finally  note  that  you should change the names of any
+dialup terminals to ttyd?  where ?  is  in  [0-9a-zA-Z],  as
+some programs use this property of the names to determine if
+a terminal is a dialup.  Shell commands to do this should be
+put in the /dev/MAKEDEV.local script.
+
+44..55..  AAddddiinngg uusseerrss
+
+     New  users  can be added to the system by adding a line
+to the password file /etc/passwd.  The procedure for  adding
+a new user is described in _a_d_d_u_s_e_r(8).
+
+     You should add accounts for the initial user community,
+giving each a directory and a password,  and  putting  users
+who will wish to share software in the same groups.
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 42Installing and Operating 2.11BSD on the PDP-11
+
+
+     Several  guest  accounts have been provided on the dis-
+tribution system; these accounts are for people at Berkeley,
+Bell  Laboratories,  and  others who have done major work on
+UNIX in the past.  You can delete these accounts,  or  leave
+them  on  the  system  if you expect that these people would
+have occasion to login as guests on your system.
+
+44..66..  SSiittee ttaaiilloorriinngg
+
+     All programs that require the site's name, or some sim-
+ilar  characteristic,  obtain the information through system
+calls or from files located in /etc.  Aside  from  parts  of
+the  system  related to the network, to tailor the system to
+your site you must simply select a site name, then edit  the
+file
+
+     /etc/netstart
+
+At  or about line 25 in /etc/netstart you should find a line
+similar to:
+
+     /bin/hostname _m_y_n_a_m_e_._m_y_._d_o_m_a_i_n
+
+defines the value  returned  by  the  _g_e_t_h_o_s_t_n_a_m_e(2)  system
+call.   Your  hostname should be your fully qualified domain
+name.  Programs such as _g_e_t_t_y(8), _m_a_i_l(1), _w_a_l_l(1), _u_u_c_p(1),
+and  _w_h_o(1)  use  this system call so that the binary images
+are site independent.
+
+44..77..  SSeettttiinngg uupp tthhee mmaaiill ssyysstteemm
+
+     The mail system consists of the following commands:
+
+
+     /bin/mail             old standard mail program, _b_i_n_m_a_i_l(1)
+     /usr/ucb/mail         UCB mail program, described in _m_a_i_l(1)
+     /usr/sbin/sendmail    mail routing program
+     /usr/spool/mail       mail spooling directory
+     /etc/aliases          mail forwarding information
+     /usr/bin/newaliases   command to rebuild binary forwarding database
+     /usr/ucb/biff         mail notification enabler|^
+     /usr/libexec/comsat   mail notification daemon|^
+
+
+Mail is normally sent and received using  the  _m_a_i_l(1)  com-
+mand,  which  provides a front-end to edit the messages sent
+and received, and passes the  messages  to  _s_e_n_d_m_a_i_l(8)  for
+routing.   The  routing algorithm uses knowledge of the net-
+work name syntax, aliasing and forwarding  information,  and
+network  topology,  as  defined  in  the  configuration file
+/etc/sendmail.cf, to process each piece of mail.  Local mail
+is delivered by giving it to the program /bin/mail that adds
+it     to     the     mailboxes     in     the     directory
+/usr/spool/mail/_u_s_e_r_n_a_m_e,  using a locking protocol to avoid
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 43
+
+
+problems with  simultaneous  updates.   After  the  mail  is
+delivered,     the     local     mail     delivery    daemon
+/usr/libexec/comsat is  notified,  which  in  turn  notifies
+users  who  have  issued  a ``_b_i_f_f y'' command that mail has
+arrived|^.
+
+     To  set  up  the  mail  facility  you  should  read the
+instructions  in  the  file   READ_ME   in   the   directory
+/usr/src/usr.lib/sendmail and then adjust the necessary con-
+figuration  files.   You  should  also  set  up   the   file
+/etc/aliases  for your installation, creating mail groups as
+appropriate.  Documents describing _s_e_n_d_m_a_i_l's operation  and
+installation are also included on the distribution tape.
+
+44..77..11..  SSeettttiinngg uupp aa UUUUCCPP ccoonnnneeccttiioonn
+
+     The  version of _u_u_c_p included in 2.11BSD is an enhanced
+version of the one originally distributed with  32/V|^.   The
+enhancements include:
+
++o  support  for many auto call units and dialers in addition
+   to the DEC DN11,
+
++o  breakup of the spooling area  into  multiple  subdirecto-
+   ries,
+
++o  addition of an _L_._c_m_d_s file to control the set of commands
+   that may be executed by a remote site,
+
++o  enhanced ``expect-send'' sequence capabilities when  log-
+   ging in to a remote site,
+
++o  new  commands  to  be used in polling sites and obtaining
+   snap shots of _u_u_c_p activity,
+
++o  additional protocols for different communication media.
+
+This section gives a brief overview of _u_u_c_p and  points  out
+the most important steps in its installation.
+
+     To  connect  two UNIX machines with a _u_u_c_p network link
+using modems, one site must have an automatic call unit  and
+the  other  must  have  a dialup port.  It is better if both
+sites have both.
+
+
+-----------
+|^ comsat and biff are only available under systems
+  configured for networking support.
+|^ The _u_u_c_p included in this  distribution  is  the
+  result  of  work  by  many people; we gratefully
+  acknowledge  their  contributions,  but  refrain
+  from mentioning names in the interest of keeping
+  this document current.
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 44Installing and Operating 2.11BSD on the PDP-11
+
+
+     You should first read the paper in the UNIX System Man-
+ager's  Manual:  ``Uucp  Implementation  Description''.   It
+describes in detail the file formats  and  conventions,  and
+will  give  you a little context.  In addition, the document
+``setup.tblms'',     located      in      the      directory
+/usr/src/usr.bin/uucp/UUAIDS, may be of use in tailoring the
+software to your needs.
+
+     The _u_u_c_p support is located in three major directories:
+/usr/bin, /etc/uucp, and /usr/spool/uucp.  User commands are
+kept in /usr/bin, operational  commands  in  /etc/uucp,  and
+/usr/spool/uucp is used as a spooling area.  The commands in
+/usr/bin are:
+
+
+     /usr/bin/uucp       file-copy command
+     /usr/bin/uux        remote execution command
+     /usr/bin/uusend     binary file transfer using mail
+     /usr/bin/uuencode   binary file encoder (for _u_u_s_e_n_d)
+     /usr/bin/uudecode   binary file decoder (for _u_u_s_e_n_d)
+     /usr/bin/uulog      scans session log files
+     /usr/bin/uusnap     gives a snap-shot of _u_u_c_p activity
+     /usr/bin/uupoll     polls remote system until an answer is received
+     /usr/bin/uuname     prints a list of known uucp hosts
+     /usr/bin/uuq        gives information about the queue
+
+
+The important files and commands in /etc/uucp are:
+
+
+     /etc/uucp/L-devices     list of dialers and hard-wired lines
+     /etc/uucp/L-dialcodes   dialcode abbreviations
+     /etc/uucp/L.aliases     hostname aliases
+     /etc/uucp/L.cmds        commands remote sites may execute
+     /etc/uucp/L.sys         systems to communicate with, how to connect, and when
+     /etc/uucp/SEQF          sequence numbering control file
+     /etc/uucp/USERFILE      remote site pathname access specifications
+     /usr/sbin/uucico        _u_u_c_p protocol daemon
+     /etc/uucp/uuclean       cleans up garbage files in spool area
+     /usr/libexec/uuxqt      _u_u_c_p remote execution server
+
+
+while the spooling area  contains  the  following  important
+files and directories:
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 45
+
+
+     /usr/spool/uucp/C.           directory for command, ``C.'' files
+     /usr/spool/uucp/D.           directory for data, ``D.'', files
+     /usr/spool/uucp/X.           directory for command execution, ``X.'', files
+     /usr/spool/uucp/D._m_a_c_h_i_n_e    directory for local ``D.'' files
+     /usr/spool/uucp/D._m_a_c_h_i_n_eX   directory for local ``X.'' files
+     /usr/spool/uucp/TM.          directory for temporary, ``TM.'', files
+     /usr/spool/uucp/LOGFILE      log file of _u_u_c_p activity
+     /usr/spool/uucp/SYSLOG       log file of _u_u_c_p file transfers
+
+
+
+     To  install  _u_u_c_p  on your system, start by selecting a
+site name.  A _u_u_c_p account must be created in  the  password
+file  and  a  password set up.  Then, create the appropriate
+spooling directories with mode 755 and owned by  user  _u_u_c_p,
+group _d_a_e_m_o_n.
+
+     If  you have an auto-call unit, the L.sys, L-dialcodes,
+and L-devices files  should  be  created.   The  L.sys  file
+should   contain  the  phone  numbers  and  login  sequences
+required to establish a connection with  a  _u_u_c_p  daemon  on
+another machine.  For example, my L.sys file looks something
+like:
+
+
+     elisa Any ACU 1200 7064297  "" \\r\\c ogin-EOT-ogin-\\r\\c-ogin xelisa assword: XXX
+     etn-ra Any ACU 1200 8891237  "" \\r\\c ogin nuucp assword XXX
+     anagld Never ACU 2400 8894517 name:-EOT-name: uucp assword: XXX
+
+
+The first field is the name of a site, the second shows when
+the machine may be called, the third field specifies how the
+host is connected (through an ACU, a hard-wired line, etc.),
+then  comes the phone number to use in connecting through an
+auto-call unit, and finally a  login  sequence.   The  phone
+number  may contain common abbreviations that are defined in
+the L-dialcodes file.  The device specification should refer
+to  devices  specified  in the L-devices file.  Listing only
+ACU causes the _u_u_c_p daemon, _u_u_c_i_c_o, to search for any avail-
+able  auto-call  unit in L-devices.  Our L-dialcodes file is
+of the form:
+
+     ny   1-315-
+     nj   1-201-
+     bostn     1-617-
+
+while our L-devices file is:
+
+     ACU cul0 unused 1200 ventel
+
+Refer to the README file in the _u_u_c_p  source  directory  for
+more information about installation.
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 46Installing and Operating 2.11BSD on the PDP-11
+
+
+     As  _u_u_c_p  operates  it creates (and removes) many small
+files in the directories underneath /usr/spool/uucp.   Some-
+times files are left undeleted; these are most easily purged
+with the _u_u_c_l_e_a_n program.  The log files  can  grow  without
+bound  unless  trimmed  back;  _u_u_l_o_g  maintains these files.
+Many useful aids in maintaining your _u_u_c_p  installation  are
+included     in     a     subdirectory     UUAIDS    beneath
+/usr/src/usr.bin/uucp.  Peruse this directory and  read  the
+``setup'' instructions also located there.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 47
+
+
+                      55.. NNEETTWWOORRKK SSEETTUUPP
+
+
+
+     The following section has been lightly edited to corre-
+spond to the current 2.11BSD networking.  Several  parts  of
+it  do  not  really  apply  to  2.11BSD,  for example, it is
+unlikely that anyone will connect a PDP-11 to an IMP but  it
+is possible as the LH/DH-11 networking interface and the IMP
+modules have been ported and lightly tested, or that  anyone
+will  run  the  nameserver.  The ``correct'' use of the net-
+working in 2.11BSD is probably with a list of the local  net
+addresses  in the _/_e_t_c_/_h_o_s_t_s file and with one default gate-
+way for all network traffic.   In  particular,  do  not  run
+_r_o_u_t_e_d(8)  unless  you're  extremely sure that you know what
+you're doing.  This is doubly true if SL/IP is being used as
+the  primary  connection  to the outside world.  The IMP and
+PRONET drivers are known to work, but long  term  robustness
+is  unknown.  Sites that wish to hook 2.11BSD into more than
+a simple local ethernet may have some work  ahead  of  them.
+If  any additional drivers are ported, I would really like a
+copy.
+
+     The networking in 2.11BSD,  runs  in  supervisor  mode,
+separate  from the mainstream kernel.  There is room without
+overlaying to hold both a SL/IP and ethernet  driver.   This
+is  a major win, as it allows the networking to maintain its
+mbufs in normal data space, among other  things.   The  net-
+working portion of the kernel resides in ``/netnix'', and is
+loaded after the kernel is running.  Since the  kernel  only
+looks  for  the  file  ``/netnix'', it will not run if it is
+unable to load ``/netnix'' , sites should build and  keep  a
+non-networking  kernel  in  ``/'' at all times, as a backup.
+NNOOTTEE:  The ``/unix'' and ``/netnix'' imagines must have been
+created  at  the same time, do not attempt to use mismatched
+images.   The ability to have bboooott  tell  the  kernel  which
+network image to load is on the wish list (had to have some-
+thing take the place of wishing for disklabels ;-)).
+
+     2.11BSD provides support for the DARPA standard  Inter-
+net  protocols  IP, ICMP, TCP, and UDP.  These protocols may
+be used on top of a variety of hardware devices ranging from
+the IMP's (PSN's) used in the Internet to local area network
+controllers for the Ethernet.  Network  services  are  split
+between  the  kernel (communication protocols) and user pro-
+grams (user services such as TELNET and FTP).  This  section
+describes  how  to configure your system to use the Internet
+networking support.  2.11BSD also includes code  to  support
+the  Xerox Network Systems (NS) protocols; the basic porting
+work has been done, but it is completely untested.
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 48Installing and Operating 2.11BSD on the PDP-11
+
+
+55..11..  SSyysstteemm ccoonnffiigguurraattiioonn
+
+     To configure the kernel to include the Internet  commu-
+nication  protocols, define the INET option.  This automati-
+cally defines the NLOOP  option.   TCP_COMPAT_42  is  always
+defined.   Xerox  NS  support is enabled with the NS option.
+In either case, include the pseudo-device  ``pty''  in  your
+machine's  configuration  file, using the NPTY options.  The
+``pty'' pseudo-device  forces  the  pseudo  terminal  device
+driver  to  be  configured into the system, see _p_t_y(4).  The
+NLOOP option  forces  inclusion  of  the  software  loopback
+interface  driver.  The loop driver is used in network test-
+ing as well as for the system talking to itself rather  than
+transmitting the data over the wire.
+
+     If you are planning to use the Internet network facili-
+ties on  a  10Mb/s  Ethernet,  the  pseudo-device  ``ether''
+should  also  be  included  in  the  configuration using the
+NETHER option; this forces inclusion of the Address  Resolu-
+tion Protocol module used in mapping between 48-bit Ethernet
+and 32-bit Internet addresses.  Also, if  you  have  an  IMP
+connection,  you  will  need  to  include  the pseudo-device
+``imp'', using the option NIMP.  The IMP software is  ported
+and is in use at at least one site.
+
+     Before configuring the appropriate networking hardware,
+you should consult the manual pages in section 4 of the Pro-
+grammer's Manual.  The following table lists the devices for
+which software support exists.  Again, much of this software
+is unported and untested; only the basic networking has been
+stressed at all.  Many  other  devices  are  available,  but
+unported.   Porting  should simply be a matter of making the
+hardware device work.  The  directories  ``/sys/pdpif''  and
+``/sys/vaxif''  contain many drivers.  The ones in ``pdpif''
+are either the current, working drivers, or drivers that, at
+some  time,  worked  on PDP-11's.  The ones in ``vaxif'' are
+the current VAX drivers, and, as such,  will  have  to  have
+their  memory usage changed, but serve as an excellent exam-
+ple of how the hardware works.
+
+
+     Device name   Manufacturer and product
+     ------------------------------------------------------------------
+     de            DEC DEUNA/DELUA 10Mb/s Ethernet
+     qe            DEC DEQNA 10Mb/s Ethernet
+     qt            DEC DELQA-YM 10Mb/s Ethernet
+     ec            3Com 10Mb/s Ethernet
+     il            Interlan 1010 and 10101A 10Mb/s Ethernet interfaces
+     vv            Proteon ProNET - Token Ring Interface
+     acc           LH/DH-11 1822 IMP/PSN Interface
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 49
+
+
+     SL/IP is also available.  It is surprisingly efficient.
+Over  a 9600 baud line it is not unusual to see ffttpp rates in
+the 800 bytes per second range (depending how busy the  sys-
+tem is).
+
+     All  network  interface  drivers including the loopback
+interface, require that their host address(es) be defined at
+boot  time.  This is done with _i_f_c_o_n_f_i_g(8) commands included
+in the _/_e_t_c_/_r_c_._l_o_c_a_l file.   Interfaces  that  are  able  to
+dynamically  deduce  the  host  part of an address may check
+that the host part of the address is  correct.   The  manual
+page for each network interface describes the method used to
+establish a host's address.  _I_f_c_o_n_f_i_g(8) can also be used to
+set options for the interface at boot time.  Options are set
+independently for each interface, and apply to  all  packets
+sent  using that interface.  These options include disabling
+the use of the Address Resolution Protocol; this may be use-
+ful  if a network is shared with hosts running software that
+does not yet provide this function.  Alternatively, transla-
+tions  for such hosts may be set in advance or ``published''
+by a 2.11BSD host by use of the _a_r_p(8) command.   Note  that
+the  use  of  trailer  link-level  is now negotiated between
+2.11BSD hosts using ARP, and it is thus no longer  necessary
+to  disable  the  use  of  trailers  with  _i_f_c_o_n_f_i_g.   It is
+SSTTRROONNGGLLYY recommended, however, that  2.11BSD  networking  be
+run  without  trailers,  as  the trailer code in most of the
+drivers has either been removed, commented out, is  untested
+or  is  kknnoowwnn  not  to work.  This is a problem with certain
+releases of _U_l_t_r_i_x, which has to  be  explicitly  configured
+not to send trailers if it and 2.11BSD are to coexist.
+
+     To  use  the  pseudo  terminals just configured, device
+entries must be created in the ``/dev'' directory.  To  cre-
+ate  32  pseudo  terminals  (plenty, you can probably get by
+with many less) execute the following commands.
+
+     ## cd /dev
+     ## MAKEDEV pty0 pty1
+
+More pseudo terminals may be made by specifying _p_t_y_2,  _p_t_y_3,
+etc.   The  kernel  normally  includes support for 16 pseudo
+terminals unless the configuration file specifies a  differ-
+ent  number.   Each  pseudo  terminal really consists of two
+files in /dev: a master and a slave.  The master pseudo ter-
+minal  file  is  named  /dev/ptyp?,  while the slave side is
+/dev/ttyp?.  Pseudo terminals are also used by several  pro-
+grams not related to the network.  NNOOTTEE: the terminal struc-
+tures are 78 bytes each, declaring more than 16 pseudo  ter-
+minals  is  potentially wasteful of kernel D space.  See the
+comment in the kernel config files.  In addition to creating
+the  pseudo  terminals,  be  sure  to  install  them  in the
+_/_e_t_c_/_t_t_y_s file (with a `none' in the  second  column  so  no
+_g_e_t_t_y is started).
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 50Installing and Operating 2.11BSD on the PDP-11
+
+
+55..22..  LLooccaall ssuubbnneettwwoorrkkss
+
+     In  2.11BSD  the  DARPA  Internet  support includes the
+notion of ``subnetworks''.  This is  a  mechanism  by  which
+multiple  local  networks  may  appears as a single Internet
+network to off-site hosts.  Subnetworks are  useful  because
+they  allow  a  site to hide their local topology, requiring
+only a single route in external gateways; it also means that
+local  network  numbers  may  be  locally administered.  The
+standard describing this change in  Internet  addressing  is
+RFC-950.
+
+     To  set  up local subnetworks one must first decide how
+the available address space (the Internet ``host  part''  of
+the  32-bit  address)  is  to  be partitioned.  Sites with a
+class A network number have  a  24-bit  address  space  with
+which  to  work,  sites with a class B network number have a
+16-bit address space, while sites with  a  class  C  network
+number have an 8-bit address space|^.  To define  local  sub-
+nets  you  must  steal some bits from the local host address
+space for use in extending the network portion of the Inter-
+net address.  This reinterpretation of Internet addresses is
+done only for local networks; i.e.  it  is  not  visible  to
+hosts  off-site.   For  example,  if your site has a class B
+network number, hosts  on  this  network  have  an  Internet
+address  that  contains the network number, 16 bits, and the
+host number, another 16 bits.  To define 254 local  subnets,
+each  possessing at most 255 hosts, 8 bits may be taken from
+the local part.  (The use of subnets 0 and all-1's,  255  in
+this example, is discouraged to avoid confusion about broad-
+cast addresses.)  These new network numbers  are  then  con-
+structed by concatenating the original 16-bit network number
+with the extra 8 bits containing the local  subnetwork  num-
+ber.
+
+     The  existence  of local subnetworks is communicated to
+the system at the time a  network  interface  is  configured
+with  the  _n_e_t_m_a_s_k option to the _i_f_c_o_n_f_i_g program.  A ``net-
+work mask'' is specified to define the portion of the Inter-
+net  address  that  is to be considered the network part for
+that network.  This mask normally contains the  bits  corre-
+sponding to the standard network part as well as the portion
+of the local part that has been assigned to subnets.  If  no
+mask  is  specified  when the address is set, it will be set
+according to the class of  the  network.   For  example,  at
+Berkeley  (class  B network 128.32) 8 bits of the local part
+have been reserved for  defining  subnetworks;  consequently
+the /etc/rc.local file contains lines of the form
+
+-----------
+|^ If you are unfamiliar with the Internet address-
+  ing  structure,  consult  ``Address  Mappings'',
+  Internet  RFC-796, J. Postel; available from the
+  Internet Network Information Center at SRI.
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 51
+
+
+     ifconfig en0 netmask 0xffffff00 128.32.1.7
+
+This specifies that for interface ``en0'', the upper 24 bits
+of the Internet address should be used in  calculating  net-
+work  numbers  (netmask  0xffffff00),  and  the  interface's
+Internet  address  is  ``128.32.1.7''  (host  7  on  network
+128.32.1).   Hosts  _m on sub-network _n of this network would
+then have addresses of the form ``128.32._n._m'';   for  exam-
+ple,   host   99  on  network  129  would  have  an  address
+``128.32.129.99''.  For hosts with multiple interfaces,  the
+network  mask  should be set for each interface, although in
+practice only the mask of the first interface on  each  net-
+work is actually used.
+
+55..33..  IInntteerrnneett bbrrooaaddccaasstt aaddddrreesssseess
+
+     The address defined as the broadcast address for Inter-
+net networks according to RFC-919 is the address with a host
+part of all 1's.  The address used by 4.2BSD was the address
+with a host part of 0.  2.11BSD uses the standard  broadcast
+address  (all  1's)  by  default,  but  allows the broadcast
+address to be set (with _i_f_c_o_n_f_i_g) for each interface.   This
+allows  networks consisting of both 4.2BSD and 2.11BSD hosts
+to coexist.  In  the  presence  of  subnets,  the  broadcast
+address  uses the subnet field as for normal host addresses,
+with the remaining host part set to 1's (or 0's, on  a  net-
+work that has not yet been converted).  2.11BSD hosts recog-
+nize and accept packets sent to the  logical-network  broad-
+cast  address  as well as those sent to the subnet broadcast
+address, and when using an all-1's broadcast, also recognize
+and receive packets sent to host 0 as a broadcast.
+
+55..44..  RRoouuttiinngg
+
+     If  your  environment  allows  access  to  networks not
+directly attached to your host you will need to set up rout-
+ing information to allow packets to be properly routed.  Two
+schemes are supported  by  the  system.   The  first  scheme
+employs  the routing table management daemon _r_o_u_t_e_d to main-
+tain the system routing tables.  The routing daemon  uses  a
+variant  of  the Xerox Routing Information Protocol to main-
+tain up to date routing tables in a cluster  of  local  area
+networks.   By  using  the  _/_e_t_c_/_g_a_t_e_w_a_y_s  file  created  by
+_h_t_a_b_l_e(8), the routing daemon can also be used to initialize
+static  routes to distant networks (see the next section for
+further discussion).  When the routing daemon is started  up
+(usually  from  _/_e_t_c_/_r_c_._l_o_c_a_l)  it reads _/_e_t_c_/_g_a_t_e_w_a_y_s if it
+exists and installs those routes defined there, then  broad-
+casts on each local network to which the host is attached to
+find  other  instances  of  the  routing  daemon.   If   any
+responses  are  received,  the  routing daemons cooperate in
+maintaining a globally consistent view  of  routing  in  the
+local  environment.   This  view  can be extended to include
+remote sites also running the routing daemon by  setting  up
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 52Installing and Operating 2.11BSD on the PDP-11
+
+
+suitable  entries  in _/_e_t_c_/_g_a_t_e_w_a_y_s; consult _r_o_u_t_e_d(8) for a
+more thorough discussion.
+
+     The second approach is to define a default or  wildcard
+route  to  a smart gateway and depend on the gateway to pro-
+vide ICMP routing redirect information to dynamically create
+a routing data base.  This is done by adding an entry of the
+form
+
+     route add default _s_m_a_r_t_-_g_a_t_e_w_a_y 1
+
+to _/_e_t_c_/_r_c_._l_o_c_a_l; see _r_o_u_t_e(8) for  more  information.   The
+default  route  will  be  used  by  the  system  as a ``last
+resort'' in routing packets to their destination.   Assuming
+the  gateway to which packets are directed is able to gener-
+ate the proper routing redirect messages,  the  system  will
+then add routing table entries based on the information sup-
+plied.  This approach has certain advantages over the  rout-
+ing  daemon, but is unsuitable in an environment where there
+are only bridges (i.e.  pseudo gateways that, for  instance,
+do not generate routing redirect messages).  Further, if the
+smart gateway goes down there is no alternative, save manual
+alteration  of  the routing table entry, to maintaining ser-
+vice.
+
+     The system always listens, and processes, routing redi-
+rect  information,  so it is possible to combine both of the
+above facilities.  For example, the routing table management
+process  might  be  used  to maintain up to date information
+about routes to geographically local networks, while employ-
+ing  the  wildcard  routing  techniques for ``distant'' net-
+works.  The _n_e_t_s_t_a_t(1) program may be used to display  rout-
+ing  table  contents  as  well  as  various routing oriented
+statistics.  For example,
+
+     ##netstat -r
+
+will display the contents of the routing tables, while
+
+     ##netstat -r -s
+
+will show the number of routing  table  entries  dynamically
+created as a result of routing redirect messages, etc.
+
+55..55..  UUssee ooff 22..1111BBSSDD mmaacchhiinneess aass ggaatteewwaayyss
+
+     Only  sheer  insanity  could  prompt the use of 2.11BSD
+machines as gateways.  If you rreeaallllyy want to  do  this  then
+the  best  recourse is to prowl the sources and see what has
+to be done.  The code is all there, and  the  "ipforwarding"
+variable is present.
+
+     Local  area  routing  within  a group of interconnected
+Ethernets  and  other  such  networks  may  be  handled   by
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 53
+
+
+_r_o_u_t_e_d(8).   Gateways  between  the Internet and one or more
+local networks require an additional routing  protocol,  the
+Exterior Gateway Protocol (EGP), to inform the core gateways
+of their presence and to acquire  routing  information  from
+the core.
+
+55..66..  NNeettwwoorrkk sseerrvveerrss
+
+     In  2.11BSD  most of the server programs are started up
+by a ``super server'', the Internet  daemon.   The  Internet
+daemon,  _i_n_e_t_d,  acts as a master server for programs speci-
+fied in its configuration file,  _/_e_t_c_/_i_n_e_t_d_._c_o_n_f,  listening
+for  service requests for these servers, and starting up the
+appropriate program whenever a  request  is  received.   The
+configuration  file contains lines containing a service name
+(as found in _/_e_t_c_/_s_e_r_v_i_c_e_s), the type of socket  the  server
+expects (e.g. stream or dgram), the protocol to be used with
+the socket (as found in _/_e_t_c_/_p_r_o_t_o_c_o_l_s), whether to wait for
+each server to complete before starting up another, the user
+name as which the server should run,  the  server  program's
+name,  and at most five arguments to pass to the server pro-
+gram.  Some trivial services are implemented  internally  in
+_i_n_e_t_d,  and  their  servers are listed as ``internal.''  For
+example, an entry for  the  file  transfer  protocol  server
+would appear as
+
+     ftp  stream    tcp  nowait    root /usr/libexec/ftpd   ftpd -l
+
+or if you are using the _t_c_p___w_r_a_p_p_e_r program as
+
+     ftp  stream    tcp  nowait    root /usr/libexec/tcpd   ftpd -l
+
+Consult  _i_n_e_t_d(8)  for more detail on the format of the con-
+figuration file and the operation of the Internet daemon.
+
+55..77..  NNeettwwoorrkk ddaattaa bbaasseess
+
+     Several data files are used by the network library rou-
+tines  and  server  programs.   Most of these files are host
+independent and updated only rarely.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 54Installing and Operating 2.11BSD on the PDP-11
+
+
+     File               Manual reference   Use
+     -------------------------------------------------------------------------------
+     /etc/hosts         _h_o_s_t_s(5)           host names
+     /etc/networks      _n_e_t_w_o_r_k_s(5)        network names
+     /etc/services      _s_e_r_v_i_c_e_s(5)        list of known services
+     /etc/protocols     _p_r_o_t_o_c_o_l_s(5)       protocol names
+     /etc/hosts.equiv   _r_s_h_d(8)            list of ``trusted'' hosts
+     /etc/rc.local      _r_c(8)              command script for starting servers
+     /etc/ftpusers      _f_t_p_d(8)            list of ``unwelcome'' ftp users
+     /etc/hosts.lpd     _l_p_d(8)             list of hosts allowed to access printers
+     /etc/inetd.conf    _i_n_e_t_d(8)           list of servers started by _i_n_e_t_d
+
+
+The files distributed are set up for Internet hosts.   Local
+networks  and  hosts  should  be added to describe the local
+configuration.  Network numbers will have to be  chosen  for
+each  Ethernet.   For  sites  not connected to the Internet,
+these can be chosen more or less arbitrarily, otherwise  the
+normal  channels  should  be  used for allocation of network
+numbers.
+
+55..77..11..  RReeggeenneerraattiinngg //eettcc//hhoossttss aanndd //eettcc//nneettwwoorrkkss
+
+     When using the  host  address  routines  that  use  the
+Internet  name  server, the file _/_e_t_c_/_h_o_s_t_s is only used for
+setting interface addresses and  at  other  times  that  the
+server  is  not  running, and therefore it need only contain
+addresses for local hosts.  There is no  equivalent  service
+for  network  names yet.  The days of retrieving a host file
+containing all systems on the Internet are  over.   Besides,
+you  would  grow  very  old  and run out of disk space while
+waiting for _m_k_h_o_s_t_s(8) to process a  hosts  file  containing
+the  several  million  entries.   Therefore  the  details of
+retrieving  a  master  hosts  file   using   _h_t_a_b_l_e(8)   and
+_g_e_t_t_a_b_l_e(8)  have  been removed from this document.  However
+if you do use local hosts files you will still need  to  run
+_m_k_h_o_s_t_s(8) and this is described below.
+
+     If  you  are  using  the  host  table for host name and
+address mapping, you should run _m_k_h_o_s_t_s(8) after  installing
+_/_e_t_c_/_h_o_s_t_s.   The  _m_k_h_o_s_t_s(8)  program has been enhanced for
+2.11BSD to allow multiple addresses per host.  The order  in
+which the addresses are given in _/_e_t_c_/_h_o_s_t_s is preserved, so
+the entries for a given host should be in  order  of  impor-
+tance.   If  you are using the name server for the host name
+and address mapping, you only need to install _n_e_t_w_o_r_k_s and a
+small  copy  of  _h_o_s_t_s  describing your local machines.  The
+full host table in this case might be placed somewhere  else
+for  reference by users.  The gateways file may be installed
+in _/_e_t_c_/_g_a_t_e_w_a_y_s if you use _r_o_u_t_e_d(8) for local routing  and
+wish to have static external routes installed when _r_o_u_t_e_d is
+started.  This procedure is essentially  obsolete,  however,
+except  for  individual  hosts that are on the Milnet and do
+not forward packets from a local network.  Other  situations
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 55
+
+
+require the use of ggaatteedd.  That program can never be made to
+run on a PDP-11 due to address space considerations.   Also,
+the  networking code could not even begin to handle the num-
+ber of routes which would be received.
+
+     If you are connected to the Internet, it is highly rec-
+ommended  that you use the name server resolver routines for
+your host name and address mapping, as this provides  access
+to  a much larger set of hosts than are provided in the host
+table.  Many large organization on  the  network,  currently
+have  only  a  small percentage of their hosts listed in the
+host table retrieved from NIC.
+
+55..77..22..  //eettcc//hhoossttss..eeqquuiivv
+
+     The remote login and shell servers use  an  authentica-
+tion  scheme  based  on trusted hosts.  The _h_o_s_t_s_._e_q_u_i_v file
+contains a list of hosts that are  considered  trusted  and,
+under a single administrative control.  When a user contacts
+a remote login  or  shell  server  requesting  service,  the
+client  process passes the user's name and the official name
+of the host on which the client is located.  In  the  simple
+case,  if  the host's name is located in _h_o_s_t_s_._e_q_u_i_v and the
+user has an account on the server's machine, then service is
+rendered (i.e. the user is allowed to log in, or the command
+is executed).  Users  may  expand  this  ``equivalence''  of
+machines  by installing a _._r_h_o_s_t_s file in their login direc-
+tory.  The root login is handled  specially,  bypassing  the
+_h_o_s_t_s_._e_q_u_i_v file, and using only the _/_._r_h_o_s_t_s file.
+
+     Thus,  to  create  a  class of equivalent machines, the
+_h_o_s_t_s_._e_q_u_i_v file should contain the _o_f_f_i_c_i_a_l names for those
+machines.   If you are running the name server, you may omit
+the domain part of the host name for machines in your  local
+domain.   For  example, several machines on my local network
+are considered trusted, so the _h_o_s_t_s_._e_q_u_i_v file  is  of  the
+form:
+
+     wlv
+     wlonex
+     wlonex0
+     wlbr
+
+
+55..77..33..  //eettcc//rrcc..llooccaall
+
+     Most  network  servers  are automatically started up at
+boot time by the command file /etc/rc (if they are installed
+in  their presumed locations) or by the Internet daemon (see
+above).  These include the following:
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 56Installing and Operating 2.11BSD on the PDP-11
+
+
+     Program    Server                            Started by
+     --------------------------------------------------------
+     rshd       shell server                      inetd
+     rexecd     exec server                       inetd
+     rlogind    login server                      inetd
+     telnetd    TELNET server                     inetd
+     ftpd       FTP server                        inetd
+     fingerd    Finger server                     inetd
+     tftpd      TFTP server                       inetd
+     rwhod      system status daemon              /etc/rc
+     syslogd    error logging server              /etc/rc
+     sendmail   SMTP server                       /etc/rc
+     routed     routing table management daemon   /etc/rc
+
+
+Consult the  manual  pages  and  accompanying  documentation
+(particularly  for  sendmail) for details about their opera-
+tion.
+
+     To have other network servers started up as  well,  the
+appropriate  line  should  be added to the Internet daemon's
+configuration file _/_e_t_c_/_i_n_e_t_d_._c_o_n_f, or commands  similar  to
+the  following  should  be placed in the site dependent file
+_/_e_t_c_/_r_c_._l_o_c_a_l.
+
+     if [ -f /usr/sbin/rwhod ]; then
+          rwhod & echo -n ' rwhod'           >/dev/console
+     fi
+
+
+55..77..44..  //eettcc//ffttppuusseerrss
+
+     The FTP server included in the system provides  support
+for an anonymous FTP account.  Because of the inherent secu-
+rity problems with such a facility you should read this sec-
+tion carefully if you consider providing such a service.
+
+     An anonymous account is enabled by creating a user _f_t_p.
+When a client uses the anonymous account a _c_h_r_o_o_t(2)  system
+call  is performed by the server to restrict the client from
+moving outside that part of the file system where  the  user
+ftp  home  directory  is  located.  Because a _c_h_r_o_o_t call is
+used, certain programs and files used by the server  process
+must be placed in the ftp home directory.  Further, one must
+be sure that  all  directories  and  executable  images  are
+unwritable.  The following directory setup is recommended.
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 57
+
+
+     ## cd ~ftp
+     ## chmod 555 .; chown ftp .; chgrp ftp .
+     ## mkdir bin etc pub
+     ## chown root bin etc
+     ## chmod 555 bin etc
+     ## chown ftp pub
+     ## chmod 777 pub
+     ## cd bin
+     ## cp /bin/sh /bin/ls .
+     ## chmod 111 sh ls
+     ## cd ../etc
+     ## cp /etc/passwd /etc/group .
+     ## chmod 444 passwd group
+
+When  local users wish to place files in the anonymous area,
+they must be placed in a subdirectory.  In the  setup  here,
+the directory _~_f_t_p_/_p_u_b is used.
+
+     NOTE:  Mode 777 on the 'pub' directory can and has been
+abused!  Changing the mode to 555 is a good choice but would
+require  administrative  assistance for placing files in the
+'pub' directory.  Probably not a bad idea though.
+
+     Another issue to consider is the  copy  of  _/_e_t_c_/_p_a_s_s_w_d
+placed  here.   It may be copied by users who use the anony-
+mous account.  They may then try to break the  passwords  of
+users  on your machine for further access.  A good choice of
+users to include in this copy might be root,  daemon,  uucp,
+and the ftp user.
+
+     Aside  from  the  problems of directory modes and such,
+the ftp server may provide a  loophole  for  interlopers  if
+certain  user  accounts are allowed.  The file _/_e_t_c_/_f_t_p_u_s_e_r_s
+is checked on each connection.  If the requested  user  name
+is  located  in the file, the request for service is denied.
+This file normally has the following names on our systems.
+
+     uucp
+     root
+
+Accounts with nonstandard shells should be  listed  in  this
+file.  Accounts without passwords need not be listed in this
+file, the ftp server will not service these users.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 58Installing and Operating 2.11BSD on the PDP-11
+
+
+                    66.. SSYYSSTTEEMM OOPPEERRAATTIIOONN
+
+
+
+     This section describes procedures  used  to  operate  a
+PDP-11  UNIX  system.   Procedures  described  here are used
+periodically, to reboot the system, analyze  error  messages
+from  devices,  do disk backups, monitor system performance,
+recompile system software and control local changes.
+
+66..11..  BBoooottssttrraapp aanndd sshhuuttddoowwnn pprroocceedduurreess
+
+     In a normal reboot, the system  checks  the  disks  and
+comes  up  multi-user  without  intervention at the console.
+Such a reboot can be stopped (after it prints the date) with
+a ^C (interrupt).  This will leave the system in single-user
+mode, with only the console terminal  active.   It  is  also
+possible to allow the filesystem checks to complete and then
+to return to single-user mode by signaling _f_s_c_k with a  QUIT
+signal (^\).
+
+     If  booting  from  the console command level is needed,
+then the command
+
+     >>>>>> B
+
+will boot from the default device and ask for  the  name  of
+the  system  to  be booted.  Other systems such as the 11/44
+require a device name to be given:
+
+     >>>>>> B DU
+
+to boot from a MSCP/UDA device.  Typing  a  carriage  return
+will  cause  the  default  system (as compiled in in section
+4.1), to be booted.  In any case, the system  selected  will
+come up in single-user mode.
+
+     To  bring  the  system up to a multi-user configuration
+from the single-user all you have to do is  hit  ^D  on  the
+console.  The system will then execute /etc/rc, a multi-user
+restart script (and /etc/rc.local), and come up on the  ter-
+minals  listed as active in the file /etc/ttys.  See _i_n_i_t(8)
+and _t_t_y_s(5).  Note, however, that this does not cause a file
+system  check  to be performed.  Unless the system was taken
+down cleanly, you should run ``fsck'' or force a reboot with
+_r_e_b_o_o_t(8) to have the disks checked.
+
+     To  take the system down to a single user state you can
+use
+
+     ## kill 1
+
+or use the _s_h_u_t_d_o_w_n(8) command (which is much  more  polite,
+if there are other users logged in.)  when you are up multi-
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 59
+
+
+user.  Either command will kill all processes and give you a
+shell  on the console, as if you had just booted.  File sys-
+tems remain mounted after the system is  taken  single-user.
+If  you wish to come up multi-user again, you should do this
+by:
+
+     ## cd /
+     ## umount -a
+     ## ^D
+
+
+     Each system shutdown, crash, processor halt and  reboot
+is recorded in the file /usr/adm/shutdownlog with the cause.
+
+66..22..  DDeevviiccee eerrrroorrss aanndd ddiiaaggnnoossttiiccss
+
+     When serious errors occur on peripherals or in the sys-
+tem,  the system prints a warning diagnostic on the console.
+These messages are written to the kernel logger  where  they
+are  retrieved by _s_y_s_l_o_g_d(8) via _/_d_e_v_/_k_l_o_g - _d_m_e_s_g(8) is now
+obsolete.  _d_m_e_s_g(8) is present in the  distribution  but  no
+longer  used.   The  message  buffer  is now 4kb in size and
+external to the kernel.
+
+     Error messages printed by the devices in the system are
+described  with  the drivers for the devices in section 4 of
+the programmer's manual.  Some drivers have been modified to
+use  the kernel logger, others still simply do printf state-
+ments.  If errors occur suggesting  hardware  problems,  you
+should contact your hardware support group or field service.
+It is a good idea to examine the error log  files  regularly
+(e.g. with ``tail -r _/_u_s_r_/_a_d_m_/_m_e_s_s_a_g_e_s'').
+
+66..33..  FFiillee ssyysstteemm cchheecckkss,, bbaacckkuuppss aanndd ddiissaasstteerr rreeccoovveerryy
+
+     Periodically  (say  every  week or so in the absence of
+any problems) and always  (usually  automatically)  after  a
+crash,  all  the  file systems should be checked for consis-
+tency by _f_s_c_k(8).  The procedures  of  _r_e_b_o_o_t(8)  should  be
+used  to get the system to a state where a file system check
+can be performed manually or automatically.
+
+     Dumping of the file systems should be done on a regular
+schedule,  since  once  the  system  is  going it is easy to
+become complacent.  Complete and incremental dumps are  eas-
+ily  done  with _d_u_m_p(8).  You should arrange to do a towers-
+of-hanoi dump sequence; we tune  ours  so  that  almost  all
+files  are  dumped on two tapes and kept for at least a week
+in most every case.  We take full  dumps  every  month  (and
+keep these indefinitely).
+
+     More  precisely,  we  have three sets of dump tapes: 10
+daily tapes, 5 weekly sets of 2 tapes,  and  fresh  sets  of
+three  tapes  monthly.   We do daily dumps circularly on the
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 60Installing and Operating 2.11BSD on the PDP-11
+
+
+daily tapes with sequence `3 2 5 4 7 6 9 8 9 9 9 ...'.  Each
+weekly  is  a  level  1  and  the  daily dump sequence level
+restarts after each weekly dump.  Full dumps are level 0 and
+the daily sequence restarts after each full dump also.
+
+     Thus a typical dump sequence would be:
+
+   tape name   level number       date       opr   size
+   ------------------------------------------------------
+     FULL           0         Nov 24, 1979   jkf   137MB
+       D1           3         Nov 28, 1979   jkf   29MB
+       D2           2         Nov 29, 1979   rrh   34MB
+       D3           5         Nov 30, 1979   rrh   19MB
+       D4           4          Dec 1, 1979   rrh   22MB
+       W1           1          Dec 2, 1979   etc   40MB
+       D5           3          Dec 4, 1979   rrh   15MB
+       D6           2          Dec 5, 1979   jkf   25MB
+       D7           5          Dec 6, 1979   jkf   15MB
+       D8           4          Dec 7, 1979   rrh   19MB
+       W2           1          Dec 9, 1979   etc   118MB
+       D9           3         Dec 11, 1979   rrh   15MB
+      D10           2         Dec 12, 1979   rrh   26MB
+       D1           5         Dec 15, 1979   rrh   14MB
+       W3           1         Dec 17, 1979   etc   71MB
+       D2           3         Dec 18, 1979   etc   13MB
+     FULL           0         Dec 22, 1979   etc   135MB
+
+Weekly  dumps  are done often enough that daily dumps always
+fit on one tape.
+
+     Dumping of files by name is best done by _t_a_r(1) but the
+amount of data that can be moved in this way is limited to a
+single tape.  Finally if  there  are  enough  drives  entire
+disks  can  be copied with _d_d(1) using the raw special files
+and an appropriate blocking factor; the  number  of  sectors
+per   track   is  usually  a  good  value  to  use,  consult
+_/_e_t_c_/_d_i_s_k_t_a_b.
+
+     It is desirable that full dumps of the root file system
+be   made   regularly.    These  dumps  should  be  made  in
+``bootable`` format, including the standalone programs  men-
+tioned  back  in  chapter 2 (boot, mkfs, restor and icheck).
+This can easily be done by going to /sys/pdpstand and doing:
+
+     make all
+      ./maketape /dev/nrmtXX maketape.data
+     dump 0u /
+
+This  is  especially  true  when only one disk is available.
+Then, if the root file system is damaged by  a  hardware  or
+software  failure,  you  can rebuild a workable disk doing a
+restore in the same way that the initial  root  file  system
+was created.
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 61
+
+
+     Exhaustion  of  user-file space is certain to occur now
+and then and may be managed with a combination of disc  quo-
+tas  (the  4.3BSD disc quota system is available as a kernel
+configuration option), threatening messages of the day,  and
+personal letters.
+
+66..44..  MMoovviinngg ffiillee ssyysstteemm ddaattaa
+
+     If  you have the equipment, the best way to move a file
+system is to dump it to magtape using _d_u_m_p(8), use  _n_e_w_f_s(8)
+to  create  the new file system, and restore the tape, using
+_r_e_s_t_o_r(8).  If for some reason you don't want  to  use  mag-
+tape,  dump  accepts  an  argument  telling where to put the
+dump; you might use another disk.  Filesystems may  also  be
+moved  by piping the output of a _t_a_r(1) to another _t_a_r.  The
+_r_e_s_t_o_r program accesses the raw device, laying  down  inodes
+and  blocks  in the same place they came from as recorded by
+dump.  Care must therefore be taken when  restoring  a  dump
+into a file system smaller than the original file system.
+
+     If  you  have  to  shrink a file system or merge a file
+system into another, existing one, the best bet  is  to  use
+_t_a_r(1).   If  you  are playing with the root file system and
+only have one drive, the procedure is more complicated.   If
+the  only drive is a Winchester disk, this procedure may not
+be used without overwriting the  existing  root  or  another
+partition.  What you do is the following:
+
+1.   GET A SECOND PACK!!!!
+
+2.   Dump the root file system to tape using _d_u_m_p(8).
+
+3.   Bring the system down and mount the new pack.
+
+4.   Load  the  distribution  tape  and install the new root
+     file system as you did when first installing  the  sys-
+     tem.
+
+5.   Boot normally using the newly created disk file system.
+
+     Note that if you add new disk drivers they should  also
+be  added to the standalone system in _/_s_y_s_/_p_d_p_s_t_a_n_d.  If you
+change the disk partition tables the default disk  partition
+tables in _/_e_t_c_/_d_i_s_k_t_a_b should be modified.
+
+66..55..  RReeccoommppiilliinngg aanndd rreeiinnssttaalllliinngg ssyysstteemm ssooffttwwaarree
+
+     It  is  easy to regenerate the system, and it is a good
+idea to try rebuilding pieces of the system to build  confi-
+dence  in  the procedures.  The system consists of two major
+parts: the  kernel  itself  (/sys)  and  the  user  programs
+(/usr/src  and  subdirectories).   The major part of this is
+/usr/src.
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 62Installing and Operating 2.11BSD on the PDP-11
+
+
+     The  three  major  libraries  are  the  C  library   in
+/usr/src/lib/libc      and     the     FORTRAN     libraries
+/usr/src/usr.lib/libI77  and  /usr/src/usr.lib/libF77.    In
+each  case the library is remade by changing into the corre-
+sponding directory and doing
+
+     ## make
+
+and then installed by
+
+     ## make install
+
+Similar to the system,
+
+     ## make clean
+
+cleans up.
+
+     The source for all other libraries is kept in subdirec-
+tories  of  /usr/src/usr.lib; each has a makefile and can be
+recompiled by the above recipe.
+
+     If you look at /usr/src/Makefile, you will see that you
+can recompile the entire system source with one command.  To
+recompile a specific program,  find  out  where  the  source
+resides  with  the  _w_h_e_r_e_i_s(1)  command, then change to that
+directory and remake it with the  makefile  present  in  the
+directory.  For instance, to recompile ``date'', all one has
+to do is
+
+     ## whereis date
+     ddaattee:: //uussrr//ssrrcc//bbiinn//ddaattee..cc //bbiinn//ddaattee //uussrr//mmaann//mmaann11//ddaattee..11
+     ## cd /usr/src/bin
+     ## make date
+
+this will create an  unstriped  version  of  the  binary  of
+``date''  in  the  current directory.  To install the binary
+image, use the install command as in
+
+     ## install -s date /bin/date
+
+The -s option will insure the installed version of date  has
+its  symbol  table  stripped.  The install command should be
+used instead of mv or cp as it understands  how  to  install
+programs even when the program is currently in use.
+
+     If  you wish to recompile and install all programs in a
+particular target area you can override the  default  target
+by doing:
+
+     ## make
+     ## make DESTDIR=_p_a_t_h_n_a_m_e install
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 63
+
+
+     To regenerate all the system source you can do
+
+     ## cd /usr/src
+     ## make
+
+
+     If  you  modify  the  C library, say to change a system
+call, and  want  to  rebuild  and  install  everything  from
+scratch  you  have  to be a little careful.  You must insure
+that the libraries are installed before the remainder of the
+source, otherwise the loaded images will not contain the new
+routine from  the  library.   The  following  sequence  will
+accomplish this.
+
+     ## cd /usr/src
+     ## make clean
+     ## make build
+     ## make installsrc
+
+The  first  _m_a_k_e removes any existing binaries in the source
+trees to insure that everything is reloaded.  The next  _m_a_k_e
+compiles and installs the libraries and compilers, then com-
+piles the remainder of the sources.  The final line installs
+all  of the commands not installed in the first phase.  This
+will take about 12 hours on a reasonably configured 11/44.
+
+66..66..  MMaakkiinngg llooccaall mmooddiiffiiccaattiioonnss
+
+     /usr/new is used by default for the programs that  con-
+stitute the contributed software portion of the distribution
+but which may not have man pages installed.  Locally written
+commands that aren't distributed (or whose man pages are not
+up to date) are kept in /usr/src/local  and  their  binaries
+are kept in /usr/local.  This allows /usr/bin, /usr/ucb, and
+/bin to correspond to the  distribution  tape  People  using
+/usr/local commands are made aware that the programs may not
+be in the base system yet.
+
+66..77..  AAccccoouunnttiinngg
+
+     UNIX optionally records two kinds of accounting  infor-
+mation:   connect   time  accounting  and  process  resource
+accounting.  The  connect  time  accounting  information  is
+stored in the file _/_u_s_r_/_a_d_m_/_w_t_m_p, which is summarized by the
+program _a_c(8).  The process time accounting  information  is
+stored  in  the  file  _/_u_s_r_/_a_d_m_/_a_c_c_t  after it is enabled by
+_a_c_c_t_o_n(8), and is analyzed and  summarized  by  the  program
+_s_a(8).
+
+     If  you  need  to  recharge for computing time, you can
+develop procedures based  on  the  information  provided  by
+these commands.  A convenient way to do this is to give com-
+mands to the clock daemon _c_r_o_n to be executed every day at a
+specified   time.    This   is   done  by  adding  lines  to
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 64Installing and Operating 2.11BSD on the PDP-11
+
+
+_/_u_s_r_/_a_d_m_/_c_r_o_n_t_a_b; see _c_r_o_n(8) for details.
+
+66..88..  RReessoouurrccee ccoonnttrrooll
+
+     Resource control in 2.11BSD is more elaborate  than  in
+previous PDP-11 UNIX systems.  The resources consumed by any
+single  process  can  be  limited  by  the   mechanisms   of
+_s_e_t_r_l_i_m_i_t(2).   As  distributed, the mechanism is voluntary,
+though sites may choose to modify  the  login  mechanism  to
+impose  limits.   Csh  now  has  the  _l_i_m_i_t_s builtin command
+enabled.  Another available option is the 4.3BSD disc  quota
+system.
+
+66..99..  FFiilleess tthhaatt nneeeedd ppeerriiooddiicc aatttteennttiioonn
+
+     The  discussion  of  system  operations is concluded by
+listing the files that require  periodic  attention  or  are
+system specific
+
+//eettcc//ffssttaabb              how disk partitions are used
+//eettcc//ddiisskkttaabb            disk partition sizes
+//eettcc//pprriinnttccaapp           printer data base
+//eettcc//ggeettttyyttaabb           terminal type definitions
+//eettcc//rreemmoottee             names and phone numbers of remote machines for _t_i_p(1)
+//eettcc//ggrroouupp              group memberships
+//eettcc//mmoottdd               message of the day
+//eettcc//mmaasstteerr..ppaasssswwdd      password file; each account has a line
+//eettcc//rrcc..llooccaall           local system restart script; runs reboot; starts daemons
+//eettcc//iinneettdd..ccoonnff         local internet servers
+//eettcc//hhoossttss              host name data base
+//eettcc//nneettwwoorrkkss           network name data base
+//eettcc//nneettssttaarrtt           Startup file to configure network
+//eettcc//sseerrvviicceess           network services data base
+//eettcc//hhoossttss..eeqquuiivv        hosts under same administrative control
+//eettcc//ssyysslloogg..ccoonnff        error log configuration for _s_y_s_l_o_g_d(8)
+//eettcc//ttttyyss               enables/disables ports
+//eettcc//ccrroonnttaabb            commands that are run periodically
+//eettcc//aalliiaasseess            mail forwarding and distribution groups
+//uussrr//aaddmm//aacccctt           raw process account data
+//uussrr//aaddmm//mmeessssaaggeess       system error log
+//uussrr//aaddmm//sshhuuttddoowwnnlloogg    log of system reboots
+//uussrr//aaddmm//wwttmmpp           login session accounting
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 65
+
+
+         AAPPPPEENNDDIIXX AA -- KKEERRNNEELL CCOONNFFIIGGUURRAATTIIOONN OOPPTTIIOONNSS
+
+
+
+77..11..  KKeerrnneell ccoonnffiigguurraattiioonn ooppttiioonnss
+
+     The  2.11BSD  kernel  has  a  number  of parameters and
+options that can be used to tailor the kernel to  site  spe-
+cific needs.  This appendix lists the parameters and options
+used in the kernel.  The  parameters  have  numeric  values,
+usually  table  sizes.  The options flags are either defined
+or undefined (via the values YES or NO respectively.)
+
+     Prototypes for all the following options can  be  found
+in  the generic kernel configuration file _/_s_y_s_/_c_o_n_f_/_G_E_N_E_R_I_C.
+The process of configuring a new kernel consists  simply  of
+copying the generic configuration file to a new file, _S_Y_S_T_E_M
+and then editing the  options  in  _S_Y_S_T_E_M  to  reflect  your
+needs.   You  can  treat  the items copied from GENERIC as a
+``grocery list'',  checking  off  those  options  you  want,
+crossing  out those you don't and setting numeric parameters
+to reasonable values.
+
+77..22..  CCoonnffiigguurriinngg  tthhee  nnuummbbeerr  ooff  mmoouunnttaabbllee  ffiillee  ssyysstteemmss
+((NNMMOOUUNNTT))
+
+     Because of time constraints the NNMMOOUUNNTT constant was not
+moved into the kernel configuration file where  it  belongs.
+NNMMOOUUNNTT  is  used  to  configure the number of mountable file
+systems in 2.11BSD.  Since each slot  in  the  kernel  mount
+table  takes  up  close to a half Kb of valuable kernel data
+space, the distribution kernel comes configured with  NNMMOOUUNNTT
+set to 5.  This is almost certainly too small for most sites
+and should be increased to the number of  file  systems  you
+expect to mount.
+
+     NNMMOOUUNNTT is defined in _/_s_y_s_/_h_/_p_a_r_a_m_._h.  If you change its
+value, you must recompile the  kernel  (obviously)  and  the
+following applications: _m_o_u_n_t, _q_u_o_t_a_o_n, _e_d_q_u_o_t_a, _u_m_o_u_n_t, and
+_d_f.
+
+77..33..  GGEENNEERRIICC kkeerrnneell ccoonnffiigguurraattiioonn
+
+     All  of  the  generic  kernels  support  the  following
+devices:
+
+Device                              Number
+-
+RK06/07                               2
+MSCP (RA) Controllers                 2
+MSCP (RA) Disks                       3
+RL01/02 Drives                        2
+SMD (XP) Controllers                  1
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 66Installing and Operating 2.11BSD on the PDP-11
+
+
+SMD (XP) Disks                        2
+TE16, TU45, TU77 (HT) Tape drives     2
+TM11 (TM) Tape drives                 2
+TS11 (TS) Tape drives                 2
+TK50 (TMSCP) Tape drives              2
+
+
+     The  generic  kernel adapts automatically to the booted
+device.  The 'a' partition on the booted device is automati-
+cally  made  the  root  filesystem and the 'b' partition the
+swap area (except for the RL02 which uses the second drive).
+The  size  of  the swap partition is determined at run time,
+the kernel queries the driver for the number of block in the
+'b'  partition.   NNOOTTEE:: If the swap partition is not labeled
+as being of type _s_w_a_p the kernel will panic.
+
+77..33..11..  GGEENNEERRIICC kkeerrnneell ccoonnffiigguurraattiioonn ffiillee
+
+     # Machine configuration file for 2.11BSD distributed kernel.
+#
+# Format:
+#       name    value           comments
+# An item's value may be either numerical, boolean or a string; if it's
+# boolean, use "YES" or "NO" to set it or unset it, respectively.  Use
+# the default value and the comments field as indicators of the type of
+# field it is.
+
+#########################################
+# MACHINE DEPENDENT PARAMETERS          #
+#########################################
+
+# Machine type
+# Split I/D and hardware floating point are required.
+#
+# Including UNIBUS map support for machines without a UNIBUS will not cause
+# a kernel to die.  It simply includes code to support UNIBUS mapping if
+# present.
+#
+# The define UNIBUS_MAP implements kernel support for UNIBUS mapped
+# machines.  However, a kernel compiled with UNIBUS_MAP does *not* have to
+# be run on a UNIBUS machine.  The define simply includes support for UNIBUS
+# mapping if the kernel finds itself on a machine with UNIBUS mapping.
+UNIBUS_MAP      YES                     # include support for UNIBUS mapping
+
+# The define Q22 has been removed.  The references to it were incorrect
+# (i.e. using it to distinguish between an Emulex CS02 and a DH11) or
+# inappropriate (the if_il.c driver should have been checking if a Unibus
+# Map was present at runtime).
+
+#LINEHZ         50              # clock frequency European
+LINEHZ          60                      # clock frequency USA
+
+# PDP-11 machine type; allowable values are GENERIC, 44, 70, 73.  GENERIC
+# should only be used to build a distribution kernel.  The only use of this
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 67
+
+
+# option is to select the proper in-line PS instructions (references to the
+# PSW use 'spl', 'mfps/mtps' or 'movb' instructions depending on the cpu type).
+PDP11           GENERIC         # distribution kernel
+#PDP11          44                      # PDP-11/44
+#PDP11          70                      # PDP-11/70,45,50,55
+#PDP11          73                      # PDP-11/73,53,83,93,84,94
+
+#########################################
+# GENERAL SYSTEM PARAMETERS             #
+#########################################
+
+IDENT           GENERIC                 # machine name
+MAXUSERS        4                       # maxusers on machine
+
+# BOOTDEV is the letter combination denoting the autoboot device,
+# or NONE if not using the autoboot feature.
+BOOTDEV         NONE            # don't autoboot
+#BOOTDEV        dvhp                    # DIVA Comp/V boot device
+#BOOTDEV        hk6                     # rk06 boot device
+#BOOTDEV        hk7                     # rk07 boot device
+#BOOTDEV        ra                      # MSCP boot device
+#BOOTDEV        rl                      # rl01/02 boot device
+#BOOTDEV        rm                      # rm02/03/05 boot device
+#BOOTDEV        br                      # Eaton BR1537/BR1711 boot device
+#BOOTDEV        sc11                    # Emulex SC11/B boot device
+#BOOTDEV        sc21                    # Emulex SC21 boot device
+#BOOTDEV        si                      # si 9500 boot device
+
+# Timezone, in minutes west of GMT
+#TIMEZONE       300                     # EST
+#TIMEZONE       360                     # CST
+#TIMEZONE       420                     # WST
+TIMEZONE        480                     # PST
+DST             1                       # Daylight Savings Time (1 or 0)
+
+# Filesystem configuration
+# Rootdev, swapdev etc. should be in terms of makedev.  For example,
+# if you have an SMD drive using the xp driver, rootdev would be xp0a,
+# or "makedev(10,0)".  Swapdev would be the b partition, xp0b, or
+# "makedev(10,1)".  The 10 is the major number of the device (the offset
+# in the bdevsw table in conf.c) and the 0 and 1 are the minor numbers
+# which correspond to the partitions as described in the section 4 manual
+# pages.  You can also get the major numbers from the MAKEDEV script in
+# /dev.
+PIPEDEV         makedev(10,0)           # makedev(10,0) xp0a
+ROOTDEV         makedev(10,0)           # makedev(10,0) xp0a
+SWAPDEV         makedev(10,1)           # makedev(10,1) xp0b
+
+# DUMPROUTINE indicates which dump routine should be used.  DUMPDEV
+# should be in terms of makedev.  If DUMPDEV is NODEV no automatic
+# dumps will be taken, and DUMPROUTINE needs to be set to "nulldev" to
+# resolve the reference.  See param.h and ioconf.c for more information.
+# DUMPLO should leave room for the kernel to start swapping without
+# overwriting the dump.
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 68Installing and Operating 2.11BSD on the PDP-11
+
+
+DUMPLO          512                     # dump start address
+DUMPDEV         NODEV                   # makedev(10,1) xp0b
+DUMPROUTINE     nulldev                 # no dump routine.
+#DUMPROUTINE    hkdump                  # hk driver dump routine
+#DUMPROUTINE    hpdump                  # hp driver dump routine
+#DUMPROUTINE    radump                  # ra driver dump routine
+#DUMPROUTINE    rldump                  # rl driver dump routine
+#DUMPROUTINE    rmdump                  # rm driver dump routine
+#DUMPROUTINE    brdump                  # br driver dump routine
+#DUMPROUTINE    sidump                  # si driver dump routine
+#DUMPROUTINE    xpdump                  # xp driver dump routine
+#DUMPROUTINE    tmsdump                 # tms driver dump routine
+
+#########################################
+# KERNEL CONFIGURATION                  #
+#########################################
+
+BADSECT         NO              # bad-sector forwarding
+EXTERNALITIMES  YES             # map out inode time values
+UCB_CLIST       NO                      # clists moved from kernel data space
+NOKA5           NO                      # KA5 not used except for buffers
+                                        # and clists (_end < 0120000);
+QUOTA           NO                      # dynamic file system quotas
+                                        # NOTE -- *very* expensive
+
+# UCB_METER is fairly expensive, but various programs (iostat, vmstat, etc)
+# use it.
+UCB_METER       NO                      # vmstat performance metering
+
+# NBUF is the size of the buffer cache, and is directly related to the UNIBUS
+# mapping registers.  There are 32 total mapping registers, of which 30 are
+# available.  The 0'th is used for CLISTS, and the 31st is used for the I/O
+# page on some PDP's.  It's suggested that you allow 7 mapping registers
+# per UNIBUS character device so that you can move 56K of data on each device
+# simultaneously.  The rest should be assigned to the block buffer pool.  So,
+# if you have a DR-11 and a TM-11, you would leave 14 unassigned for them and
+# allocate 16 to the buffer pool.  Since each mapping register addresses 8
+# buffers for a 1K file system, NBUF would be 128.  A possible exception would
+# be to reduce the buffers to save on data space, as they were 24 bytes each
+# Should be 'small' for GENERIC, so room for kernel + large program to run.
+NBUF            32                      # buffer cache, *must* be <= 240
+
+# DIAGNOSTIC does various run-time checks, some of which are pretty
+# expensive and at a high priority.  Suggested use is when the kernel
+# is crashing and you don't know why, otherwise run with it off.
+DIAGNOSTIC      NO                      # misc. diagnostic loops and checks
+
+#########################################
+# PERIPHERALS: DISK DRIVES              #
+#########################################
+
+NBR             0               # EATON BR1537/BR1711, BR1538A, B, C, D
+
+NHK             2               # RK611, RK06/07
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 69
+
+
+NRAC            1               # NRAD controllers
+NRAD            2               # RX50, RC25, RD51/52/53, RA60/80/81
+
+NRK             0               # RK05
+
+NRL             2               # RL01/02
+
+NRX             0               # RX02
+
+NSI             0               # SI 9500 driver for CDC 9766 disks
+
+# Because the disk drive type registers conflict with other DEC
+# controllers, you cannot use XP_PROBE for the Ampex 9300 and
+# Diva drives.  Read through /sys/pdpuba/hpreg.h and /sys/pdpuba/xp.c
+# for information on how to initialize for these drives.
+NXPC            1               # NXPD controllers (RH70/RH11 style)
+NXPD            2               # RM02/03/05, RP04/05/06, CDC 9766,
+                                # Ampex 9300, Diva, Fuji 160, SI Eagle.
+XP_PROBE        YES             # check drive types at boot
+
+NRAM            0               # RAM disk size (512-byte blocks)
+
+#########################################
+# PERIPHERALS: TAPE DRIVES              #
+#########################################
+
+NHT             2               # TE16, TU45, TU77
+
+# Setting AVIVTM configures the TM driver for the AVIV 800/1600/6250
+# controller (the standard DEC TM only supports 800BPI).  For more details,
+# see /sys/pdpuba/tm.c.
+NTM             2               # TM11
+AVIVTM          YES             # AVIV 800/1600/6250 controller
+
+NTS             2               # TS11
+
+NTMSCP          2               # TMSCP controllers
+NTMS            2               # TMSCP drives
+TMSCP_DEBUG     NO              # debugging code in TMSCP drive (EXPENSIVE)
+
+#########################################
+# PERIPHERALS: TERMINALS                #
+#########################################
+
+# NKL includes both KL11's and DL11's.
+# It should always be at least 1, for the console.
+NKL             1               # KL11, DL11
+NDH             0               # DH11; NDH is in units of boards (16 each)
+CS02            NO              # DH units above are really Emulex CS02
+                                # boards on a 22bit Qbus.
+NDM             0               # DM11; NDM is in units of boards (16 each)
+NDHU            0               # DHU11
+NDHV            0               # DHV11
+NDZ             0               # DZ11; NDZ is in units of boards (8 each)
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 70Installing and Operating 2.11BSD on the PDP-11
+
+
+#########################################
+# PERIPHERALS: OTHER                    #
+#########################################
+NDN             0               # DN11 dialer
+NLP             0               # Line Printer
+LP_MAXCOL       132             # Maximum number of columns on line printers
+NDR             0               # DR11-W
+
+#########################################
+# PSEUDO DEVICES, PROTOCOLS, NETWORKING #
+#########################################
+# Networking only works with split I/D and SUPERVISOR space, i.e. with the
+# 11/44/45/50/53/55/70/73/83/84.  NETHER should be non-zero for networking
+# systems using any ethernet.  CHECKSTACK makes sure the networking stack
+# pointer and the kernel stack pointer don't collide; it's fairly expensive
+# at 4 extra instructions for EVERY function call AND return, always left
+# NO unless doing serious debugging.
+INET            NO              # TCP/IP
+CHECKSTACK      NO              # Kernel & Supervisor stack pointer checking
+NETHER          0               # ether pseudo-device
+
+# Note, PTY's and the select(2) system call do not require the kernel to
+# be configured for networking (INET).  Note that you can allocate PTY's
+# in any number (multiples of 8, of 16, even, odd, prime, whatever).  Nothing
+# in the kernel cares.  PTY's cost 78 bytes apiece in kernel data space.  You
+# should probably have at least 8-10 since several applications use them:
+# script, jove, window, rlogin, ...
+NPTY            0               # pseudo-terminals - GENERIC sys needs NONE
+
+# To make the 3Com Ethernet board work correctly, splimp has to be promoted
+# to spl6; splfix files that do this are in conf/3Com; the config script
+# does the right thing.
+NEC             0               # 3Com Ethernet
+NDE             0               # DEUNA/DELUA
+NIL             0               # Interlan Ethernet
+NSL             0               # Serial Line IP
+NQE             0               # DEQNA
+NQT             0               # DEQTA (DELQA-YM, DELQA-PLUS)
+NVV             0               # V2LNI (Pronet)
+NACC            0               # ACC LH/DH ARPAnet IMP interface
+PLI             NO              # LH/DH is connected to a PLI
+NIMP            0               # ARPAnet IMP 1822 interface
+
+# The following are untested in 2.11BSD; some are untested since before 2.9BSD
+# Some won't even compile.  Most will require modification.  Good luck.
+ENABLE34        NO              # if have the ENABLE34 board
+
+NCSS            0               # DEC/CSS IMP11-A ARPAnet IMP interface
+NDMC            0               # DMC11
+NEN             0               # Xerox prototype (3 Mb) Ethernet
+NHY             0               # Hyperchannel
+NS              0               # Xerox NS (XNS)
+NSRI            0               # SRI DR11c ARPAnet IMP
+NTB             0               # RS232 interface for Genisco/Hitachi tablets
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 71
+
+
+# Defining FPSIM to YES compiles a floating point simulator into the kernel
+# which will catch floating point instruction traps from user space.  This
+# doesn't work at present.
+FPSIM           NO              # floating point simulator
+
+# To enable profiling, the :splfix script must be changed to use spl6 instead
+# of spl7 (see conf/:splfix.profile), also, you have to have a machine with a
+# supervisor PAR/PDR pair, i.e. an 11/44/45/50/53/55/70/73/83/84, as well
+# as both a KW11-L and a KW11-P.
+#
+# Note that profiling is not currently working.  We don't have any plans on
+# fixing it, so this is essentially a non-supported feature.
+PROFILE         NO              # system profiling with KW11P clock
+
+INGRES          NO              # include the Ingres lock driver
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 72Installing and Operating 2.11BSD on the PDP-11
+
+
+         AAPPPPEENNDDIIXX BB -- SSTTAANNDDAALLOONNEE DDIISSKKLLAABBEELL PPRROOGGRRAAMM
+
+
+
+88..11..  SSttaannddaalloonnee ddiisskkllaabbeell eexxaammppllee
+
+     This is a real example of using the  disklabel  program
+to  place  a  label  on a disk.  User input is in bboolldd type.
+The disklabel program was loaded from a bootable TK50.   The
+disk  being labeled in a RD54.  The BOOT> prompt is from the
+11/73 console ODT, if you are using an 11/44 the prompt will
+be >>>.
+
+     The  first  thing  that is done is request disklabel to
+create a default partition  ('a')  which  spans  the  entire
+disk.   Some disk types have fixed sizes and geometries, for
+example RK05 (rk), RK06/7 (hk) and RL02 (rl)  drives.   With
+this type of disk the standalone disklabel program will gen-
+erate a label with the correct geometry  and  'a'  partition
+size.   With MSCP ('ra') disks disklabel will query the con-
+troller for the information it  needs.   The  last  type  of
+disk,  SMD  (xp),  presents  many  problems,  disklabel will
+attempt to determine the drive type  and  geometry  but  you
+will have to verify the information.
+
+      Indented paragraphs like this one are explanatory com-
+      ments and are not part of the output from the  diskla-
+      bel program.  In the case of MSCP drives the number of
+      cylinders may be 1 too low.  This is discussed in  the
+      example below.
+
+BOOT> MMUU 00
+
+73Boot from tms(0,0,0) at 0174500
+: ttmmss((00,,11))
+Boot: bootdev=06001 bootcsr=0174500
+disklabel
+Disk? rraa((00,,00))
+d(isplay) D(efault) m(odify) w(rite) q(uit)? DD
+d(isplay) D(efault) m(odify) w(rite) q(uit)? dd
+
+type: MSCP
+disk: RD54
+flags:
+bytes/sector: 512
+sectors/track: 17
+tracks/cylinder: 15
+sectors/cylinder: 255
+cylinders: 1220
+rpm: 3600
+drivedata: 0 0 0 0 0
+
+1 partitions:
+#      size   offset   fstype   [fsize bsize]
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 73
+
+
+  a: 311200 0 2.11BSD 1024 1024  # (Cyl. 0 - 1220*)
+
+      The  columns  do not line up nicely under the headings
+      due to limitations of the  sprintf()  routine  in  the
+      standalone  I/O  package.   There  is no capability to
+      justify the output.  It should be obvious which column
+      belongs  under  which  heading.  The '*' says that the
+      partition does not end on a cylinder  boundary.   This
+      is  due  to the peculiar way in which MSCP returns the
+      geometry information:  sectors/track * tracks/cylinder
+      * cylinders != sectors per volume.
+
+d(isplay) D(efault) m(odify) w(rite) q(uit)? mm
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? mm
+
+      It is normally not necessary to change the geometry of
+      an MSCP disk.  On the other hand it will almost always
+      be  necessary  to specify the geometry of an SMD drive
+      (one which uses the XP driver).  Since the drive being
+      labeled  is  an MSCP drive the next step is to set the
+      pack label to something other than DEFAULT.
+
+modify misc
+d(isplay) t(ype) n(ame) l(able) f(lags) r(pm) D(rivedata) q(uit)? ll
+label [DEFAULT]: TTEESSTTIINNGG
+modify misc
+d(isplay) t(ype) n(ame) l(able) f(lags) r(pm) D(rivedata) q(uit)? qq
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? pp
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? dd
+
+type: MSCP
+disk: RD54
+flags:
+bytes/sector: 512
+sectors/track: 17
+tracks/cylinder: 15
+sectors/cylinder: 255
+cylinders: 1220
+rpm: 3600
+drivedata: 0 0 0 0 0
+
+1 partitions:
+#      size   offset   fstype   [fsize bsize]
+  a: 311200 0 2.11BSD 1024 1024  # (Cyl. 0 - 1220*)
+
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? ss
+a b c d e f g h q(uit)? aa
+sizes and offsets may be given as sectors, cylinders
+or cylinders plus sectors: 6200, 32c, 19c10s respectively
+modify partition 'a'
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 74Installing and Operating 2.11BSD on the PDP-11
+
+
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? ss
+'a' size [311200]: 1155888844
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? qq
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? ss
+a b c d e f g h q(uit)? bb
+sizes and offsets may be given as sectors, cylinders
+or cylinders plus sectors: 6200, 32c, 19c10s respectively
+modify partition 'b'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? oo
+'b' offset [0]: 1155888844
+modify partition 'b'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? ss
+'b' size [0]: 1166772200
+modify partition 'b'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? tt
+'b' fstype [unused]: sswwaapp
+modify partition 'b'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? qq
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? ss
+a b c d e f g h q(uit)? cc
+sizes and offsets may be given as sectors, cylinders
+or cylinders plus sectors: 6200, 32c, 19c10s respectively
+modify partition 'c'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? oo
+'c' offset [0]: 00
+modify partitions 'c'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? ss
+'c' size [0]: 331111220000
+modify partitions 'c'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? tt
+'c' fstype [unused]: uunnuusseedd
+modify partitions 'c'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? qq
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? ss
+a b c d e f g h q(uit)? gg
+sizes and offsets may be given as sectors, cylinders
+or cylinders plus sectors: 6200, 32c, 19c10s respectively
+modify partition 'g'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? oo
+'g' offset [0]: 3322660044
+modify partition 'g'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? ss
+'g' size [0]: 227788559966
+modify partition 'g'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? tt
+'g' fstype [unused]: 22..1111BBSSDD
+modify partition 'g'
+d(isplay) z(ero) t(ype) o(ffset) s(ize) f(rag) F(size) q(uit)? qq
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? nn
+Number of partitions (8 max) [7]? 77
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 75
+
+
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? qq
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? dd
+
+type: MSCP
+disk: RD54
+label: TESTING
+flags:
+bytes/sector: 512
+sectors/track: 17
+tracks/cylinder: 15
+sectors/cylinder: 255
+cylinders: 1220
+rpm: 3600
+drivedata: 0 0 0 0 0
+
+7 partitions:
+#      size   offset   fstype   [fsize bsize]
+  a: 15884   0  2.11BSD 1024 1024  # (Cyl. 0 - 62*)
+  b: 16720 15884 swap              # (Cyl. 62*- 127*)
+  c: 311200  0   unused 1024 1024  # (Cyl. 0 - 1220*)
+  g: 278596 32604 2.11BSD 1024 1024 # (Cyl. 127- 1220*)
+
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? qq
+
+      On MSCP disks it is possible you will  see  a  warning
+      error like this:
+
+      partition c: extends past end of unit 0 311200 311100
+      partition  g:  extends  past  end of unit 32604 278596
+      311100
+
+      This is not cause for panic.  What this is  saying  is
+      that  the  number  of  cylinders is one too low.  MSCP
+      devices do not necessarily use all of the last  cylin-
+      der.   The  total  number of blocks is precisely known
+      for MSCP devices  (it is returned in the act of bring-
+      ing  the drive online).  However the number of sectors
+      on the volume is not necessarily evenly  divisible  by
+      the  number  of  sectors  per track (311200 divided by
+      17*15 gives 1220.392).  Basically the last cylinder is
+      not fully used.  What must be done is raise the number
+      of cylinders by 1.
+
+      NNOOTTEE:: For any other disk type it is cause for  concern
+      if  the warning above is issued - it means that incor-
+      rect partition or geometry information was entered  by
+      the user and needs to be corrected.
+
+d(isplay) D(efault) m(odify) w(rite) q(uit)? mm
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? gg
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 76Installing and Operating 2.11BSD on the PDP-11
+
+
+modify geometry
+d(isplay) s(ector/trk) t(rk/cyl) c(yl) S(ector/cyl) q(uit)? cc
+cylinders [1220]: 11222211
+modify geometry
+d(isplay) s(ector/trk) t(rk/cyl) c(yl) S(ector/cyl) q(uit)? qq
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? qq
+d(isplay) D(efault) m(odify) w(rite) q(uit)? ww
+d(isplay) D(efault) m(odify) w(rite) q(uit)? qq
+
+73Boot from tms(0,0,1) at 0174500
+: rraa((11,,00,,00))uunniixx
+ra1 csr[00]: 00117722115544
+
+      The  last  string  entered  shows  how  I boot from an
+      alternate controller.  In normal use, i.e. with a sin-
+      gle  MSCP  controller,  the  string  would  simply  be
+      rraa((00,,00))uunniixx.
+
+88..22..  SSttaannddaalloonnee ddiisskkllaabbeell pprrooggrraamm
+
+     The standalone disklabel program is the second file  on
+a  boot tape (after the bootblocks and boot program).  It is
+used to place an initial label on a disk describing the disk
+and  its partitions.  The program is also used when the root
+('a') or swap ('b') partitions of a previously labeled  sys-
+tem  disk  must  be  modified.   The  second use is mandated
+because the root and swap partitions  can  not  be  modified
+while the kernel has them open.
+
+     _d_i_s_k_l_a_b_e_l  effectively runs in CBREAK mode - you do not
+need to hit the RETURN key except when prompted for a multi-
+character  response  such  as a string (the pack label) or a
+number (partition size).  Defaults are placed inside  square
+brackets ([default]).   Entering RETURN accepts the default.
+
+     The program is organized into several levels.   _d_i_s_k_l_a_-
+_b_e_l  prints the current level out before prompting.  At each
+level there is always the choice of d(isplaying) the current
+label  and  q(uit)ing the current level and returning to the
+previous level.  If you are at the top level and enter qq the
+program  will exit back to BBoooott unless you have made changes
+to the disklabel.  In that case you will  be  asked  if  you
+wish  to  discard  the  changes, if you answer yy the changes
+will be discarded.  If the answer is nn the qq is ignored  and
+_d_i_s_k_l_a_b_e_l does not exit.
+
+     In  the  following paragraphs the convention is to bboolldd
+the user input while leaving the output  from  _d_i_s_k_l_a_b_e_l  in
+normal type.  The devices used were a TK50 and an RD54, thus
+the tape device is ttmmss and the disk device is rraa.
+
+     The TK50 was booted resulting in the usual message from
+BBoooott:
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 77
+
+
+73Boot from tms(0,0,0) at 0174500
+: ttmmss((00,,11))
+
+88..33..  DDiisskkllaabbeell -- ttoouurr ooff tthhee lleevveellss..
+
+Boot: bootdev=06001 bootcsr=0174500
+disklabel
+Disk? rraa((00,,00))
+d(isplay) D(efault) m(odify) w(write) q(uit)? mm
+
+      The  'D'  option  will  request  _d_i_s_k_l_a_b_e_l to create a
+      default label based on what the program can  determine
+      about  the  drive.  For some devices, such as RL01/02,
+      RK06/07, MSCP (RD54, RA81, usw.), _d_i_s_k_l_a_b_e_l can deter-
+      mine  what  the  drive type is and how many sectors it
+      has.  For other devices, such as SMD drives  supported
+      by  the xxpp driver, the task is complicated by the num-
+      ber of different controllers and emulations supported.
+      Some  3rd party controllers have capabilities that DEC
+      controllers do not and the xxpp has no  way  of  knowing
+      exactly  which type of controller is present.  In this
+      case _d_i_s_k_l_a_b_e_l will gguueessss and then depend  on  you  to
+      enter the correct data.
+
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? gg
+modify geometry
+d(isplay)  s(ector/trk) t(rk/cyl) c(yl) S(ector/cyl) q(uit)?
+qq
+
+      The Sector/cyl entry is rarely used.   _d_i_s_k_l_a_b_e_l  will
+      calculate  this  quantity  for you from the sector/trk
+      and trk/cyl quantities.
+
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? mm
+d(isplay) t(ype) n(ame) l(abel)  f(lags)  r(pm)  D(rivedata)
+q(quit)? ff
+
+      Type is one of: SMD, MSCP, old DEC, SCSI, ESDI, ST506,
+      floppy.
+
+      Name is a string up to 16 characters in length.  It is
+      typically  something  like rrdd5544 or rrmm0033 but may be any
+      meaningful string.
+
+      Label is an arbitrary string up to  16  characters  in
+      length  -  nothing in the system checks for or depends
+      on the contents of the pack label string.
+
+      Rpm is the rotational speed of the drive.  Nothing  in
+      the  system  uses  or  depends  on this at the present
+      time.  Default is 3600.
+
+
+
+
+                        17 March 1998
+
+
+
+
+
+setup.2.11 - 78Installing and Operating 2.11BSD on the PDP-11
+
+
+      Drivedata consists of 5 longwords of  arbitrary  data.
+      Reserved for future use.
+
+modify misc flags
+d(isplay) c(lear) e(cc) b(adsect) r(emovable) q(uit)? qq
+
+      Ecc   says  that  the  controller/driver  can  correct
+      errors.
+
+      Badsect indicates that the controller/driver  supports
+      bad sector replacement.
+
+      Removable  indicates  that  the  drive  uses removable
+      media (floppy, RL02, RA60 for example).
+
+modify misc
+d(isplay) t(type) n(ame) l(abel) f(lags)  r(pm)  D(rivedata)
+q(uit)? qq
+modify
+d(isplay) g(eometry) m(isc) p(artitions) q(uit)? pp
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? nn
+Number of partitions (8 max) [7]? 77
+
+      This  is the highest partition number considered to be
+      valid.  _d_i_s_k_l_a_b_e_l will  adjust  this  parameter  semi-
+      automatically  at  the pp level but it may be necessary
+      to use nn in cases where some partitions are not to  be
+      used or contain invalid information.
+
+modify partitions
+d(isplay) n(umber) s(elect) q(uit)? ss
+a b c d e f g h q(uit)? aa
+sizes and offsets may be given as sectors, cylinders
+or cylinders plus sectors:  6200, 32c, 19c10 respectively
+modify partition 'a'
+d(isplay)  z(ero)  t(ype)  o(ffset)  s(ize)  f(rag)  F(size)
+q(uit)? qq
+
+      Zero clears the size and offset fields of a  partition
+      entry and sets the filesystem type to uunnuusseedd.
+
+      Type  is  the  filesystem  type  and  of  the possible
+      choices only 22..1111BBSSDD, sswwaapp and uunnuusseedd make  any  sense
+      to specify.
+
+      Offset  is the number of sectors from the beginning of
+      the disk at which the partition starts.
+
+      Size is the number  of  sectors  which  the  partition
+      occupies.
+
+      Frag is the number of fragments a filesystem block can
+      be broken into.  It is not presently used  and  should
+
+
+
+                        17 March 1998
+
+
+
+
+
+Installing and Operating 2.11BSD on the PDP-11Setup.2.11 - 79
+
+
+      be left at the default of 1.
+
+      Fsize  is  the filesystem blocksize and should be left
+      at the default of 1024.
+
+      modify partitions
+      d(isplay) n(umber) s(elect) q(uit)? qq
+      modify
+      d(isplay) g(eometry) m(isc) p(artitions) q(uit)? qq
+      d(isplay) D(efault) m(odify) w(write) q(uit)? qq
+      Label changed.  Discard changes [y/n]? yy
+
+
+      73Boot from tms(0,0,1) at 0174500
+
+88..44..  DDiisskkllaabbeell -- hheellppffuull hhiinnttss aanndd ttiippss..
+
+     Define only those partitions  you  actually  will  use.
+There  is  no  need to set up all 8 partitions.  Drives less
+than 200Mb probably will only  have  3  partitions  defined,
+'a',  'b' and 'd' for /, swap and /usr respectively.  Remem-
+ber to set the number of partitions.  Disklabel will attempt
+to do this for you by keeping track of the highest partition
+you modify but this is not foolproof.
+
+     Do not define overlapping  partitions  unless  you  are
+sure  what  you are doing.  _d_i_s_k_l_a_b_e_l will warn you of over-
+lapping partitions but will not prohibit  you  from  writing
+such a label to disk.
+
+     Remember  that the prompt levels nest in _d_i_s_k_l_a_b_e_l.  It
+will be necessary in several cases to enter multiple qq  com-
+mands to get back to the top level.
+
+     IIMMPPOORRTTAANNTT::  Keep at least 1, preferably more,  bootable
+tape or floppy with _d_i_s_k_l_a_b_e_l on it present  at  all  times.
+If  the  label  on  a disk ever becomes corrupted the kernel
+will be very unhappy and probably won't boot.  If this  hap-
+pens  you will need to boot the standalone _d_i_s_k_l_a_b_e_l program
+and relabel the disk.  At least  2.11BSD  provides  a  stan-
+dalone  _d_i_s_k_l_a_b_e_l  - previous 4BSD systems which implemented
+disklabels did not and the cold-start of those  systems  was
+painful indeed.
+
+     IIMMPPOORRTTAANNTT::  Write  down in at least one place, and keep
+with the tape/floppy mentioned above, the geometry and  par-
+tition layout you assign to the disk.  The _d_i_s_k_l_a_b_e_l_(_8_) _p_r_o_-
+_g_r_a_m _s_h_o_u_l_d _b_e _u_s_e_d _t_o _p_r_o_d_u_c_e _a _h_a_r_d_c_o_p_y _o_f _t_h_e  _d_i_s_k_l_a_b_e_l_.
+
+
+
+
+
+
+
+
+
+                        17 March 1998
+
+
