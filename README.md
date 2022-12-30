@@ -1,4 +1,18 @@
-# Run ancient UNIX
+<div align="center">
+
+![](https://img.shields.io/github/license/felipenlunkes/run-ancient-unix.svg)
+![](https://img.shields.io/github/stars/felipenlunkes/run-ancient-unix.svg)
+![](https://img.shields.io/github/issues/felipenlunkes/run-ancient-unix.svg)
+![](https://img.shields.io/github/issues-closed/felipenlunkes/run-ancient-unix.svg)
+![](https://img.shields.io/github/issues-pr/felipenlunkes/run-ancient-unix.svg)
+![](https://img.shields.io/github/issues-pr-closed/felipenlunkes/run-ancient-unix.svg)
+[![](https://img.shields.io/twitter/follow/felipeldev.svg?style=social&label=Follow%20%40felipeldev)](https://twitter.com/felipeldev)
+
+</div>
+
+<hr>
+
+# Run ancient UNIX on modern hardware
 
 <div align="justify">
 
