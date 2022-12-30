@@ -70,7 +70,7 @@ chmod +x run.sh
 ./run.sh
 ```
 
-When running the script, you will be asked to choose one of the available UNIX versions. After typing only the number relative to the choice, press <ENTER> to make your decision effective. Then wait for the desired version to run.
+When running the script, you will be asked to choose one of the available UNIX versions. After typing only the number relative to the choice, press ENTER to make your decision effective. Then wait for the desired version to run.
 
 Now, you need to know peculiarities in the execution of each version of the system. For this, go to [section 4](#section-4).
 
