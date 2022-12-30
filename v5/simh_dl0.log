@@ -1,0 +1,23 @@
+Logging to file "simh_dl0.log"
+Listening on port 5671 (socket 5)
+Listening on port 5672 (socket 7)
+Modem control activated
+@unix
+
+;login: root
+# 
+;login: root
+# Logging to file "simh_dl0.log"
+Listening on port 5671 (socket 5)
+Listening on port 5672 (socket 7)
+Modem control activated
+@unix
+@
+Logging to file "simh_dl0.log"
+Listening on port 5671 (socket 5)
+Listening on port 5672 (socket 7)
+Modem control activated
+@unix
+
+;login: root
+# 

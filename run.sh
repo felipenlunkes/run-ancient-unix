@@ -46,9 +46,9 @@ exit
 run_v7UNIX()
 {
 
-cd "2.11BSD"
+cd "v7"
 
-pdp11v7.simh
+pdp11 v7.simh
 
 clean
 
@@ -63,7 +63,7 @@ cd "v5"
 
 pdp11 v5.simh
 
-clean
+clean 
 
 exit 
 
