@@ -26,9 +26,9 @@ First of all, credits and acknowledgment for material available in this reposito
 - The UNIX versions available in this repository have been released as open source under the [Caldera license](Caldera-license.pdf) available in this repository. Please read the document carefully for concrete information about your rights and obligations when using the software.
   - Note that various components within the system images may have been made available under other license conditions. Pay attention to these components. A clear example is version 2.11BSD UNIX, which features code covered by the Caldera license made available, in addition to code released under the BSD license. Source files available in the images show the license and due copyright. Check this data before reuse.
   - The UNIX images available in this repository were obtained from the w11 project (which uses these images for other purposes). You can get them directly [here](https://wfjm.github.io/home/w11/inst/systems.html#h_os_kits), as well as more information about the project, images, licenses and other data.
-- The scripts used to simulate the systems using SIMH for v5 and v7 UNIX were obtained from a w11 project repository, which can be accessed [here](https://github.com/wfjm/w11/tree/master/tools/oskit). The original scripts are available under license GLP v3 or later.
-  - In addition, the general script for configuring the execution environment of versions v5 and v7 was obtained from the project, authored by [Walter F.J. Mueller](https://github.com/wfjm). You can get the original script [here](https://github.com/wfjm/w11/blob/master/tools/simh/setup_w11a_max.scmd). The original script are available under license GLP v3 or later.
-- All my contributions and modifications are available in this repository under the BSD-3-Clause [license](LICENSE).
+- The scripts used to simulate the systems using SIMH for v5 and v7 UNIX were obtained from a w11 project repository, which can be accessed [here](https://github.com/wfjm/w11/tree/master/tools/oskit). The original scripts are available under license GLP v3 or later. Modifications in these files were made by me, to fit the purpose of this repository. These modifications are restricted to the same license as the original script.
+  - In addition, the general script for configuring the execution environment of versions v5 and v7 was obtained from the project, authored by [Walter F.J. Mueller](https://github.com/wfjm). You can get the original script [here](https://github.com/wfjm/w11/blob/master/tools/simh/setup_w11a_max.scmd). The original script are available under license GLP v3 or later. Modifications in these files were made by me, to fit the purpose of this repository. These modifications are restricted to the same license as the original script.
+- All my contributions and modifications (except for material that requires redistribution under the same license, such as the running scripts) are available in this repository under the BSD-3-Clause [license](LICENSE).
 
 <hr>
 <hr>
@@ -441,5 +441,19 @@ The `#` symbol indicates that the shell is ready to receive commands. Try using 
 To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
 
 </details>
+
+When you are finished running the system on the PDP-11 simulator, you can clean up temporary and log files that may have been created by SIMH. To do so, go to [section 5](#section-5).
+
+<hr>
+
+### Section 5
+
+The simulator can create temporary and log files to simulate peripheral devices that would be connected to a PDP-11 minicomputer. These files typically have `.log` and `.dat` extensions. You can remove these files using the `run.sh` script and selecting the cleanup temporary files option, as well as manually going into each system directory and entering, in your system shell:
+
+```
+cd UNIX_VERSION_DIRECTORY
+rm *.log *.dat
+cd ..
+```
 
 </div>
