@@ -157,7 +157,7 @@ cp 211bsd_rpeth.dsk "../../2.11BSD/211bsd.dsk"
 cd ..
 cd ..
 
-# rm -R temp/
+rm -R temp/
 
 exit 
 

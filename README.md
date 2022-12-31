@@ -27,8 +27,8 @@ The contents of this repository allow older versions of UNIX to run on Unix-like
 
 First of all, credits and acknowledgment for material available in this repository that is not my own (or has been modified by me based on previous work).
 
-- The UNIX versions available in this repository have been released as open source under the [Caldera license](Caldera-license.pdf) available in this repository. Please read the document carefully for concrete information about your rights and obligations when using the software.
-  - Note that various components within the system images may have been made available under other license conditions. Pay attention to these components. A clear example is version 2.11BSD UNIX, which features code covered by the Caldera license made available, in addition to code released under the BSD license. Source files available in the images show the license and due copyright. Check this data before reuse.
+- The UNIX versions available in this repository have been released as open source under the [Caldera license](doc/Caldera-license.pdf) available in this repository. Please read the document carefully for concrete information about your rights and obligations when using the software.
+  - Note that various components within the system images may have been made available under other license conditions. Pay attention to these components. A clear example is version 2.11BSD UNIX, which features code covered by the Caldera license made available, in addition to code released under the [BSD license](doc/BSD-license.txt). Source files available in the images show the license and due copyright. Check this data before reuse.
   - The UNIX images available in this repository were obtained from the w11 project (which uses these images for other purposes). You can get them directly [here](https://wfjm.github.io/home/w11/inst/systems.html#h_os_kits), as well as more information about the project, images, licenses and other data.
 - The scripts used to simulate the systems using SIMH for v5 and v7 UNIX were obtained from a w11 project repository, which can be accessed [here](https://github.com/wfjm/w11/tree/master/tools/oskit). The original scripts are available under license GLP v3 or later. Modifications in these files were made by me, to fit the purpose of this repository. These modifications are restricted to the same license as the original script.
   - In addition, the general script for configuring the execution environment of versions v5 and v7 was obtained from the project, authored by [Walter F.J. Mueller](https://github.com/wfjm). You can get the original script [here](https://github.com/wfjm/w11/blob/master/tools/simh/setup_w11a_max.scmd). The original script are available under license GLP v3 or later. Modifications in these files were made by me, to fit the purpose of this repository. These modifications are restricted to the same license as the original script.
@@ -69,9 +69,7 @@ git clone https://github.com/felipenlunkes/run-ancient-unix
 cd run-ancient-unix
 ```
 
-NOTICE! Disk images have large sizes. Normally, cloning the repository by `git` may not download these files. If this happens, you can either install the [LFS extension](https://git-lfs.com/) for git or manually download the disk images via the GitHub web interface. In the future, these images will be fetched from the W11 project server via a run script function. Wait for an update on the script. For now, if this problem persists, manually download the files.
-
-Go to [section 3](#section-3).
+After cloning the repository with the configuration files, you must populate the directories of each UNIX version with their respective image files. For that, go to the [next section](#section-3).
 
 <hr>
 
@@ -83,6 +81,26 @@ Now, you have to run the available `run.sh` script. For that, use:
 chmod +x run.sh
 ./run.sh
 ```
+
+First, you have to run the script and select the option to install system images. You will see the following screen:
+
+```
+You must select, from the list below, which edition/version of
+UNIX you want to start. The available options are:
+
+1) v1 UNIX
+2) v5 UNIX
+3) v7 UNIX
+4) 2.11BSD UNIX
+5) Clear temporary files
+6) Install the disk images for UNIX
+
+Select a number and press <ENTER>: 
+```
+
+In this case, you should select option `6`, which will install the system images. After pressing 6, press ENTER to make your choice effective. Wait for the process of obtaining, extracting, configuring and installing the images.
+
+After the installation is complete, you must run `run.sh` again to start a UNIX version.
 
 When running the script, you will be asked to choose one of the available UNIX versions. After typing only the number relative to the choice, press ENTER to make your decision effective. Then wait for the desired version to run.
 
