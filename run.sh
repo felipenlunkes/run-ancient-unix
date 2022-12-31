@@ -87,27 +87,31 @@ clean()
 
 cd v1 
 
-rm *.log *.dat
+rm -rf *.log *.dat
 
 cd ..
 
 cd v5
 
-rm *.log *.dat
+rm -rf *.log *.dat
 
 cd ..
 
 cd v7 
 
-rm *.log *.dat
+rm -rf *.log *.dat
 
 cd ..
 
 cd "2.11BSD"
 
-rm *.log *.dat
+rm -rf *.log *.dat
 
 cd ..
+
+echo 
+echo -e "\e[1;32m[Done]\e[0m"
+echo 
 
 exit 
 
