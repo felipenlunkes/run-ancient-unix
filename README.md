@@ -86,8 +86,9 @@ Now, you need to know peculiarities in the execution of each version of the syst
 
 ### Section 4
 
+Select the desired UNIX version option below for details on how to start and operate the system. Each version of UNIX has different boot procedures. Pay attention to each particularity.
+
 <details title="Particularities for v1 UNIX version" align='left'>
-<br>
 <summary align='left'>Particularities for v1 UNIX version</summary>
 
 #### Particularities for v1 UNIX version
@@ -151,7 +152,6 @@ To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when th
 </details>
 
 <details title="Particularities for v5 UNIX version" align='left'>
-<br>
 <summary align='left'>Particularities for v5 UNIX version</summary>
 
 #### Particularities for v5 UNIX version
@@ -235,7 +235,6 @@ To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when th
 </details>
 
 <details title="Particularities for v7 UNIX version" align='left'>
-<br>
 <summary align='left'>Particularities for v7 UNIX version</summary>
 
 #### Particularities for v7 UNIX version
@@ -356,7 +355,6 @@ To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when th
 </details>
 
 <details title="Particularities for 2.11BSD UNIX" align='left'>
-<br>
 <summary align='left'>Particularities for 2.11BSD UNIX</summary>
 
 #### Particularities for 2.11BSD UNIX
