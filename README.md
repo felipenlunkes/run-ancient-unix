@@ -53,6 +53,8 @@ sudo dnf install simh
 
 After installation, proceed to [section 2](#section-2).
 
+<hr>
+
 ### Section 2
 
 
@@ -64,6 +66,8 @@ cd run-ancient-unix
 ```
 
 Go to [section 3](#section-3).
+
+<hr>
 
 ### Section 3
 
@@ -78,7 +82,13 @@ When running the script, you will be asked to choose one of the available UNIX v
 
 Now, you need to know peculiarities in the execution of each version of the system. For this, go to [section 4](#section-4).
 
+<hr>
+
 ### Section 4
+
+<details title="Particularities for v1 UNIX version" align='left'>
+<br>
+<summary align='left'>Particularities for v1 UNIX version</summary>
 
 #### Particularities for v1 UNIX version
 
@@ -137,6 +147,12 @@ usr
 ```
 
 To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
+
+</details>
+
+<details title="Particularities for v5 UNIX version" align='left'>
+<br>
+<summary align='left'>Particularities for v5 UNIX version</summary>
 
 #### Particularities for v5 UNIX version
 
@@ -215,6 +231,12 @@ login: root
 ```
 
 To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
+
+</details>
+
+<details title="Particularities for v7 UNIX version" align='left'>
+<br>
+<summary align='left'>Particularities for v7 UNIX version</summary>
 
 #### Particularities for v7 UNIX version
 
@@ -331,7 +353,13 @@ You have mail.
 
 To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
 
-#### Particularities for 2.11BSD UNIX version
+</details>
+
+<details title="Particularities for 2.11BSD UNIX" align='left'>
+<br>
+<summary align='left'>Particularities for 2.11BSD UNIX</summary>
+
+#### Particularities for 2.11BSD UNIX
 
 After the start of execution after selecting 2.11BSD UNIX version, you will see a screen like below:
 
@@ -413,5 +441,7 @@ The `#` symbol indicates that the shell is ready to receive commands. Try using 
 - [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. You will again be taken to the 2.11BSD shell.
 
 To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
+
+</details>
 
 </div>
