@@ -146,37 +146,46 @@ mkdir -p v7
 mkdir -p "2.11BSD"
 
 echo -e "\e[1;32m > Downloading v5 UNIX...\e[0m"
+echo
 
 # v5
 
 wget https://www.retro11.de/data/oc_w11/oskits/u5ed_rkset.tgz
 
 echo -e "\e[1;32m > Unpacking v5 UNIX...\e[0m"
+echo
 
 tar -xvzf u5ed_rkset.tgz -C v5/
 
 # v7
 
+echo
 echo -e "\e[1;32m > Downloading v7 UNIX...\e[0m"
+echo
 
 wget https://www.retro11.de/data/oc_w11/oskits/u7ed_rpset.tgz
 
-echo -e "\e[1;32m > Unpacking v5 UNIX...\e[0m"
+echo -e "\e[1;32m > Unpacking v7 UNIX...\e[0m"
+echo
 
 tar -xvzf u7ed_rpset.tgz -C v7/
 
 # 2.11BSD
 
+echo
 echo -e "\e[1;32m > Downloading 2.11BSD UNIX...\e[0m"
+echo
 
 wget https://www.retro11.de/data/oc_w11/oskits/211bsd_rpethset.tgz
 
 echo -e "\e[1;32m > Unpacking 2.11BSD UNIX...\e[0m"
+echo
 
 tar -xvzf 211bsd_rpethset.tgz -C "2.11BSD/"
 
 # Install the images
 
+echo
 echo -e "\e[1;32m > Installing v5 UNIX...\e[0m"
 
 cd v5 
@@ -205,7 +214,7 @@ cd ..
 rm -R temp/
 
 echo 
-echo "\e[1;32m[Done]\e[0m"
+echo -e "\e[1;32m[Done]\e[0m"
 echo 
 
 exit 
