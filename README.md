@@ -41,7 +41,7 @@ First of all, you must have the PDP-11 Simulator installed on your device. If yo
 sudo apt install simh
 ```
 
-> To install on Fedoraand derivatives, use:
+> To install on Fedora and derivatives, use:
 
 ```
 sudo dnf install simh
@@ -184,7 +184,7 @@ Modem control activated
 login:
 ```
 
-You must then type `root` and press ENTER. You will then be taken to the shell and be able to use the system. see below:
+You must then type `root` and press ENTER. You will then be taken to the shell and be able to use the system. See below:
 
 ```
 You must select, from the list below, which edition/version of
@@ -290,7 +290,7 @@ mem = 2020544
 
 Pressing ENTER will immediately take you to the UNIX v7 shell.
 
-- [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. you will again be taken to the UNIX v7 shell, as below:
+- [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. You will again be taken to the UNIX v7 shell, as below:
 
 ```
 You must select, from the list below, which edition/version of
@@ -406,7 +406,7 @@ erase, kill ^U, intr ^C
 
 The `#` symbol indicates that the shell is ready to receive commands. Try using `uname -a` or `ls` to get started.
 
-- [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. you will again be taken to the 2.11BSD shell.
+- [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. You will again be taken to the 2.11BSD shell.
 
 To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
 
