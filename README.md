@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://github.com/felipenlunkes/run-ancient-unix/blob/main/img/banner.png">
+</p>
+
 <div align="center">
 
 ![](https://img.shields.io/github/license/felipenlunkes/run-ancient-unix.svg)
