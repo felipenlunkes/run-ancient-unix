@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/felipenlunkes/run-ancient-unix/blob/main/img/banner.png">
+<img src="https://github.com/felipenlunkes/run-ancient-unix/blob/main/doc/banner.png">
 </p>
 
 <div align="center">
