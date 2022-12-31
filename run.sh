@@ -87,8 +87,6 @@ clean()
 
 rm -R *.log *.dat
 
-clean
-
 exit 
 
 }
@@ -109,6 +107,62 @@ exit
 
 }
 
+install_images()
+{
+
+
+mkdir -p temp 
+cd temp
+
+mkdir -p v5
+mkdir -p v7 
+mkdir -p "2.11BSD"
+
+# v5
+
+wget https://www.retro11.de/data/oc_w11/oskits/u5ed_rkset.tgz
+
+tar -xvzf u5ed_rkset.tgz -C v5/
+
+# v7
+
+wget https://www.retro11.de/data/oc_w11/oskits/u7ed_rpset.tgz
+
+tar -xvzf u7ed_rpset.tgz -C v7/
+
+# 2.11BSD
+
+wget https://www.retro11.de/data/oc_w11/oskits/211bsd_rpethset.tgz
+
+tar -xvzf 211bsd_rpethset.tgz -C "2.11BSD/"
+
+# Install the images
+
+cd v5 
+
+cp u5ed_rk.dsk ../../v5/v5.dsk 
+
+cd ..
+
+cd v7
+
+cp u7ed_rp.dsk ../../v7/v7.dsk 
+
+cd ..
+
+cd "2.11BSD"
+
+cp 211bsd_rpeth.dsk "../../2.11BSD/211bsd.dsk"
+
+cd ..
+cd ..
+
+# rm -R temp/
+
+exit 
+
+}
+
 export NAME=$0
 
 clear
@@ -122,6 +176,7 @@ echo -e "2) v5 UNIX"
 echo -e "3) v7 UNIX"
 echo -e "4) 2.11BSD UNIX"
 echo -e "5) Clear temporary files"
+echo -e "6) Install the disk images for UNIX" 
 echo 
 echo -n "Select a number and press <ENTER>: "
 
@@ -134,6 +189,7 @@ case $UNIXVERSION in
 3) run_v7UNIX; exit;;
 4) run_211BSD; exit;;
 5) clean; exit;;
+6) install_images; exit;;
 
 *) help; exit;;
 

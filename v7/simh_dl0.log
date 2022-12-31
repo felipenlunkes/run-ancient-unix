@@ -1,64 +1,0 @@
-Logging to file "simh_dl0.log"
-Listening on port 5671 (socket 5)
-Listening on port 5672 (socket 7)
-Modem control activated
-
-Logging to file "simh_dl0.log"
-Listening on port 5671 (socket 5)
-Listening on port 5672 (socket 7)
-Modem control activated
-boot
-Boot
-: hp(0,0)unix
-mem = 2020544
-# RESTRICTED RIGHTS: USE, DUPLICATION, OR DISCLOSURE
-IS SUBJECT TO RESTRICTIONS STATED IN YOUR CONTRACT WITH
-WESTERN ELECTRIC COMPANY, INC.
-WED DEC 31 19:03:05 EST 1969
-
-login: root
-Password:
-You have mail.
-# ls
-bin
-boot
-dev
-etc
-hphtunix
-hptmunix
-lib
-rphtunix
-rptmunix
-tmp
-unix
-usr
-# Logging to file "simh_dl0.log"
-Listening on port 5671 (socket 5)
-Listening on port 5672 (socket 7)
-Modem control activated
-[bboot
-Logging to file "simh_dl0.log"
-Listening on port 5671 (socket 5)
-Listening on port 5672 (socket 7)
-Modem control activated
-boot
-Boot
-: unix
-Bad device
-: Logging to file "simh_dl0.log"
-Listening on port 5671 (socket 5)
-Listening on port 5672 (socket 7)
-Modem control activated
-boot
-Boot
-: hp(0,0)unix
-mem = 2020544
-# RESTRICTED RIGHTS: USE, DUPLICATION, OR DISCLOSURE
-IS SUBJECT TO RESTRICTIONS STATED IN YOUR CONTRACT WITH
-WESTERN ELECTRIC COMPANY, INC.
-WED DEC 31 19:05:14 EST 1969
-
-login: root
-Password:
-You have mail.
-# 
