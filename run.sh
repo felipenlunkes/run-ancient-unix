@@ -85,7 +85,29 @@ exit
 clean()
 {
 
-rm -R *.log *.dat
+cd v1 
+
+rm *.log *.dat
+
+cd ..
+
+cd v5
+
+rm *.log *.dat
+
+cd ..
+
+cd v7 
+
+rm *.log *.dat
+
+cd ..
+
+cd "2.11BSD"
+
+rm *.log *.dat
+
+cd ..
 
 exit 
 
@@ -104,12 +126,17 @@ echo
 
 exit
 
-
 }
 
 install_images()
 {
 
+clear 
+
+echo 
+echo -e "Please wait while the UNIX disk images are installed locally. This process may take"
+echo -e "a few minutes, depending on the speed of your internet connection."
+echo 
 
 mkdir -p temp 
 cd temp
@@ -118,25 +145,39 @@ mkdir -p v5
 mkdir -p v7 
 mkdir -p "2.11BSD"
 
+echo -e "\e[1;32m > Downloading v5 UNIX...\e[0m"
+
 # v5
 
 wget https://www.retro11.de/data/oc_w11/oskits/u5ed_rkset.tgz
+
+echo -e "\e[1;32m > Unpacking v5 UNIX...\e[0m"
 
 tar -xvzf u5ed_rkset.tgz -C v5/
 
 # v7
 
+echo -e "\e[1;32m > Downloading v7 UNIX...\e[0m"
+
 wget https://www.retro11.de/data/oc_w11/oskits/u7ed_rpset.tgz
+
+echo -e "\e[1;32m > Unpacking v5 UNIX...\e[0m"
 
 tar -xvzf u7ed_rpset.tgz -C v7/
 
 # 2.11BSD
 
+echo -e "\e[1;32m > Downloading 2.11BSD UNIX...\e[0m"
+
 wget https://www.retro11.de/data/oc_w11/oskits/211bsd_rpethset.tgz
+
+echo -e "\e[1;32m > Unpacking 2.11BSD UNIX...\e[0m"
 
 tar -xvzf 211bsd_rpethset.tgz -C "2.11BSD/"
 
 # Install the images
+
+echo -e "\e[1;32m > Installing v5 UNIX...\e[0m"
 
 cd v5 
 
@@ -144,11 +185,15 @@ cp u5ed_rk.dsk ../../v5/v5.dsk
 
 cd ..
 
+echo -e "\e[1;32m > Installing v7 UNIX...\e[0m"
+
 cd v7
 
 cp u7ed_rp.dsk ../../v7/v7.dsk 
 
 cd ..
+
+echo -e "\e[1;32m > Installing 2.11BSD UNIX...\e[0m"
 
 cd "2.11BSD"
 
@@ -158,6 +203,10 @@ cd ..
 cd ..
 
 rm -R temp/
+
+echo 
+echo "\e[1;32m[Done]\e[0m"
+echo 
 
 exit 
 
