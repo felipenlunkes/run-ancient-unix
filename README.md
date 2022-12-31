@@ -69,6 +69,8 @@ git clone https://github.com/felipenlunkes/run-ancient-unix
 cd run-ancient-unix
 ```
 
+NOTICE! Disk images have large sizes. Normally, cloning the repository by `git` may not download these files. If this happens, you can either install the [LFS extension](https://git-lfs.com/) for git or manually download the disk images via the GitHub web interface. In the future, these images will be fetched from the W11 project server via a run script function. Wait for an update on the script. For now, if this problem persists, manually download the files.
+
 Go to [section 3](#section-3).
 
 <hr>
