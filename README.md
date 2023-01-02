@@ -23,6 +23,16 @@
 
 The contents of this repository allow older versions of UNIX to run on Unix-like systems with ease.
 
+At this time, you can run the following versions of UNIX:
+
+- UNIX versions for PDP-11 (run on a PDP-11 simulator):
+  - [x] Version 1 UNIX;
+  - [x] Version 5 UNIX;
+  - [x] Version 7 UNIX;
+  - [x] 2.11BSD UNIX.
+
+- Version 7 UNIX ported to x86 architecture by [Robert Nordier](https://www.nordier.com/) (original port in 1999 and patches in 2006-2007).
+
 ## License, Credits and Copyright
 
 First of all, credits and acknowledgment for material available in this repository that is not my own (or has been modified by me based on previous work).
