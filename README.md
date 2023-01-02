@@ -52,7 +52,7 @@ First of all, credits and acknowledgment for material available in this reposito
 
 ### Section 1
 
-First of all, you must have the PDP-11 Simulator and qemu installed on your device. If you already have them installed, skip to [section 2](#section-2).
+First of all, you must have the `PDP-11 Simulator` (SIMH) and `qemu` installed on your device. If you already have them installed, skip to [section 2](#section-2).
 
 > To install on Debian, Ubuntu, Pop!_OS and derivatives, use:
 
