@@ -1,2 +1,0 @@
-*.dsk[[:space:]]*.tap filter=lfs diff=lfs merge=lfs -text
-*.dsk filter=lfs diff=lfs merge=lfs -text
