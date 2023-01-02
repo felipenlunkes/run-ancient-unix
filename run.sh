@@ -30,12 +30,29 @@
 #;; OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #;; OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+run_v7x86()
+{
+
+cd "v7_x86"
+
+qemu-system-i386 -hda hd0.img 
+
+cd ..
+
+clean
+
+exit 
+
+}
+
 run_211BSD()
 {
 
 cd "2.11BSD"
 
 pdp11 211bsd.simh
+
+cd ..
 
 clean
 
@@ -50,6 +67,8 @@ cd "v7"
 
 pdp11 v7.simh
 
+cd ..
+
 clean
 
 exit 
@@ -63,6 +82,8 @@ cd "v5"
 
 pdp11 v5.simh
 
+cd ..
+
 clean 
 
 exit 
@@ -75,6 +96,8 @@ run_v1UNIX()
 cd "v1"
 
 pdp11 v1.simh
+
+cd ..
 
 clean
 
@@ -148,6 +171,7 @@ cd temp
 mkdir -p v5
 mkdir -p v7 
 mkdir -p "2.11BSD"
+mkdir -p "v7_x86"
 
 echo -e "\e[1;32m > Downloading v5 UNIX...\e[0m"
 echo
@@ -187,6 +211,31 @@ echo
 
 tar -xvzf 211bsd_rpethset.tgz -C "2.11BSD/"
 
+# v7 UNIX for x86
+
+echo
+echo -e "\e[1;32m > Downloading v7 UNIX for x86...\e[0m"
+echo
+
+wget https://www.nordier.com/v7x86/v7x86-0.8a-all.tar.xz
+
+echo -e "\e[1;32m > Unpacking v7 UNIX for x86...\e[0m"
+echo
+
+tar xvf v7x86-0.8a-all.tar.xz -C "v7_x86/"
+
+cd "v7_x86"
+cd v7x86-0.8a-all
+cd releases
+unzip v7x86-0.8a-vm.zip
+cd v7x86-0.8a-vm
+cp hd0.img ../../../hd0.img
+cd ..
+cd ..
+cd ..
+cd ..
+rm -Rf v7x86-0.8a-all
+
 # Install the images
 
 echo
@@ -213,9 +262,18 @@ cd "2.11BSD"
 cp 211bsd_rpeth.dsk "../../2.11BSD/211bsd.dsk"
 
 cd ..
+
+echo -e "\e[1;32m > Installing v7 UNIX for x86...\e[0m"
+
+cd "v7_x86"
+
+cp hd0.img "../../v7_x86/hd0.img"
+
+cd ..
 cd ..
 
-rm -R temp/
+
+rm -Rf temp/
 
 echo 
 echo -e "\e[1;32m[Done]\e[0m"
@@ -237,8 +295,9 @@ echo -e "1) v1 UNIX"
 echo -e "2) v5 UNIX"
 echo -e "3) v7 UNIX"
 echo -e "4) 2.11BSD UNIX"
-echo -e "5) Clear temporary files"
-echo -e "6) Install the disk images for UNIX" 
+echo -e "5) v7 UNIX for x86"
+echo -e "6) Clear temporary files"
+echo -e "7) Install the disk images for UNIX" 
 echo 
 echo -n "Select a number and press <ENTER>: "
 
@@ -250,8 +309,9 @@ case $UNIXVERSION in
 2) run_v5UNIX; exit;;
 3) run_v7UNIX; exit;;
 4) run_211BSD; exit;;
-5) clean; exit;;
-6) install_images; exit;;
+5) run_v7x86; exit;;
+6) clean; exit;;
+7) install_images; exit;;
 
 *) help; exit;;
 

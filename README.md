@@ -103,13 +103,14 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
-6) Install the disk images for UNIX
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 
 ```
 
-In this case, you should select option `6`, which will install the system images. After pressing 6, press ENTER to make your choice effective. Wait for the process of obtaining, extracting, configuring and installing the images.
+In this case, you should select option `7`, which will install the system images. After pressing 7, press ENTER to make your choice effective. Wait for the process of obtaining, extracting, configuring and installing the images.
 
 After the installation is complete, you must run `run.sh` again to start a UNIX version.
 
@@ -123,10 +124,10 @@ Now, you need to know peculiarities in the execution of each version of the syst
 
 Select the desired UNIX version option below for details on how to start and operate the system. Each version of UNIX has different boot procedures. Pay attention to each particularity.
 
-<details title="Particularities for v1 UNIX version" align='left'>
-<summary align='left'>Particularities for v1 UNIX version</summary>
+<details title="Particularities for Version 1 UNIX" align='left'>
+<summary align='left'>Particularities for Version 1 UNIX</summary>
 
-#### Particularities for v1 UNIX version
+#### Particularities for Version 1 UNIX
 
 After the start of execution after selecting v1 version, you will see a screen like below:
 
@@ -138,7 +139,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 1
 
@@ -161,7 +164,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 1
 
@@ -186,10 +191,10 @@ To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when th
 
 </details>
 
-<details title="Particularities for v5 UNIX version" align='left'>
-<summary align='left'>Particularities for v5 UNIX version</summary>
+<details title="Particularities for Version 5 UNIX" align='left'>
+<summary align='left'>Particularities for Version 5 UNIX</summary>
 
-#### Particularities for v5 UNIX version
+#### Particularities for Version 5 UNIX
 
 After the start of execution after selecting v5 version, you will see a screen like below:
 
@@ -201,7 +206,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 2
 
@@ -224,7 +231,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 2
 
@@ -249,7 +258,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 2
 
@@ -269,10 +280,10 @@ To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when th
 
 </details>
 
-<details title="Particularities for v7 UNIX version" align='left'>
-<summary align='left'>Particularities for v7 UNIX version</summary>
+<details title="Particularities for Version 7 UNIX" align='left'>
+<summary align='left'>Particularities for Version 7 UNIX</summary>
 
-#### Particularities for v7 UNIX version
+#### Particularities for Version 7 UNIX
 
 After the start of execution after selecting v7 version, you will see a screen like below:
 
@@ -284,7 +295,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 3
 
@@ -306,7 +319,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 3
 
@@ -331,7 +346,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 3
 
@@ -360,7 +377,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 3
 
@@ -404,7 +423,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 4
 
@@ -430,7 +451,9 @@ UNIX you want to start. The available options are:
 2) v5 UNIX
 3) v7 UNIX
 4) 2.11BSD UNIX
-5) Clear temporary files
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
 
 Select a number and press <ENTER>: 4
 
@@ -474,6 +497,44 @@ The `#` symbol indicates that the shell is ready to receive commands. Try using 
 - [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and password. You will again be taken to the 2.11BSD shell.
 
 To end the simulation, press CTRL-E followed by CTRL-C or by typing quit when the `simh>` prompt appears on the screen.
+
+</details>
+
+<details title="Particularities for Version 7 UNIX for x86" align='left'>
+<summary align='left'>Particularities for Version 7 UNIX for x86</summary>
+
+#### Particularities for Version 7 UNIX for x86
+
+After the start of execution after selecting v7 UNIX for x86, you will see a screen like below:
+
+```
+You must select, from the list below, which edition/version of
+UNIX you want to start. The available options are:
+
+1) v1 UNIX
+2) v5 UNIX
+3) v7 UNIX
+4) 2.11BSD UNIX
+5) v7 UNIX for x86
+6) Clear temporary files
+7) Install the disk images for UNIX
+
+Select a number and press <ENTER>: 5
+```
+
+Upon selection, `qemu` will automatically start with the Version 7 UNIX for x86 disk image. After the initial boot, you will see the following screen:
+
+<p align="center">
+<img src="https://github.com/felipenlunkes/run-ancient-unix/blob/main/doc/qemu1.png" width="600" height="500">
+</p>
+
+Then press ENTER to load and start UNIX. After pressing ENTER, you will see the following screen, and you will be able to interact with the Version 7 UNIX shell:
+
+<p align="center">
+<img src="https://github.com/felipenlunkes/run-ancient-unix/blob/main/doc/qemu2.png" width="600" height="500">
+</p>
+
+- [x] To enter multiuser mode and access all system functions, press CTRL-D. Afterwards, provide `root` as username and `password` as password. You will again be taken to the Version 7 UNIX shell.
 
 </details>
 
