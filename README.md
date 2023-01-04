@@ -21,15 +21,15 @@
 
 <div align="justify">
 
-The contents of this repository allow older versions of UNIX to run on Unix-like systems with ease.
+The contents of this repository allow older versions of [UNIX](https://en.wikipedia.org/wiki/Unix) ([ancient UNIX](https://en.wikipedia.org/wiki/Ancient_UNIX))to run on [Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems with ease.
 
 At this time, you can run the following versions of UNIX:
 
-- UNIX versions for PDP-11 (run on a PDP-11 simulator):
-  - [x] Version 1 UNIX;
-  - [x] Version 5 UNIX;
-  - [x] Version 7 UNIX;
-  - [x] 2.11BSD UNIX.
+- UNIX versions for [PDP-11](https://en.wikipedia.org/wiki/PDP-11) (run on a PDP-11 simulator):
+  - [x] [Version 1 UNIX](https://github.com/jserv/unix-v1);
+  - [x] [Version 5 UNIX](https://gunkies.org/wiki/UNIX_Fifth_Edition);
+  - [x] [Version 7 UNIX](https://en.wikipedia.org/wiki/Version_7_Unix);
+  - [x] [2.11BSD UNIX](https://en.wikipedia.org/wiki/Berkeley_Software_Distribution).
 
 - Version 7 UNIX ported to x86 architecture by [Robert Nordier](https://www.nordier.com/) (original port in 1999 and patches in 2006-2007).
 
@@ -66,12 +66,32 @@ sudo apt install simh qemu qemu-system-i386
 sudo dnf install simh qemu qemu-system-i386
 ```
 
+> To install on FreeBSD, use (for FreeBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
+
+```
+su root # <= Enter your password to login as root user
+pkg install simh bash
+```
+
+> To install on NetBSD, use (for NetBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
+
+```
+su root # <= Enter your password to login as root user
+pkgin install simh bash
+```
+
+> To install on OpenBSD, use (for OpenBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
+
+```
+su root # <= Enter your password to login as root user
+pkg_add simh bash
+```
+
 After installation, proceed to [section 2](#section-2).
 
 <hr>
 
 ### Section 2
-
 
 You must clone this repository to your computer. For that, use:
 
