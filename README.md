@@ -59,7 +59,7 @@ You will need the following tools and utilities to run the available UNIX versio
 <div align="center">
 
 ![gnu_bash](https://img.shields.io/badge/GNU%20Bash-4EAA25?style=for-the-badge&logo=GNU%20Bash&logoColor=white)
-![github](https://img.shields.io/badge/GitHub-8117EB?style=for-the-badge&logo=github&logoColor=white)
+![git](https://img.shields.io/badge/Git-8117EB?style=for-the-badge&logo=git&logoColor=white)
 ![qemu](https://img.shields.io/badge/Qemu-0A0A0A?style=for-the-badge&logo=qemu&logoColor=white)
 ![simh](https://img.shields.io/badge/SIMH-DE2218?style=for-the-badge&logo=SIMH&logoColor=white)
 
