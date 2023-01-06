@@ -61,44 +61,45 @@ You will need the following tools and utilities to run the available UNIX versio
 ![gnu_bash](https://img.shields.io/badge/GNU%20Bash-4EAA25?style=for-the-badge&logo=GNU%20Bash&logoColor=white)
 ![git](https://img.shields.io/badge/Git-8117EB?style=for-the-badge&logo=git&logoColor=white)
 ![wget](https://img.shields.io/badge/wget-0077B5?style=for-the-badge&logo=wget&logoColor=white)
+![python](https://img.shields.io/badge/Python-8419D1?style=for-the-badge&logo=Python&logoColor=white)
 ![qemu](https://img.shields.io/badge/Qemu-0A0A0A?style=for-the-badge&logo=qemu&logoColor=white)
 ![simh](https://img.shields.io/badge/SIMH-DE2218?style=for-the-badge&logo=SIMH&logoColor=white)
 
 </div>
 
-First of all, you must have the `PDP-11 Simulator` (SIMH), `qemu`, `GNU bash`, `wget` and `git` installed on your device. If you already have them installed, skip to [section 2](#section-2).
+First of all, you must have the `PDP-11 Simulator` (SIMH), `qemu`, `GNU bash`, `Python`, `wget` and `git` installed on your device. If you already have them installed, skip to [section 2](#section-2).
 
 > To install on Debian, Ubuntu, Pop!_OS and derivatives, use:
 
 ```
-sudo apt install simh qemu qemu-system-i386 git wget
+sudo apt install simh qemu qemu-system-i386 git wget python
 ```
 
 > To install on Fedora and derivatives, use:
 
 ```
-sudo dnf install simh qemu qemu-system-i386 git wget
+sudo dnf install simh qemu qemu-system-i386 git wget python
 ```
 
 > To install on FreeBSD, use (for FreeBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
 
 ```
 su root # <= Enter your password to login as root user
-pkg install simh bash qemu git wget
+pkg install simh bash qemu git wget python
 ```
 
 > To install on NetBSD, use (for NetBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
 
 ```
 su root # <= Enter your password to login as root user
-pkgin install simh bash qemu git wget
+pkgin install simh bash qemu git wget python
 ```
 
 > To install on OpenBSD, use (for OpenBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
 
 ```
 su root # <= Enter your password to login as root user
-pkg_add simh bash qemu git wget
+pkg_add simh bash qemu git wget python
 ```
 
 After installation, proceed to [section 2](#section-2).
