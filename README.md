@@ -72,34 +72,34 @@ First of all, you must have the `PDP-11 Simulator` (SIMH), `qemu`, `GNU bash`, `
 > To install on Debian, Ubuntu, Pop!_OS and derivatives, use:
 
 ```
-sudo apt install simh qemu qemu-system-i386 git wget python
+sudo apt install simh qemu qemu-system-i386 git wget python3
 ```
 
 > To install on Fedora and derivatives, use:
 
 ```
-sudo dnf install simh qemu qemu-system-i386 git wget python
+sudo dnf install simh qemu qemu-system-i386 git wget python3
 ```
 
 > To install on FreeBSD, use (for FreeBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
 
 ```
 su root # <= Enter your password to login as root user
-pkg install simh bash qemu git wget python
+pkg install simh bash qemu git wget python3
 ```
 
 > To install on NetBSD, use (for NetBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
 
 ```
 su root # <= Enter your password to login as root user
-pkgin install simh bash qemu git wget python
+pkgin install simh bash qemu git wget python3
 ```
 
 > To install on OpenBSD, use (for OpenBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
 
 ```
 su root # <= Enter your password to login as root user
-pkg_add simh bash qemu git wget python
+pkg_add simh bash qemu git wget python3
 ```
 
 After installation, proceed to [section 2](#section-2).
