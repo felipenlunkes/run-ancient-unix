@@ -58,12 +58,12 @@ You will need the following tools and utilities to run the available UNIX versio
 
 <div align="center">
 
-![gnu_bash](https://img.shields.io/badge/GNU%20Bash-4EAA25?style=for-the-badge&logo=GNU%20Bash&logoColor=white)
-![git](https://img.shields.io/badge/Git-8117EB?style=for-the-badge&logo=git&logoColor=white)
+![GNU_Bash](https://img.shields.io/badge/GNU%20Bash-4EAA25?style=for-the-badge&logo=GNU%20Bash&logoColor=white)
+![git](https://img.shields.io/badge/Git-F57842?style=for-the-badge&logo=git&logoColor=white)
 ![wget](https://img.shields.io/badge/wget-0077B5?style=for-the-badge&logo=wget&logoColor=white)
-![python](https://img.shields.io/badge/Python-8419D1?style=for-the-badge&logo=Python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-8419D1?style=for-the-badge&logo=Python&logoColor=white)
 ![qemu](https://img.shields.io/badge/Qemu-0A0A0A?style=for-the-badge&logo=qemu&logoColor=white)
-![simh](https://img.shields.io/badge/SIMH-DE2218?style=for-the-badge&logo=SIMH&logoColor=white)
+![SIMH](https://img.shields.io/badge/SIMH-DE2218?style=for-the-badge&logo=SIMH&logoColor=white)
 
 </div>
 
