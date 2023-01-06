@@ -283,7 +283,8 @@ exit
 
 }
 
-export NAME=$0
+init()
+{
 
 clear
 
@@ -314,5 +315,23 @@ case $UNIXVERSION in
 7) install_images; exit;;
 
 *) help; exit;;
+
+esac 
+
+}
+
+export NAME=$0
+
+case $1 in 
+
+v1UNIX) run_v1UNIX; exit;;
+v5UNIX) run_v5UNIX; exit;;
+v7UNIX) run_v7UNIX; exit;;
+211BSDUNIX) run_211BSD; exit;;
+v7UNIXx86) run_v7x86; exit;;
+installUNIX) install_images; exit;;
+clearTemp) clean; exit;;
+
+*) echoo; exit;;
 
 esac 
