@@ -14,9 +14,8 @@ class RAU:
 
         self.lbl1=Label(win, text='Ancient UNIX running tool')
         self.lbl2=Label(win, text='Select one of the options below to continue')
-
-        self.lbl1.place(x=150, y=5)
-        self.lbl2.place(x=100, y=50)
+        self.lbl3=Label(win, text='Configuration options')
+        self.lbl4=Label(win, text='Running options')
 
         self.botao0=Button(win, text='Run Version 1 UNIX for PDP-11', command=self.runV1UNIX)
         self.botao1=Button(win, text='Run Version 5 UNIX for PDP-11', command=self.runV5UNIX)
@@ -26,13 +25,21 @@ class RAU:
         self.botao5=Button(win, text='Install UNIX system images', command=self.installImages)
         self.botao6=Button(win, text="Clear temporary files", command=self.clearTemp)
 
-        self.botao5.place(x=140, y=100)
-        self.botao0.place(x=10, y=150)
-        self.botao1.place(x=250, y=150)
-        self.botao2.place(x=10, y=200)
-        self.botao3.place(x=250, y=200)
-        self.botao4.place(x=10, y=250)
-        self.botao6.place(x=250, y=250)
+        self.lbl1.place(x=170, y=5)
+        self.lbl2.place(x=100, y=50)
+        self.lbl3.place(x=180, y=100)
+
+        self.botao5.place(x=10, y=140)
+        self.botao6.place(x=250, y=140)
+
+        self.lbl4.place(x=200, y=200)
+
+        self.botao0.place(x=10, y=240)
+        self.botao1.place(x=250, y=240)
+        self.botao2.place(x=10, y=280)
+        self.botao3.place(x=250, y=280)
+        self.botao4.place(x=10, y=320)
+        
 
     def runV1UNIX(self):
     
@@ -84,9 +91,9 @@ class RAU:
 
 janela=Tk()
 autobuild=RAU(janela)
-janela.title('Run ancient UNIX v0.1')
+janela.title('Run ancient UNIX v0.2')
 janela.geometry("500x400+10+10")
-print("\nRun ancient UNIX frontend v0.1")
+print("\nRun ancient UNIX frontend v0.2")
 print("Copyright (C) 2023 Felipe Miguel Nery Lunkes")
 print("All rights reserved.")
 print("\nWaiting for user interaction...")
