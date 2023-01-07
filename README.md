@@ -130,7 +130,9 @@ chmod +x run.sh
 
 First, you have to run the script and select the option to install system images. You can also use the Python frontend to run the script. This is the easiest and simplest way to run script functions. To run this frontend and not rely on the command line, go to [session 5](#section-5). To continue the steps using the terminal, go to [section 4](#section-4).
 
-#### Section 4
+<hr>
+
+### Section 4
 
 You will see the following screen:
 
@@ -612,7 +614,5 @@ cd UNIX_VERSION_DIRECTORY
 rm *.log *.dat
 cd ..
 ```
-
-<hr>
 
 </div>
