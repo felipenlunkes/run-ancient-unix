@@ -12,6 +12,8 @@ class RAU:
 
     def __init__(self, win):
 
+# TODO :labels for runnig and config options
+
         self.lbl1=Label(win, text='Ancient UNIX running tool')
         self.lbl2=Label(win, text='Select one of the options below to continue')
 
