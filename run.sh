@@ -332,6 +332,4 @@ v7UNIXx86) run_v7x86; exit;;
 installUNIX) install_images; exit;;
 clearTemp) clean; exit;;
 
-*) echoo; exit;;
-
 esac 
