@@ -85,21 +85,27 @@ sudo dnf install simh qemu qemu-system-i386 git wget python3
 
 ```
 su root # <= Enter your password to login as root user
-pkg install simh bash qemu git wget python3
+pkg install -q -y simh bash qemu git wget python3 py39-pip
+ln -s /usr/local/bin/pip-3.9 /usr/local/bin/pip
+pip install --upgrade pip
 ```
 
 > To install on NetBSD, use (for NetBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
 
 ```
 su root # <= Enter your password to login as root user
-pkgin install simh bash qemu git wget python3
+pkgin install simh bash qemu git wget python3 py39-pip
+ln -s /usr/local/bin/pip-3.9 /usr/local/bin/pip
+pip install --upgrade pip
 ```
 
 > To install on OpenBSD, use (for OpenBSD, installing GNU bash is also required. This shell is not normally installed in a default installation. Installation of GNU bash is not required on Linux systems, where bash is already installed by default):
 
 ```
 su root # <= Enter your password to login as root user
-pkg_add simh bash qemu git wget python3
+pkg_add simh bash qemu git wget python3 py39-pip
+ln -s /usr/local/bin/pip-3.9 /usr/local/bin/pip
+pip install --upgrade pip
 ```
 
 After installation, proceed to [section 2](#section-2).
@@ -163,7 +169,13 @@ Now, you need to know peculiarities in the execution of each version of the syst
 
 ### Section 5
 
-You need to start running the Python frontend that will manage the configuration and running of UNIX on your computer. For that, you can press the `RAU.py` script with the right button of your mouse and select the option of `Run as program` or start the script from the terminal, using:
+You need to start running the Python frontend that will manage the configuration and running of UNIX on your computer. First, you must install the TKinter Python package on your computer. For that, use:
+
+```
+pip install tk
+```
+
+After that, you can press the `RAU.py` script with the right button of your mouse and select the option of `Run as program` or start the script from the terminal, using:
 
 ```
 python3 RAU.py
