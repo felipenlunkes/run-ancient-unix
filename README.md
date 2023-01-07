@@ -169,7 +169,7 @@ You need to start running the Python frontend that will manage the configuration
 python3 RAU.py
 ```
 
-> NOTICE! The frontend is currently only compatible with the GNOME graphical environment (Linux and BSD systems). You can manually replace the `gnome-terminal` calls with `konsole` or another desired terminal emulator. Feel free to submit a pull request with any improvements or changes to the frontend.
+> WARNING! The frontend is currently only compatible with the GNOME graphical environment (Linux and BSD systems). You can manually replace the `gnome-terminal` calls with `konsole` or another desired terminal emulator. Feel free to submit a pull request with any improvements or changes to the frontend.
 
 After running the program, you will see the following screen:
 
