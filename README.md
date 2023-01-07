@@ -174,7 +174,7 @@ python3 RAU.py
 After running the program, you will see the following screen:
 
 <p align="center">
-<img src="https://github.com/felipenlunkes/run-ancient-unix/blob/main/doc/frontend.png" width="600" height="500">
+<img src="https://github.com/felipenlunkes/run-ancient-unix/blob/main/doc/frontend.png" width="500" height="400">
 </p>
 
 On first run, you must install the UNIX disk images locally on your computer. Prior to this operation, you will NOT be able to run UNIX. To do so, click on the `Install UNIX system images` button.
