@@ -128,7 +128,7 @@ chmod +x run.sh
 ./run.sh
 ```
 
-First, you have to run the script and select the option to install system images. You can also use the Python frontend to run the script. This is the easiest and simplest way to run script functions. To run this frontend and not rely on the command line, go to [session 5](#section-5). To continue the steps using the terminal, go to [section 4](#section-4).
+First, you have to run the script and select the option to install system images. You can also use the Python frontend to run the script. This is the easiest and simplest way to run script functions. To run this frontend and not rely on the command line, go to [section 5](#section-5). To continue the steps using the terminal, go to [section 4](#section-4).
 
 <hr>
 
@@ -168,6 +168,8 @@ You need to start running the Python frontend that will manage the configuration
 ```
 python3 RAU.py
 ```
+
+> NOTICE! The frontend is currently only compatible with the GNOME graphical environment (Linux and BSD systems). You can manually replace the `gnome-terminal` calls with `konsole` or another desired terminal emulator. Feel free to submit a pull request with any improvements or changes to the frontend.
 
 After running the program, you will see the following screen:
 
