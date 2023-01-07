@@ -128,7 +128,11 @@ chmod +x run.sh
 ./run.sh
 ```
 
-First, you have to run the script and select the option to install system images. You will see the following screen:
+First, you have to run the script and select the option to install system images. You can also use the Python frontend to run the script. This is the easiest and simplest way to run script functions. To run this frontend and not rely on the command line, go to [session 5](#section-5). To continue the steps using the terminal, go to [section 4](#section-4).
+
+#### Section 4
+
+You will see the following screen:
 
 ```
 You must select, from the list below, which edition/version of
@@ -151,11 +155,33 @@ After the installation is complete, you must run `run.sh` again to start a UNIX 
 
 When running the script, you will be asked to choose one of the available UNIX versions. After typing only the number relative to the choice, press ENTER to make your decision effective. Then wait for the desired version to run.
 
-Now, you need to know peculiarities in the execution of each version of the system. For this, go to [section 4](#section-4).
+Now, you need to know peculiarities in the execution of each version of the system. For this, go to [section 6](#section-6).
 
 <hr>
 
-### Section 4
+### Section 5
+
+You need to start running the Python frontend that will manage the configuration and running of UNIX on your computer. For that, you can press the `RAU.py` script with the right button of your mouse and select the option of `Run as program` or start the script from the terminal, using:
+
+```
+python3 RAU.py
+```
+
+After running the program, you will see the following screen:
+
+<p align="center">
+<img src="https://github.com/felipenlunkes/run-ancient-unix/blob/main/doc/frontend.png" width="600" height="500">
+</p>
+
+On first run, you must install the UNIX disk images locally on your computer. Prior to this operation, you will NOT be able to run UNIX. To do so, click on the `Install UNIX system images` button.
+
+After downloading and installing the disk images, you are able to run UNIX. To do so, select the desired UNIX version in the `Running options` section of the frontend screen.
+
+Go to the [next section](#section-6) for more information about the specifics of running each version of UNIX available. Remember that when using the Python frontend, the command line selection screen, as shown in the next section, will not be displayed. However, the manual options and settings presented in the next section (after the selection screen, which will not appear) are still required to run each version of UNIX.
+
+<hr>
+
+### Section 6
 
 Select the desired UNIX version option below for details on how to start and operate the system. Each version of UNIX has different boot procedures. Pay attention to each particularity.
 
@@ -573,11 +599,11 @@ Then press ENTER to load and start UNIX. After pressing ENTER, you will see the 
 
 </details>
 
-When you are finished running the system on the PDP-11 simulator, you can clean up temporary and log files that may have been created by SIMH. To do so, go to [section 5](#section-5).
+When you are finished running the system on the PDP-11 simulator, you can clean up temporary and log files that may have been created by SIMH. To do so, go to [section 7](#section-7).
 
 <hr>
 
-### Section 5
+### Section 7
 
 The simulator can create temporary and log files to simulate peripheral devices that would be connected to a PDP-11 minicomputer. These files typically have `.log` and `.dat` extensions. You can remove these files using the `run.sh` script and selecting the cleanup temporary files option, as well as manually going into each system directory and entering, in your system shell:
 
@@ -586,5 +612,7 @@ cd UNIX_VERSION_DIRECTORY
 rm *.log *.dat
 cd ..
 ```
+
+<hr>
 
 </div>
