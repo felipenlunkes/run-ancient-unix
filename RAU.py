@@ -12,10 +12,14 @@ class RAU:
 
     def __init__(self, win):
 
+        # Labels
+
         self.lbl1=Label(win, text='Ancient UNIX running tool')
         self.lbl2=Label(win, text='Select one of the options below to continue')
         self.lbl3=Label(win, text='Configuration options')
         self.lbl4=Label(win, text='Running options')
+
+        # Buttons 
 
         self.btn0=Button(win, text='Run Version 1 UNIX for PDP-11', command=self.runV1UNIX)
         self.btn1=Button(win, text='Run Version 5 UNIX for PDP-11', command=self.runV5UNIX)
@@ -32,7 +36,7 @@ class RAU:
         self.btn5.place(x=10, y=140)
         self.btn6.place(x=250, y=140)
 
-        self.lbl4.place(x=200, y=200)
+        self.lbl4.place(x=195, y=200)
 
         self.btn0.place(x=10, y=240)
         self.btn1.place(x=250, y=240)
