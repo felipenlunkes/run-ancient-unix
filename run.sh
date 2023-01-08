@@ -161,8 +161,9 @@ install_images()
 clear 
 
 echo 
-echo -e "Please wait while the UNIX disk images are installed locally. This process may take"
-echo -e "a few minutes, depending on the speed of your internet connection."
+echo -e "Please wait while the UNIX disk images are installed locally."
+echo -e "This process may take a few minutes, depending on the speed of"
+echo -e "your internet connection."
 echo 
 
 mkdir -p temp 
@@ -174,60 +175,53 @@ mkdir -p "2.11BSD"
 mkdir -p "v7_x86"
 
 echo -e "\e[1;32m > Downloading v5 UNIX...\e[0m"
-echo
 
 # v5
 
-wget https://www.retro11.de/data/oc_w11/oskits/u5ed_rkset.tgz
+wget -q https://www.retro11.de/data/oc_w11/oskits/u5ed_rkset.tgz
 
-echo -e "\e[1;32m > Unpacking v5 UNIX...\e[0m"
-echo
+echo -e "\e[1;32m   > Unpacking v5 UNIX...\e[0m"
 
-tar -xvzf u5ed_rkset.tgz -C v5/
+tar -xvzf u5ed_rkset.tgz -C v5/ >> /dev/null
 
 # v7
 
 echo
 echo -e "\e[1;32m > Downloading v7 UNIX...\e[0m"
-echo
 
-wget https://www.retro11.de/data/oc_w11/oskits/u7ed_rpset.tgz
+wget -q https://www.retro11.de/data/oc_w11/oskits/u7ed_rpset.tgz
 
-echo -e "\e[1;32m > Unpacking v7 UNIX...\e[0m"
-echo
+echo -e "\e[1;32m   > Unpacking v7 UNIX...\e[0m"
 
-tar -xvzf u7ed_rpset.tgz -C v7/
+tar -xvzf u7ed_rpset.tgz -C v7/ >> /dev/null
 
 # 2.11BSD
 
 echo
 echo -e "\e[1;32m > Downloading 2.11BSD UNIX...\e[0m"
+
+wget -q https://www.retro11.de/data/oc_w11/oskits/211bsd_rpethset.tgz
+
+echo -e "\e[1;32m   > Unpacking 2.11BSD UNIX...\e[0m"
 echo
 
-wget https://www.retro11.de/data/oc_w11/oskits/211bsd_rpethset.tgz
-
-echo -e "\e[1;32m > Unpacking 2.11BSD UNIX...\e[0m"
-echo
-
-tar -xvzf 211bsd_rpethset.tgz -C "2.11BSD/"
+tar -xvzf 211bsd_rpethset.tgz -C "2.11BSD/" >> /dev/null
 
 # v7 UNIX for x86
 
-echo
 echo -e "\e[1;32m > Downloading v7 UNIX for x86...\e[0m"
+
+wget -q https://www.nordier.com/v7x86/v7x86-0.8a-all.tar.xz
+
+echo -e "\e[1;32m   > Unpacking v7 UNIX for x86...\e[0m"
 echo
 
-wget https://www.nordier.com/v7x86/v7x86-0.8a-all.tar.xz
-
-echo -e "\e[1;32m > Unpacking v7 UNIX for x86...\e[0m"
-echo
-
-tar xvf v7x86-0.8a-all.tar.xz -C "v7_x86/"
+tar xvf v7x86-0.8a-all.tar.xz -C "v7_x86/" >> /dev/null
 
 cd "v7_x86"
 cd v7x86-0.8a-all
 cd releases
-unzip v7x86-0.8a-vm.zip
+unzip v7x86-0.8a-vm.zip >> /dev/null
 cd v7x86-0.8a-vm
 cp hd0.img ../../../hd0.img
 cd ..
