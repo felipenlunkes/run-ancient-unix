@@ -214,7 +214,6 @@ echo -e "\e[1;32m > Downloading v7 UNIX for x86...\e[0m"
 wget -q https://www.nordier.com/v7x86/v7x86-0.8a-all.tar.xz
 
 echo -e "\e[1;32m   > Unpacking v7 UNIX for x86...\e[0m"
-echo
 
 tar xvf v7x86-0.8a-all.tar.xz -C "v7_x86/" >> /dev/null
 
