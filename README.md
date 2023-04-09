@@ -15,13 +15,12 @@
 </div>
 
 <hr>
-<hr>
 
 # Run ancient UNIX on modern hardware
 
 <div align="justify">
 
-The contents of this repository allow older versions of [UNIX](https://en.wikipedia.org/wiki/Unix) ([ancient UNIX](https://en.wikipedia.org/wiki/Ancient_UNIX)) to run on [Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems with ease.
+The contents of this repository allow older versions of [UNIX](https://en.wikipedia.org/wiki/Unix) ([ancient UNIX](https://en.wikipedia.org/wiki/Ancient_UNIX)) to run on [Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems easily.
 
 At this time, you can run the following versions of UNIX:
 
