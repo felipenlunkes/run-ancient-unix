@@ -20,7 +20,7 @@
 
 <div align="justify">
 
-The contents of this repository allow older versions of [UNIX](https://en.wikipedia.org/wiki/Unix) ([ancient UNIX](https://en.wikipedia.org/wiki/Ancient_UNIX)) to run easily on [Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems.
+The contents of this repository allow older versions of [UNIX](https://en.wikipedia.org/wiki/Unix) ([ancient UNIX](https://en.wikipedia.org/wiki/Ancient_UNIX)) to run easily on modern [Unix-like](https://en.wikipedia.org/wiki/Unix-like) systems (Linux, FreeBSD, macOS, among others).
 
 At this time, you can run the following versions of UNIX:
 
