@@ -46,7 +46,7 @@ First of all, credits and acknowledgment for material available in this reposito
 - The scripts used to simulate the systems using SIMH for v5 and v7 UNIX were obtained from a w11 project repository, which can be accessed [here](https://github.com/wfjm/w11/tree/master/tools/oskit). The original scripts are available under license GLP v3 or later. Modifications in these files were made by me, to fit the purpose of this repository. These modifications are restricted to the same license as the original script.
   - In addition, the general script for configuring the execution environment of versions v5 and v7 was obtained from the project, authored by [Walter F.J. Mueller](https://github.com/wfjm). You can get the original script [here](https://github.com/wfjm/w11/blob/master/tools/simh/setup_w11a_max.scmd). The original script are available under license GLP v3 or later. Modifications in these files were made by me, to fit the purpose of this repository. These modifications are restricted to the same license as the original script.
 - The port of Version 7 UNIX to the x86 architecture was performed by [Robert Nordier](https://www.nordier.com/). These modifications are released under the simplified BSD license. For more information on all aspects of the distribution, read [this file](v7_x86/LICENSE).
-- All my contributions and modifications `(except for material that requires redistribution under the same license, such as the running scripts)` are available in this repository under the BSD-3-Clause [license](LICENSE).
+- All my contributions and modifications **(except for material that requires redistribution under the same license, such as the running scripts)** are available in this repository under the BSD-3-Clause [license](LICENSE).
 
 <hr>
 <hr>
