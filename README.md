@@ -30,7 +30,11 @@ At this time, you can run the following versions of UNIX:
   - [x] [Version 7 UNIX](https://en.wikipedia.org/wiki/Version_7_Unix);
   - [x] [2.11BSD UNIX](https://en.wikipedia.org/wiki/Berkeley_Software_Distribution).
 
-- Version 7 UNIX ported to x86 architecture by [Robert Nordier](https://www.nordier.com/) (original port in 1999 and patches in 2006-2007).
+- UNIX versions for x86:
+  - [x] Version 7 UNIX ported to x86 architecture by [Robert Nordier](https://www.nordier.com/) (original port in 1999 and patches in 2006-2007).
+
+<hr>
+<hr>
 
 ## License, Credits and Copyright
 
