@@ -145,6 +145,8 @@ rm -rf *.log *.dat
 
 cd ..
 
+rm -rf temp
+
 echo 
 echo -e "\e[1;32m[Done]\e[0m"
 echo 
