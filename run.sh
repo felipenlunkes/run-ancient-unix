@@ -30,6 +30,17 @@
 #;; OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #;; OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+run_pdp11()
+{
+
+if which simh-pdp11 > /dev/null 2> /dev/null; then
+  simh-pdp11 $1;
+else
+  pdp11 $1
+fi
+
+}
+
 run_v7x86()
 {
 
@@ -50,7 +61,7 @@ run_211BSD()
 
 cd "2.11BSD"
 
-pdp11 211bsd.simh
+run_pdp11 211bsd.simh
 
 cd ..
 
@@ -65,7 +76,7 @@ run_v7UNIX()
 
 cd "v7"
 
-pdp11 v7.simh
+run_pdp11 v7.simh
 
 cd ..
 
@@ -80,7 +91,7 @@ run_v5UNIX()
 
 cd "v5"
 
-pdp11 v5.simh
+run_pdp11 v5.simh
 
 cd ..
 
@@ -95,7 +106,7 @@ run_v1UNIX()
 
 cd "v1"
 
-pdp11 v1.simh
+run_pdp11 v1.simh
 
 cd ..
 
