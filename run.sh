@@ -195,6 +195,11 @@ echo -e "\e[1;32m > Downloading v5 UNIX...\e[0m"
 
 wget -q https://www.retro11.de/data/oc_w11/oskits/u5ed_rkset.tgz
 
+echo -e "\e[1;32m   > Verifying v5 UNIX...\e[0m"
+
+echo "bad3f00f39ca2769590baacb044d3090d7e60661644ccc88c93a663b7843381e  u5ed_rkset.tgz" > u5ed_rkset.tgz.sha256
+sha256sum u5ed_rkset.tgz.sha256 -c
+
 echo -e "\e[1;32m   > Unpacking v5 UNIX...\e[0m"
 
 tar -xvzf u5ed_rkset.tgz -C v5/ >> /dev/null
@@ -205,6 +210,11 @@ echo
 echo -e "\e[1;32m > Downloading v7 UNIX...\e[0m"
 
 wget -q https://www.retro11.de/data/oc_w11/oskits/u7ed_rpset.tgz
+
+echo -e "\e[1;32m   > Verifying v7 UNIX...\e[0m"
+
+echo "55fb0dad3d28eb6ccdf3af7039c6b3d77904d5114ed368e443e8b3682217a6cf  u7ed_rpset.tgz" > u7ed_rpset.tgz.sha256
+sha256sum u7ed_rpset.tgz.sha256 -c
 
 echo -e "\e[1;32m   > Unpacking v7 UNIX...\e[0m"
 
@@ -217,6 +227,11 @@ echo -e "\e[1;32m > Downloading 2.11BSD UNIX...\e[0m"
 
 wget -q https://www.retro11.de/data/oc_w11/oskits/211bsd_rpethset.tgz
 
+echo -e "\e[1;32m   > Verifying 2.11BSD UNIX...\e[0m"
+
+echo "74678c649338b10bfc470b4fec4bd75b649b4df1e3eb5a9f227ed7ac7d947b42  211bsd_rpethset.tgz" > 211bsd_rpethset.tgz.sha256
+sha256sum 211bsd_rpethset.tgz.sha256 -c
+
 echo -e "\e[1;32m   > Unpacking 2.11BSD UNIX...\e[0m"
 echo
 
@@ -227,6 +242,11 @@ tar -xvzf 211bsd_rpethset.tgz -C "2.11BSD/" >> /dev/null
 echo -e "\e[1;32m > Downloading v7 UNIX for x86...\e[0m"
 
 wget -q https://www.nordier.com/v7x86/v7x86-0.8a-all.tar.xz
+
+echo -e "\e[1;32m   > Verifying v7 UNIX for x86...\e[0m"
+
+echo "05236c3635af5cdf1e70bc97b466964fa727e434dd4b80b97d3d85aae84329a7  v7x86-0.8a-all.tar.xz" > v7x86-0.8a-all.tar.xz.sha256
+sha256sum v7x86-0.8a-all.tar.xz.sha256 -c
 
 echo -e "\e[1;32m   > Unpacking v7 UNIX for x86...\e[0m"
 
