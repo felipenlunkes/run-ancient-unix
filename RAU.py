@@ -46,6 +46,7 @@ class RAU:
 
 
     def runCommand(self, cmd):
+        os.chdir(os.path.dirname(__file__))
         bashcmd = f"bash -c './run.sh {cmd}; echo Press Enter to continue...; read'"
 
         if shutil.which("gnome-terminal"):
