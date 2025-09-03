@@ -6,7 +6,7 @@
 # Frontend for run.sh
 
 from tkinter import *
-import os
+import os, shutil
 
 class RAU:
 
@@ -43,66 +43,63 @@ class RAU:
         self.btn2.place(x=10, y=280)
         self.btn3.place(x=250, y=280)
         self.btn4.place(x=10, y=320)
+
+
+    def runCommand(self, cmd):
+        os.chdir(os.path.dirname(__file__))
+        bashcmd = f"bash -c './run.sh {cmd}; echo Press Enter to continue...; read'"
+
+        if shutil.which("gnome-terminal"):
+            os.system(f"gnome-terminal -- {bashcmd}")
+            return
+
+        if shutil.which("xfce4-terminal"):
+            os.system(f"xfce4-terminal --disable-server -e \"{bashcmd}\"")
+            return
+
+        if shutil.which("xterm"):
+            os.system(f"xterm -e {bashcmd}")
+            return
+
+        os.system(f"./run.sh {cmd}")
         
 
     def runV1UNIX(self):
-    
         print(" > Version 1 UNIX (PDP-11) was selected to run.")
-
-        os.system("gnome-terminal -- bash -c './run.sh v1UNIX'")
-
+        self.runCommand("v1UNIX")
         self.complete() 
     
     def runV5UNIX(self):
-
         print(" > Version 5 UNIX (PDP-11) was selected to run.")
-
-        os.system("gnome-terminal -- bash -c './run.sh v5UNIX'")
-
+        self.runCommand("v5UNIX")
         self.complete() 
 
     def runV7UNIX(self):
-
         print(" > Version 7 UNIX (PDP-11) was selected to run.")
-
-        os.system("gnome-terminal -- bash -c './run.sh v7UNIX'")
-
+        self.runCommand("v7UNIX")
         self.complete() 
 
     def run211BSD(self):
-    
         print(" > 2.11BSD UNIX (PDP-11) was selected to run.")
-
-        os.system("gnome-terminal -- bash -c './run.sh 211BSDUNIX'")
-
+        self.runCommand("211BSDUNIX")
         self.complete() 
 
     def runV7UNIXx86(self):
-    
         print(" > Version 7 UNIX (x86) was selected to run.")
-
-        os.system("gnome-terminal -- bash -c './run.sh v7UNIXx86'")
-
+        self.runCommand("v7UNIXx86")
         self.complete() 
 
     def installImages(self):
-
         print(" > Installing UNIX system images...")
-
-        os.system("gnome-terminal -- bash -c './run.sh installUNIX'")
-
+        self.runCommand("installUNIX")
         self.complete() 
     
     def clearTemp(self):
-
         print(" > Clear temporary files.")
-
-        os.system("gnome-terminal -- bash -c './run.sh clearTemp'")
-
+        self.runCommand("clearTemp")
         self.complete() 
 
     def complete(self):
-
         print("Request completed.\n")
 
 # Main code
