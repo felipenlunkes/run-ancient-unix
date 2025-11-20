@@ -350,7 +350,7 @@ esac
 
 export NAME=$0
 
-case $1 in 
+case ${1:-} in 
 
 v1UNIX) run_v1UNIX; exit;;
 v5UNIX) run_v5UNIX; exit;;
